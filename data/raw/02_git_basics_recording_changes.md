@@ -1,6 +1,5 @@
 # Git Basics — Recording Changes to the Repository
 
-
 # 2.2 Git Basics - Recording Changes to the Repository
 
 ## Recording Changes to the Repository
@@ -26,7 +25,7 @@ The main tool you use to determine which files are in which state is the `git st
 
 This means you have a clean working directory; in other words, none of your tracked files are modified. Git also doesn’t see any untracked files, or they would be listed here. Finally, the command tells you which branch you’re on and informs you that it has not diverged from the same branch on the server. For now, that branch is always `master`, which is the default; you won’t worry about it here. Git Branching will go over branches and references in detail.
 
-Note |  GitHub changed the default branch name from `master` to `main` in mid-2020, and other Git hosts followed suit. So you may find that the default branch name in some newly created repositories is `main` and not `master`. In addition, the default branch name can be changed (as you have seen in Your default branch name), so you may see a different name for the default branch. However, Git itself still uses `master` as the default, so we will use it throughout the book.
+GitHub changed the default branch name from `master` to `main` in mid-2020, and other Git hosts followed suit. So you may find that the default branch name in some newly created repositories is `main` and not `master`. In addition, the default branch name can be changed (as you have seen in Your default branch name), so you may see a different name for the default branch. However, Git itself still uses `master` as the default, so we will use it throughout the book.
 
 Let’s say you add a new file to your project, a simple `README` file. If the file didn’t exist before, and you run `git status`, you see your untracked file like so:
 
@@ -178,9 +177,9 @@ Here is another example `.gitignore` file:
     # ignore all .pdf files in the doc/ directory and any of its subdirectories
     doc//*.pdf
 
-Tip |  GitHub maintains a fairly comprehensive list of good `.gitignore` file examples for dozens of projects and languages at <https://github.com/github/gitignore> if you want a starting point for your project.
+GitHub maintains a fairly comprehensive list of good `.gitignore` file examples for dozens of projects and languages at <> if you want a starting point for your project.
 
-Note |  In the simple case, a repository might have a single `.gitignore` file in its root directory, which applies recursively to the entire repository. However, it is also possible to have additional `.gitignore` files in subdirectories. The rules in these nested `.gitignore` files apply only to the files under the directory where they are located. The Linux kernel source repository has 206 `.gitignore` files. It is beyond the scope of this book to get into the details of multiple `.gitignore` files; see `man gitignore` for the details.
+In the simple case, a repository might have a single `.gitignore` file in its root directory, which applies recursively to the entire repository. However, it is also possible to have additional `.gitignore` files in subdirectories. The rules in these nested `.gitignore` files apply only to the files under the directory where they are located. The Linux kernel source repository has 206 `.gitignore` files. It is beyond the scope of this book to get into the details of multiple `.gitignore` files; see `man gitignore` for the details.
 
 ### Viewing Your Staged and Unstaged Changes
 
@@ -284,7 +283,7 @@ and `git diff --cached` to see what you’ve staged so far (`--staged` and `--ca
      If you are starting to work on a particular area, feel free to submit a PR
      that highlights your work in progress (and note in the PR title that it's
 
-Note |  Git Diff in an External Tool We will continue to use the `git diff` command in various ways throughout the rest of the book. There is another way to look at these diffs if you prefer a graphical or external diff viewing program instead. If you run `git difftool` instead of `git diff`, you can view any of these diffs in software like emerge, vimdiff and many more (including commercial products). Run `git difftool --tool-help` to see what is available on your system.
+Git Diff in an External Tool We will continue to use the `git diff` command in various ways throughout the rest of the book. There is another way to look at these diffs if you prefer a graphical or external diff viewing program instead. If you run `git difftool` instead of `git diff`, you can view any of these diffs in software like emerge, vimdiff and many more (including commercial products). Run `git difftool --tool-help` to see what is available on your system.
 
 ### Committing Your Changes
 
@@ -294,7 +293,7 @@ Now that your staging area is set up the way you want it, you can commit your ch
 
 Doing so launches your editor of choice.
 
-Note |  This is set by your shell’s `EDITOR` environment variable — usually vim or emacs, although you can configure it with whatever you want using the `git config --global core.editor` command as you saw in Getting Started.
+This is set by your shell’s `EDITOR` environment variable — usually vim or emacs, although you can configure it with whatever you want using the `git config --global core.editor` command as you saw in Getting Started.
 
 The editor displays the following text (this example is a Vim screen):
 
@@ -314,7 +313,7 @@ The editor displays the following text (this example is a Vim screen):
 
 You can see that the default commit message contains the latest output of the `git status` command commented out and one empty line on top. You can remove these comments and type your commit message, or you can leave them there to help you remember what you’re committing.
 
-Note |  For an even more explicit reminder of what you’ve modified, you can pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor so you can see exactly what changes you’re committing.
+For an even more explicit reminder of what you’ve modified, you can pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor so you can see exactly what changes you’re committing.
 
 When you exit the editor, Git creates your commit with that commit message (with the comments and diff stripped out).
 

@@ -1,6 +1,5 @@
 # Git Branching — Branch Management
 
-
 # 3.3 Git Branching - Branch Management
 
 ## Branch Management
@@ -42,13 +41,12 @@ This shows your other branch. Because it contains work that isn’t merged in ye
 
 If you really do want to delete the branch and lose that work, you can force it with `-D`, as the helpful message points out.
 
-Tip |  The options described above, `--merged` and `--no-merged` will, if not given a commit or branch name as an argument, show you what is, respectively, merged or not merged into your _current_ branch. You can always provide an additional argument to ask about the merge state with respect to some other branch without checking that other branch out first, as in, what is not merged into the `master` branch?
+The options described above, `--merged` and `--no-merged` will, if not given a commit or branch name as an argument, show you what is, respectively, merged or not merged into your _current_ branch. You can always provide an additional argument to ask about the merge state with respect to some other branch without checking that other branch out first, as in, what is not merged into the `master` branch?
 
     $ git checkout testing
     $ git branch --no-merged master
       topicA
       featureB
-
 
 ### Changing a branch name
 

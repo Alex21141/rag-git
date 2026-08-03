@@ -1,6 +1,5 @@
 # Git Basics — Getting a Git Repository
 
-
 # 2.1 Git Basics - Getting a Git Repository
 
 If you can read only one chapter to get going with Git, this is it. This chapter covers every basic command you need to do the vast majority of the things you’ll eventually spend your time doing with Git. By the end of the chapter, you should be able to configure and initialize a repository, begin and stop tracking files, and stage and commit changes. We’ll also show you how to set up Git to ignore certain files and file patterns, how to undo mistakes quickly and easily, how to browse the history of your project and view changes between commits, and how to push and pull from remote repositories.
@@ -51,13 +50,13 @@ If you want to get a copy of an existing Git repository — for example, a proje
 
 You clone a repository with `git clone <url>`. For example, if you want to clone the Git linkable library called `libgit2`, you can do so like this:
 
-    $ git clone https://github.com/libgit2/libgit2
+    $ git clone
 
 That creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you’ll see the project files in there, ready to be worked on or used.
 
 If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
 
-    $ git clone https://github.com/libgit2/libgit2 mylibgit
+    $ git clone  mylibgit
 
 That command does the same thing as the previous one, but the target directory is called `mylibgit`.
 

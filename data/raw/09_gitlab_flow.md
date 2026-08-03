@@ -1,7 +1,5 @@
 # GitLab Flow
 
-
-
 GitLab Flow is a simplified Git branching strategy that integrates feature-driven development with issue tracking and continuous delivery.
 
 ## Why GitLab Flow supports modern development

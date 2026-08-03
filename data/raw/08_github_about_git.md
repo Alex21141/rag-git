@@ -1,11 +1,10 @@
 # GitHub — About Git
 
-
 # About Git
 
 Learn about the version control system, Git, and how it works with GitHub.
 
-## 
+##
 
 ## About version control and Git
 
@@ -72,7 +71,7 @@ For more information, see the full reference guide to Git commands.
 
     # download a repository on GitHub to our machine
     # Replace `owner/repo` with the owner and name of the repository to clone
-    git clone https://github.com/owner/repo.git
+    git clone
 
     # change into the `repo` directory
     cd repo
@@ -114,7 +113,7 @@ First, you will need to create a new repository on GitHub. For more information,
     git commit -m "add README to initial commit"
 
     # provide the path for the repository you created on github
-    git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPOSITORY-NAME.git
+    git remote add origin
 
     # push changes to github
     git push --set-upstream origin main

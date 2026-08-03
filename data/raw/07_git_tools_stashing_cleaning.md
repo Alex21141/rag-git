@@ -1,6 +1,5 @@
 # Git Tools — Stashing and Cleaning
 
-
 # 7.3 Git Tools - Stashing and Cleaning
 
 ## Stashing and Cleaning
@@ -9,7 +8,7 @@ Often, when you’ve been working on part of your project, things are in a messy
 
 Stashing takes the dirty state of your working directory — that is, your modified tracked files and staged changes — and saves it on a stack of unfinished changes that you can reapply at any time (even on a different branch).
 
-Note |  Migrating to `git stash push` As of late October 2017, there has been extensive discussion on the Git mailing list, wherein the command `git stash save` is being deprecated in favour of the existing alternative `git stash push`. The main reason for this is that `git stash push` introduces the option of stashing selected _pathspecs_ , something `git stash save` does not support. `git stash save` is not going away any time soon, so don’t worry about it suddenly disappearing. But you might want to start migrating over to the `push` alternative for the new functionality.
+Migrating to `git stash push` As of late October 2017, there has been extensive discussion on the Git mailing list, wherein the command `git stash save` is being deprecated in favour of the existing alternative `git stash push`. The main reason for this is that `git stash push` introduces the option of stashing selected _pathspecs_ , something `git stash save` does not support. `git stash save` is not going away any time soon, so don’t worry about it suddenly disappearing. But you might want to start migrating over to the `push` alternative for the new functionality.
 
 ### Stashing Your Work
 
@@ -210,4 +209,4 @@ This will run the `clean` command in an interactive mode.
 
 This way you can step through each file individually or specify patterns for deletion interactively.
 
-Note |  There is a quirky situation where you might need to be extra forceful in asking Git to clean your working directory. If you happen to be in a working directory under which you’ve copied or cloned other Git repositories (perhaps as submodules), even `git clean -fd` will refuse to delete those directories. In cases like that, you need to add a second `-f` option for emphasis.
+There is a quirky situation where you might need to be extra forceful in asking Git to clean your working directory. If you happen to be in a working directory under which you’ve copied or cloned other Git repositories (perhaps as submodules), even `git clean -fd` will refuse to delete those directories. In cases like that, you need to add a second `-f` option for emphasis.
