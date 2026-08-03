@@ -1,5 +1,4 @@
-# Branch Management
-
+# Git Branching — Branch Management
 
 ## Branch Management
 

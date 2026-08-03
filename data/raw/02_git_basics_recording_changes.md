@@ -1,5 +1,4 @@
-# Recording Changes to the Repository
-
+# Git Basics — Recording Changes to the Repository
 
 ## Recording Changes to the Repository
 

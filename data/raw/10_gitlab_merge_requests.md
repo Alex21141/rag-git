@@ -1,4 +1,4 @@
-# Merge requests
+# GitLab — Merge Requests
 
   * Tier: Free, Premium, Ultimate
   * Offering: GitLab.com, GitLab Self-Managed, GitLab Dedicated

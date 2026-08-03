@@ -1,5 +1,4 @@
-# Rebasing
-
+# Git Tools — Rebasing
 
 ## Rebasing
 

@@ -1,5 +1,4 @@
-# Stashing and Cleaning
-
+# Git Tools — Stashing and Cleaning
 
 ## Stashing and Cleaning
 

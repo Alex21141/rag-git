@@ -1,5 +1,4 @@
-# Basic Branching and Merging
-
+# Git Branching — Basic Branching and Merging
 
 ## Basic Branching and Merging
 
