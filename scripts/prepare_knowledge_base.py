@@ -3,14 +3,13 @@
 Prepare knowledge base: read raw documents → chunk with overlap → save as JSONL.
 
 Chunking approach:
-  1. For each document, use sliding window across entire text
+  1. Sliding window across entire document text
   2. Break at sentence boundaries for readability
-  3. POST-PROCESS: inject overlap by prepending last OVERLAP chars of each chunk
-     to the start of the next chunk (standard RAG overlap pattern)
+  3. Overlap: last N chars of each chunk are prepended to the next chunk
 
 Configuration:
-    CHUNK_SIZE    — max characters per chunk
-    OVERLAP       — characters to carry over between chunks
+    CHUNK_SIZE    — max characters per raw chunk
+    OVERLAP       — characters to overlap between chunks
     MIN_CHUNK     — minimum characters per chunk (filtered out)
 
 Output:
@@ -61,15 +60,12 @@ def find_sentence_break(text: str, pos: int, window: int = 80) -> int:
 
 def find_chunk_end(text: str, start: int, max_end: int) -> int:
     """Find best chunk endpoint — sentence or word boundary for readability."""
-    # Try sentence break
     sentence_end = find_sentence_break(text, max_end, 80)
     if sentence_end > start + MIN_CHUNK:
         return sentence_end
-    # Try word boundary (space)
     last_space = text.rfind(' ', max(0, max_end - 50), max_end)
     if last_space > start + MIN_CHUNK:
         return last_space + 1
-    # Last resort
     return max_end
 
 
@@ -97,7 +93,6 @@ def get_section_at(section_map: list, char_pos: int, title: str):
     """Get the section heading that contains the given character position."""
     if not section_map:
         return title
-    # At position 0, return first heading
     if char_pos <= section_map[0][1]:
         return section_map[0][0]
     result = None
@@ -108,48 +103,48 @@ def get_section_at(section_map: list, char_pos: int, title: str):
     return result or section_map[0][0]
 
 
-def inject_overlap(raw_chunks: list, overlap: int) -> list:
-    """Inject overlap between consecutive chunks.
+def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int):
+    """Split text into chunks with overlap between consecutive chunks.
     
-    For each pair (i, i+1):
-    - Take the last ~`overlap` chars from the already-processed chunk i
-    - Truncate chunk i before those chars
-    - Prepend those chars to chunk i+1
+    Each chunk i contains text[i_start:i_end].
+    Chunk i+1 starts at i_end - overlap (so the last `overlap` chars of chunk i
+    appear at the start of chunk i+1).
     
-    This ensures: end of result[i] == start of result[i+1] (overlapping region)
+    Returns list of (start_pos, end_pos, chunk_text) tuples.
     """
-    if len(raw_chunks) <= 1:
-        return raw_chunks
-
-    result = []
-    for i in range(len(raw_chunks)):
-        chunk = dict(raw_chunks[i])
-        text = chunk["text"]
-        
-        # Prepend overlap from the ALREADY PROCESSED previous chunk
-        if i > 0 and result:
-            prev_processed_text = result[-1]["text"]
-            overlap_tail = prev_processed_text[-overlap:] if len(prev_processed_text) > overlap else prev_processed_text
-            text = overlap_tail + text
-        
-        # Truncate if too long
-        max_size = CHUNK_SIZE + OVERLAP + 100
-        if len(text) > max_size:
-            text = text[:max_size]
-        
-        # For non-last chunks, truncate the end to reserve overlap for next
-        if i < len(raw_chunks) - 1:
-            cut_point = len(text) - overlap
-            # Move forward/backward to nearest word boundary
-            space_pos = text.find(' ', cut_point - 10, cut_point + 10)
-            if space_pos < 0 or abs(space_pos - cut_point) > 10:
-                space_pos = cut_point
-            text = text[:space_pos].strip()
-        
-        chunk["text"] = text.strip()
-        result.append(chunk)
+    raw_splits = []
+    start = 0
+    text_len = len(text)
     
-    return result
+    # Phase 1: Split into contiguous raw chunks
+    while start < text_len:
+        end = min(start + chunk_size, text_len)
+        if end < text_len:
+            end = find_chunk_end(text, start, end)
+        raw_splits.append((start, end))
+        start = end
+    
+    # Phase 2: Apply overlap by adjusting boundaries
+    # Chunk i ends at raw_splits[i][1], but we want its last `overlap` chars
+    # to also appear at the start of chunk i+1.
+    # So chunk i's effective text is text[raw_splits[i][0]:raw_splits[i][1]]
+    # and chunk i+1's effective text starts at raw_splits[i][1] - overlap.
+    
+    chunks = []
+    for i, (s, e) in enumerate(raw_splits):
+        chunk_text = text[s:e].strip()
+        
+        if i > 0:
+            # Prepend overlap from previous raw split
+            prev_s, prev_e = raw_splits[i - 1]
+            overlap_start = max(prev_s, prev_e - overlap)
+            overlap_text = text[overlap_start:prev_e]
+            chunk_text = overlap_text + chunk_text
+        
+        if len(chunk_text) >= min_chunk:
+            chunks.append((s, e, chunk_text))
+    
+    return chunks
 
 
 def prepare_chunks():
@@ -174,52 +169,32 @@ def prepare_chunks():
         with open(doc_file, "r", encoding="utf-8") as f:
             text = f.read()
 
-        # Build section map for metadata tracking
         section_map = build_section_map(text)
 
-        # Phase 1: Sliding window chunking (no overlap yet)
-        raw_chunks = []
-        step = CHUNK_SIZE  # Advance full chunk size (no overlap in raw phase)
-        start = 0
-        text_len = len(text)
+        # Get chunks with overlap
+        raw_splits = chunk_with_overlap(text, CHUNK_SIZE, OVERLAP, MIN_CHUNK)
 
-        while start < text_len:
-            end = min(start + CHUNK_SIZE, text_len)
-
-            # Adjust endpoint for readability
-            if end < text_len:
-                end = find_chunk_end(text, start, end)
-
-            chunk_text = text[start:end].strip()
-
-            if len(chunk_text) >= MIN_CHUNK:
-                section = get_section_at(section_map, start, title)
-                raw_chunks.append({
-                    "chunk_id": f"{doc_id}_chunk_{len(raw_chunks):03d}",
-                    "text": chunk_text,
-                    "metadata": {
-                        "document_id": doc_id,
-                        "source_file": f"data/raw/{doc_file.name}",
-                        "source_type": "markdown",
-                        "title": title,
-                        "section": section,
-                        "chunk_index": len(raw_chunks) + 1,
-                        "language": "en",
-                        "domain": domain,
-                        "document_type": doc_type,
-                    },
-                })
-
-            start += step
-            if start >= end:
-                start = end
-
-        # Phase 2: Inject overlap between consecutive chunks
-        final_chunks = inject_overlap(raw_chunks, OVERLAP)
+        final_chunks = []
+        for start_pos, end_pos, chunk_text in raw_splits:
+            section = get_section_at(section_map, start_pos, title)
+            final_chunks.append({
+                "chunk_id": f"{doc_id}_chunk_{len(final_chunks):03d}",
+                "text": chunk_text.strip(),
+                "metadata": {
+                    "document_id": doc_id,
+                    "source_file": f"data/raw/{doc_file.name}",
+                    "source_type": "markdown",
+                    "title": title,
+                    "section": section,
+                    "chunk_index": len(final_chunks) + 1,
+                    "language": "en",
+                    "domain": domain,
+                    "document_type": doc_type,
+                },
+            })
 
         all_chunks.extend(final_chunks)
-        print(f"  {doc_file.name}: {len(final_chunks)} chunks "
-              f"(raw: {len(raw_chunks)}, with overlap: {len(final_chunks)})")
+        print(f"  {doc_file.name}: {len(final_chunks)} chunks")
 
     # Save to JSONL
     print(f"\n{'=' * 60}")
@@ -253,7 +228,7 @@ def prepare_chunks():
     for domain, count in sorted(domain_counts.items(), key=lambda x: -x[1]):
         print(f"    {domain:20s} {count:4d} chunks")
 
-    # Overlap analysis (post-injection)
+    # Overlap analysis
     print(f"\n  Overlap analysis:")
     from collections import defaultdict
     by_doc = defaultdict(list)
@@ -264,15 +239,13 @@ def prepare_chunks():
     total_pairs = 0
     for did, doc_chunks in by_doc.items():
         for i in range(len(doc_chunks) - 1):
-            t1 = doc_chunks[i]["text"][-80:]
-            t2 = doc_chunks[i + 1]["text"][:80]
-            shared = 0
-            for k in range(min(len(t1), len(t2))):
-                if t1[k] == t2[k]:
-                    shared += 1
-                else:
-                    break
-            if shared > 15:
+            t1_end = doc_chunks[i]["text"][-200:]
+            t2_start = doc_chunks[i + 1]["text"][:200]
+            found = any(
+                t1_end[k:] in t2_start and len(t1_end[k:]) >= 15 and t1_end[k:].strip()
+                for k in range(len(t1_end))
+            )
+            if found:
                 overlap_pairs += 1
             total_pairs += 1
 
