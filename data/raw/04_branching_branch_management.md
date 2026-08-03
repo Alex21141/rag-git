@@ -123,5 +123,3 @@ Now you have a few more tasks in front of you to complete the transition:
 After you’ve done all these tasks, and are certain the `main` branch performs just as the `master` branch, you can delete the `master` branch:
 
     $ git push origin --delete master
-
-prev | next

@@ -219,5 +219,3 @@ If you’re happy with that, and you verify that everything that had conflicts h
     #
 
 If you think it would be helpful to others looking at this merge in the future, you can modify this commit message with details about how you resolved the merge and explain why you did the changes you made if these are not obvious.
-
-prev | next

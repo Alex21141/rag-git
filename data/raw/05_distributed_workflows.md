@@ -69,5 +69,3 @@ Note |  Martin Fowler has made a guide "Patterns for Managing Source Code Branch
 ### Workflows Summary
 
 These are some commonly used workflows that are possible with a distributed system like Git, but you can see that many variations are possible to suit your particular real-world workflow. Now that you can (hopefully) determine which workflow combination may work for you, we’ll cover some more specific examples of how to accomplish the main roles that make up the different flows. In the next section, you’ll learn about a few common patterns for contributing to a project.
-
-prev | next

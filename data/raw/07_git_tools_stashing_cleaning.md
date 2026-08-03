@@ -213,5 +213,3 @@ This way you can step through each file individually or specify patterns for del
 
 Note |  There is a quirky situation where you might need to be extra forceful in asking Git to clean your working directory. If you happen to be in a working directory under which you’ve copied or cloned other Git repositories (perhaps as submodules), even `git clean -fd` will refuse to delete those directories. In cases like that, you need to add a second `-f` option for emphasis.
 ---|---
-
-prev | next

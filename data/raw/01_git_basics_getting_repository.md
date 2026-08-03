@@ -62,5 +62,3 @@ If you want to clone the repository into a directory named something other than 
 That command does the same thing as the previous one, but the target directory is called `mylibgit`.
 
 Git has a number of different transfer protocols you can use. The previous example uses the `https://` protocol, but you may also see `git://` or `user@server:path/to/repo.git`, which uses the SSH transfer protocol. Getting Git on a Server will introduce all of the available options the server can set up to access your Git repository and the pros and cons of each.
-
-prev | next
