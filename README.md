@@ -35,14 +35,14 @@
 
 ```json
 {
-  "chunk_id": "git_basics_getting_repository_chunk_001",
+  "chunk_id": "git_basics_getting_repository_chunk_000",
   "text": "текст чанку...",
   "metadata": {
     "document_id": "git_basics_getting_repository",
     "source_file": "data/raw/01_git_basics_getting_repository.md",
     "source_type": "markdown",
     "title": "Git Basics",
-    "section": "## About version control",
+    "section": "# Git Basics — Getting a Git Repository",
     "chunk_index": 1,
     "language": "en",
     "domain": "git",
@@ -69,7 +69,7 @@
 
 - **chunk_size**: 700 символів
 - **overlap**: 150 символів
-- **метод**: sliding window з post-processing overlap injection
+- **метод**: contiguous sliding window з post-processing overlap injection
 - **word-boundary cuts**: розриви на кордонах слів (не посеред слів)
 - **sentence-aware**: пріоритет розриву на кордонах речень
 
@@ -78,18 +78,18 @@
 | Метрика | Значення |
 |---------|----------|
 | Документів | 10 |
-| Чанків | 164 |
-| Середня довжина | 818 chars |
-| Мінімальна довжина | 242 chars |
+| Чанків | 162 |
+| Середня довжина | 824 chars |
+| Мінімальна довжина | 299 chars |
 | Максимальна довжина | 923 chars |
-| Всього chars | 134,083 |
-| Overlap coverage | 100% пар (154/154) |
+| Всього chars | 133,407 |
+| Overlap coverage | 100% пар (152/152) |
 
 **По доменах:**
 | Домен | Чанків |
 |-------|--------|
-| git | 116 |
-| gitlab | 35 |
+| git | 114 |
+| gitlab | 34 |
 | github | 14 |
 
 ## 6. Приклади чанків
@@ -98,14 +98,14 @@
 
 ```json
 {
-  "chunk_id": "git_basics_getting_repository_chunk_001",
-  "text": "текст про контроль версій і Git...",
+  "chunk_id": "git_basics_getting_repository_chunk_000",
+  "text": "# Git Basics — Getting a Git Repository\n\nIf you can read only one chapter to get going with Git, this is it. This chapter covers every basic command you need to do the vast majority of the things you'll eventually spend your time doing with Git.",
   "metadata": {
     "document_id": "git_basics_getting_repository",
     "source_file": "data/raw/01_git_basics_getting_repository.md",
     "source_type": "markdown",
     "title": "Git Basics",
-    "section": "## About version control and Git",
+    "section": "# Git Basics — Getting a Git Repository",
     "chunk_index": 1,
     "language": "en",
     "domain": "git",
@@ -114,19 +114,19 @@
 }
 ```
 
-### Приклад 2 — GitHub commands (concept)
+### Приклад 2 — GitHub (concept)
 
 ```json
 {
-  "chunk_id": "github_about_git_chunk_005",
-  "text": "текст про базові команди Git...",
+  "chunk_id": "github_about_git_chunk_000",
+  "text": "# GitHub — About Git\n\nLearn about the version control system, Git, and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together.",
   "metadata": {
     "document_id": "github_about_git",
     "source_file": "data/raw/08_github_about_git.md",
     "source_type": "markdown",
     "title": "GitHub",
-    "section": "### Basic Git commands",
-    "chunk_index": 5,
+    "section": "# GitHub — About Git",
+    "chunk_index": 1,
     "language": "en",
     "domain": "github",
     "document_type": "concept"
@@ -138,15 +138,15 @@
 
 ```json
 {
-  "chunk_id": "gitlab_flow_chunk_003",
-  "text": "текст про те, як працює GitLab Flow...",
+  "chunk_id": "gitlab_flow_chunk_000",
+  "text": "# GitLab Flow\n\nGitLab Flow is a simplified Git branching strategy that integrates feature-driven development with issue tracking and continuous delivery.\n\n## Why GitLab Flow supports modern development\n\nGit simplifies branching and merging, prompting many software development teams to move away from older source control tools like SVN.",
   "metadata": {
     "document_id": "gitlab_flow",
     "source_file": "data/raw/09_gitlab_flow.md",
     "source_type": "markdown",
     "title": "GitLab Flow",
-    "section": "## How does GitLab Flow work?",
-    "chunk_index": 3,
+    "section": "# GitLab Flow",
+    "chunk_index": 1,
     "language": "en",
     "domain": "gitlab",
     "document_type": "workflow"
@@ -158,15 +158,15 @@
 
 **Що вийшло добре:**
 - ✅ 10 якісних джерел з трьох доменів (Git, GitHub, GitLab)
+- ✅ Оригінальні заголовки документів збережено (без нумерації та дублів)
 - ✅ Повна metadata структура — 10 полів, включаючи section, domain, document_type
-- ✅ Sliding window чанкінг з overlap — 94% пар чанків мають перекриття
+- ✅ Contiguous sliding window chunking з overlap — 100% пар чанків мають перекриття (150 chars)
 - ✅ Word-boundary розриви — чанки не обриваються посеред слів
 - ✅ Sentence-aware break — пріоритет розриву на кордонах речень
-- ✅ Очистка від посилань, жирного тексту, навігаційного сміття, prev|next
-- ✅ Таблиці відокремлені порожніми рядками для коректного рендерингу
+- ✅ Очистка від посилань, жирного тексту, навігаційного сміття, prev|next, порожніх заголовків
 
 **Що треба покращити:**
-- ⚠️ Середня довжина (678 chars) — можна збільшити chunk_size до 800+
+- ⚠️ Середня довжина (824 chars) — можна збільшити chunk_size до 850-900
 - ⚠️ Немає семантичного чанкінгу — розбиття на основі змісту, а не фіксованих розмірів
 - ⚠️ 09_gitlab_flow.md згенеровано вручну на основі about.gitlab.com — краще офіційна документація
 - ⚠️ Немає валідації JSONL — бажано додати скрипт перевірки валідності кожного рядка
@@ -189,7 +189,7 @@ rag-github/
 │   │   ├── 09_gitlab_flow.md
 │   │   └── 10_gitlab_merge_requests.md
 │   └── processed/                     ← оброблені дані
-│       └── chunks.jsonl               ← 165 чанків
+│       └── chunks.jsonl               ← 162 чанків
 └── scripts/
     ├── download_sources.py            ← збір даних з веб-сторінок
     └── prepare_knowledge_base.py      ← нормалізація + чанкінг
