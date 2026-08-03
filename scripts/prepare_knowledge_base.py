@@ -39,7 +39,7 @@ DOMAIN_MAP = {
     "git_tools_rebasing": ("Git Tools", "git", "procedure"),
     "git_tools_stashing_cleaning": ("Git Tools", "git", "commands"),
     "github_about_git": ("GitHub", "github", "concept"),
-    "gitlab_flow": ("GitLab Flow", "gitlab", "workflow"),
+    "gitlab_getting_started": ("GitLab", "gitlab", "concept"),
     "gitlab_merge_requests": ("GitLab", "gitlab", "procedural"),
 }
 

@@ -26,7 +26,7 @@
 | 6 | Git Tools — Rebasing | https://git-scm.com/book/en/v2/Git-Branching-Rebasing | концепт + процедура |
 | 7 | Git Tools — Stashing and Cleaning | https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning | команди |
 | 8 | GitHub — About Git (intro) | https://docs.github.com/en/get-started/using-git/about-git | концепт, доп. контекст |
-| 9 | GitLab Flow | https://about.gitlab.com/topics/version-control/what-is-gitlab-flow/ | концепт/workflow |
+| 9 | GitLab — Getting started with Git | https://docs.gitlab.com/topics/git/get_started/index.md | концепт |
 | 10 | GitLab Merge Requests | https://docs.gitlab.com/ee/user/project/merge_requests/ | процедура |
 
 ## 3. Структура метаданих
@@ -78,18 +78,18 @@
 | Метрика | Значення |
 |---------|----------|
 | Документів | 10 |
-| Чанків | 162 |
-| Середня довжина | 824 chars |
-| Мінімальна довжина | 299 chars |
+| Чанків | 164 |
+| Середня довжина | 823 chars |
+| Мінімальна довжина | 283 chars |
 | Максимальна довжина | 923 chars |
-| Всього chars | 133,407 |
-| Overlap coverage | 100% пар (152/152) |
+| Всього chars | 135,026 |
+| Overlap coverage | 100% пар (154/154) |
 
 **По доменах:**
 | Домен | Чанків |
 |-------|--------|
 | git | 114 |
-| gitlab | 34 |
+| gitlab | 36 |
 | github | 14 |
 
 ## 6. Приклади чанків
@@ -134,22 +134,22 @@
 }
 ```
 
-### Приклад 3 — GitLab Flow (workflow)
+### Приклад 3 — GitLab (concept)
 
 ```json
 {
-  "chunk_id": "gitlab_flow_chunk_000",
-  "text": "# GitLab Flow\n\nGitLab Flow is a simplified Git branching strategy that integrates feature-driven development with issue tracking and continuous delivery.\n\n## Why GitLab Flow supports modern development\n\nGit simplifies branching and merging, prompting many software development teams to move away from older source control tools like SVN.",
+  "chunk_id": "gitlab_getting_started_chunk_000",
+  "text": "# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others. GitLab is a web-based Git repository manager that provides CI/CD and other features to help you manage your software development lifecycle.\n\nYou can use the GitLab web interface for many Git operations, but understanding Git commands provides you with additional flexibility and control.",
   "metadata": {
-    "document_id": "gitlab_flow",
-    "source_file": "data/raw/09_gitlab_flow.md",
+    "document_id": "gitlab_getting_started",
+    "source_file": "data/raw/09_gitlab_getting_started.md",
     "source_type": "markdown",
-    "title": "GitLab Flow",
-    "section": "# GitLab Flow",
+    "title": "GitLab",
+    "section": "# Get started with Git",
     "chunk_index": 1,
     "language": "en",
     "domain": "gitlab",
-    "document_type": "workflow"
+    "document_type": "concept"
   }
 }
 ```
@@ -186,10 +186,10 @@ rag-github/
 │   │   ├── 06_git_tools_rebasing.md
 │   │   ├── 07_git_tools_stashing_cleaning.md
 │   │   ├── 08_github_about_git.md
-│   │   ├── 09_gitlab_flow.md
+│   │   └── 09_gitlab_getting_started.md
 │   │   └── 10_gitlab_merge_requests.md
 │   └── processed/                     ← оброблені дані
-│       └── chunks.jsonl               ← 162 чанків
+│       └── chunks.jsonl               ← 164 чанків
 └── scripts/
     ├── download_sources.py            ← збір даних з веб-сторінок
     └── prepare_knowledge_base.py      ← нормалізація + чанкінг

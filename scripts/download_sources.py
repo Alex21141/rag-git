@@ -71,9 +71,9 @@ SOURCES = [
     },
     {
         "filename": "09_gitlab_flow.md",
-        "url": "https://docs.gitlab.com/topics/gitlab_flow/",
-        "title": "GitLab Flow",
-        "selector": "article",
+        "url": "https://docs.gitlab.com/topics/git/get_started/index.md",
+        "title": "GitLab — Getting started with Git",
+        "selector": "#main-content",
     },
     {
         "filename": "10_gitlab_merge_requests.md",
@@ -89,28 +89,36 @@ HEADERS = {
 
 
 def fetch_and_clean(url: str, selector: str) -> str:
-    """Скачивает страницу, вырезает основной контент, чистит HTML → markdown-текст."""
+    """Скачивает страницу, вырезает основной контент, чистит HTML → markdown-текст.
+    
+    Для plain markdown URL (ending in .md) — просто скачивает через requests без HTML парсинга.
+    Для HTML страниц — использует BeautifulSoup + html2text.
+    """
     resp = requests.get(url, headers=HEADERS, timeout=20)
     resp.raise_for_status()
 
-    soup = BeautifulSoup(resp.text, "html.parser")
+    # Plain markdown endpoint — skip HTML parsing entirely
+    if url.endswith('.md') or 'text/markdown' in resp.headers.get('content-type', ''):
+        text = resp.text.strip()
+    else:
+        soup = BeautifulSoup(resp.text, "html.parser")
 
-    # Убираем явный мусор до выбора основного блока
-    for tag in soup(["script", "style", "nav", "header", "footer", "aside"]):
-        tag.decompose()
+        # Убираем явный мусор до выбора основного блока
+        for tag in soup(["script", "style", "nav", "header", "footer", "aside"]):
+            tag.decompose()
 
-    main = soup.select_one(selector)
-    if main is None:
-        print(f"  [!] селектор '{selector}' не найден, беру <body> целиком — проверь вручную")
-        main = soup.body if soup.body else soup
+        main = soup.select_one(selector)
+        if main is None:
+            # fallback — если селектор не совпал с реальной вёрсткой сайта
+            print(f"  [!] селектор '{selector}' не найден, беру <body> целиком — проверь вручную")
+            main = soup.body if soup.body else soup
 
-    converter = html2text.HTML2Text()
-    converter.ignore_links = False
-    converter.ignore_images = True
-    converter.body_width = 0
+        converter = html2text.HTML2Text()
+        converter.ignore_links = False
+        converter.ignore_images = True
+        converter.body_width = 0  # не переносить строки принудительно
 
-    text = converter.handle(str(main))
-
+        text = converter.handle(str(main))
     # Базовая пост-очистка: убираем лишние пустые строки
     lines = [line.rstrip() for line in text.splitlines()]
     cleaned = []
