@@ -1,6 +1,5 @@
-# Git Basics — Recording Changes to the Repository
+# Recording Changes to the Repository
 
-# 2.2 Git Basics - Recording Changes to the Repository
 
 ## Recording Changes to the Repository
 

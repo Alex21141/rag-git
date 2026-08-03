@@ -1,5 +1,3 @@
-# GitLab — Merge Requests
-
 # Merge requests
 
   * Tier: Free, Premium, Ultimate

@@ -1,12 +1,8 @@
-# GitHub — About Git
-
 # About Git
 
 Learn about the version control system, Git, and how it works with GitHub.
 
-##
 
-## About version control and Git
 
 A version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together. As developers make changes to the project, any earlier version of the project can be recovered at any time.
 

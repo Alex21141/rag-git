@@ -1,6 +1,5 @@
-# Git Branching — Basic Branching and Merging
+# Basic Branching and Merging
 
-# 3.2 Git Branching - Basic Branching and Merging
 
 ## Basic Branching and Merging
 

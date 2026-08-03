@@ -1,6 +1,5 @@
-# Git Tools — Rebasing
+# Rebasing
 
-# 3.6 Git Branching - Rebasing
 
 ## Rebasing
 
