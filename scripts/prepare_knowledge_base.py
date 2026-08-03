@@ -116,8 +116,9 @@ def prepare_chunks():
     print(f"  Found {len(doc_files)} documents\n")
 
     for doc_file in doc_files:
-        # Extract document ID from filename (e.g. 01_git_basics_getting_repository)
-        doc_id = doc_file.stem  # without extension
+        # Extract document ID from filename (e.g. 01_git_basics_getting_repository → git_basics_getting_repository)
+        raw_doc_id = doc_file.stem  # e.g. 01_git_basics_getting_repository
+        doc_id = re.sub(r'^\d+_', '', raw_doc_id)  # strip number prefix
 
         # Get domain info
         domain_info = DOMAIN_MAP.get(doc_id, (doc_id, "git", "reference"))
