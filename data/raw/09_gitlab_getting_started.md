@@ -9,14 +9,11 @@ but understanding Git commands provides you with additional flexibility and cont
 
 Learning Git is part of a larger workflow:
 
-!Use Git in the Create stage of the GitLab DevOps lifecycle.
-
 Choose your learning path:
 
 - Install Git
 - Tutorial: Make your first Git commit
-- Understand Git concepts: Continue reading
-
+- Understand Git concepts
 ## Repositories
 
 A Git repository is a directory that contains all the files, folders, and version
@@ -69,9 +66,7 @@ These must be resolved manually by reviewing and editing the code.
 After a successful merge, you can delete the branch if it is no longer needed.
 Deleting unnecessary branches helps keep your repository organized and manageable.
 
-> [!note]
-> To ensure no work is lost, verify all changes are incorporated into the default branch
-> before you delete the branch after the final merge.
+Note: To ensure no work is lost, verify all changes are incorporated into the default branchbefore you delete the branch after the final merge.
 
 For more information, see branches.
 

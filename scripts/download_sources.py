@@ -164,6 +164,8 @@ def clean_raw_document(text: str, filename: str) -> str:
     text = clean_empty_headings(text)
     text = clean_table_separators(text)
     text = clean_image_refs(text)
+    text = clean_note_blocks(text)
+    text = clean_cross_references(text)
     text = clean_blank_lines(text)
     return text
 
@@ -313,8 +315,40 @@ def clean_table_separators(text: str) -> str:
 
 
 def clean_image_refs(text: str) -> str:
-    """Remove image references like [](/path/to/image.png)."""
+    """Remove image references [](/path/to/image.png) and broken !alt_text artifacts."""
     text = re.sub(r'\[\]\([^)]*\)', '', text)
+    # Remove broken image alt text: ![Alt text](url) → removed entirely
+    # When URL is stripped, we get !Alt text — remove these lines
+    text = re.sub(r'^!\s*[^\n]*$\n?', '', text, flags=re.MULTILINE)
+    # Remove image markers like ![image] that remain
+    text = re.sub(r'!\[([^\]]*)\]\s*\(\s*\)', '', text)
+    return text
+
+
+def clean_note_blocks(text: str) -> str:
+    """Convert > [!note] / > [!tip] / > [!important] callout blocks.
+    
+    GitLab uses: > [!note]\n> Text here
+    Convert to: Note: Text here
+    """
+    # Match > [!note] / > [!tip] / > [!warning] / > [!important] blocks
+    text = re.sub(r'>\s*\[!(note|tip|warning|important)\]\s*\n((?:>\s*.+\n?)*)',
+                  lambda m: f"Note: {''.join(line.lstrip('>').lstrip() for line in m.group(2).splitlines() if line.strip())}\n",
+                  text, flags=re.IGNORECASE)
+    return text
+
+
+def clean_cross_references(text: str) -> str:
+    """Remove internal cross-references like 'see X.' and 'Continue reading'.
+    
+    These are artifacts of the documentation navigation.
+    """
+    # Remove "For more information, see X." → keep just "For more information, see X."
+    # Actually these are fine as text — the links were stripped, just bare text remains
+    # Remove "Continue reading" artifacts
+    text = re.sub(r':\s*Continue reading\s*$', '', text, flags=re.MULTILINE)
+    # Remove "- Item: See link" patterns where the link was stripped
+    text = re.sub(r'- (.*?):\s+.*?reading$', r'- \1', text, flags=re.MULTILINE)
     return text
 
 
