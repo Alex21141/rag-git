@@ -49,12 +49,10 @@ Tip |  The options described above, `--merged` and `--no-merged` will, if not gi
       topicA
       featureB
 
----|---
 
 ### Changing a branch name
 
 Caution |  Do not rename branches that are still in use by other collaborators. Do not rename a branch like master/main/mainline without having read the section Changing the master branch name.
----|---
 
 Suppose you have a branch that is called `bad-branch-name` and you want to change it to `corrected-branch-name`, while keeping all history. You also want to change the branch name on the remote (GitHub, GitLab, other server). How do you do this?
 
@@ -84,7 +82,6 @@ Now the bad branch name is fully replaced with the corrected branch name.
 #### Changing the master branch name
 
 Warning |  Changing the name of a branch like master/main/mainline/default will break the integrations, services, helper utilities and build/release scripts that your repository uses. Before you do this, make sure you consult with your collaborators. Also, make sure you do a thorough search through your repo and update any references to the old branch name in your code and scripts.
----|---
 
 Rename your local `master` branch into `main` with the following command:
 

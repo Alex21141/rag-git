@@ -38,15 +38,11 @@ Learn the different ways to create a merge request.
 
 When you create a merge request, GitLab checks for the existence of a description template to add data to your merge request. GitLab checks these locations in order from 1 to 5, and applies the first template found to your merge request:
 
-Name| Project UI
-setting| Group
-`default.md`| Instance
-`default.md`| Project
-`default.md`|  template
----|---|---|---|---|---
-Standard commit message| 1| 2| 3| 4| 5
-Commit message with an issue closing pattern like `s #1234`| 1| 2| 3| 4| 5 *
-Branch name prefixed with an issue ID, like `1234-example`| 1 *| 2 *| 3 *| 4 *| 5 *
+| Name | Project UI setting | Group `default.md` | Instance `default.md` | Project `default.md` | No template |
+| --- | --- | --- | --- | --- | --- |
+| Standard commit message | 1 | 2 | 3 | 4 | 5 |
+| Commit message with issue closing pattern like `Closes #1234` | 1 | 2 | 3 | 4 | 5 * |
+| Branch name prefixed with an issue ID, like `1234-example` | 1 * | 2 * | 3 * | 4 * | 5 * |
 
 Items marked with an asterisk (*) also append an issue closing pattern.
 
