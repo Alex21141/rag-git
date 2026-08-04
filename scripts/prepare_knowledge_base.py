@@ -174,6 +174,21 @@ def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int,
     return chunks
 
 
+def _capitalize_chunk(text: str) -> str:
+    """Capitalize first letter of chunk text.
+
+    If chunk starts with lowercase (e.g. overlap cut mid-sentence),
+    capitalize the first alphabetic character.
+    """
+    if not text:
+        return text
+    # Find first alphabetic character
+    for i, ch in enumerate(text):
+        if ch.isalpha():
+            return text[:i] + ch.upper() + text[i+1:]
+    return text
+
+
 def prepare_chunks():
     """Read all raw documents, chunk them, and save as JSONL."""
     os.makedirs(OUTPUT.parent, exist_ok=True)
@@ -208,7 +223,7 @@ def prepare_chunks():
                 section = title
             final_chunks.append({
                 "chunk_id": f"{doc_id}_chunk_{len(final_chunks):03d}",
-                "text": chunk_text.strip(),
+                "text": _capitalize_chunk(chunk_text.strip()),
                 "metadata": {
                     "document_id": doc_id,
                     "source_file": f"data/raw/{doc_file.name}",
