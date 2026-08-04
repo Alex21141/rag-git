@@ -43,11 +43,33 @@ Answer (in Ukrainian):
 
 ### Prompt Improvements
 
-**Improvement 1: Grounded answering rule** — Додано явну інструкцію відповідати ТІЛЬКИ з context. Без цього модель вигадувала відповіді (галюцинації).
+**Improvement 1: Grounded answering rule**
 
-**Improvement 2: Citation requirement** — Додано вимогу цитувати chunk ID або source file. Без цього неможливо перевірити коректність.
+*Проблема:* Перший prompt був занадто простий — модель вигадувала відповіді з загальних знань.
+*Before:* `Answer the question using the context.`
+*After:* `Answer ONLY based on the provided context below. Do NOT use any general knowledge outside the provided context.`
+*Результат:* Відповіді стали grounded, модель більше не додає зовнішню інформацію.
 
-**Improvement 3: Ukrainian language output** — Додано "Answer (in Ukrainian):" для генерації відповідей українською.
+**Improvement 2: Citation requirement**
+
+*Проблема:* Без вимоги цитувати джерело неможливо перевірити коректність відповіді.
+*Before:* Жодної вимоги про джерела.
+*After:* `Always cite the source chunk ID or source file used in your answer.`
+*Результат:* Кожна відповідь містить посилання на конкретний chunk та source file.
+
+**Improvement 3: Fallback for insufficient context**
+
+*Проблема:* Для запитів без релевантного контексту модель намагалась відповісти і помилялась.
+*Before:* Фallback відсутній — модель завжди намагалась відповісти.
+*After:* `If the context does not contain enough information to answer the question, say: "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."`
+*Результат:* Модель чесно каже "не знаю" замість вигадування.
+
+**Improvement 4: Ukrainian language output**
+
+*Проблема:* Модель генерувала відповіді англійською (мова контексту).
+*Before:* `Answer:`
+*After:* `Answer (in Ukrainian):`
+*Результат:* Відповіді українською, що відповідає цільовій аудиторії.
 
 ### Fallback behavior
 
