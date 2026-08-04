@@ -2,7 +2,7 @@
 
 **Model**: sentence-transformers/all-MiniLM-L6-v2
 
-**Chunks**: 164
+**Chunks**: 138
 
 **Index**: FAISS (IndexFlatIP, dim=384)
 
@@ -12,7 +12,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Total chunks indexed | 164 |
+| Total chunks indexed | 138 |
 | Embedding model | sentence-transformers/all-MiniLM-L6-v2 |
 | Embedding dimension | 384 |
 | Vector storage | FAISS IndexFlatIP |
@@ -192,28 +192,28 @@ Top-1: gitlab_getting_started_chunk_004 | score: 0.7394
   Domain: gitlab
 
 
-Top-2: gitlab_merge_requests_chunk_014 | score: 0.7366
-  Text: 'lose a merge request without merging, by selecting Delete source branch.\n\nAn administrator can make this option the default in the project’s settings.For merge requests from forks, GitLab reads the De'
-  Source: data/raw/10_gitlab_merge_requests.md
+Top-2: gitlab_getting_started_chunk_003 | score: 0.6844
+  Text: "ches\n\nIn Git, you can use branches to work on different features, bug fixes, or experiments\nsimultaneously without interfering with each other's work.Branching enables you to create an isolated enviro"
+  Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-3: gitlab_merge_requests_chunk_016 | score: 0.7201
-  Text: '2 merges into `feature-alpha`. The updated merge request 1, which now contains the contents of `feature-alpha` and `feature-beta`, merges into `main`.This feature works only when a merge request is me'
-  Source: data/raw/10_gitlab_merge_requests.md
+Top-3: gitlab_getting_started_chunk_008 | score: 0.63
+  Text: 'en different branches in your local repository.\n- `git add`: Stage changes for commit.\n- `git commit`: Commit staged changes to your local repository.- `git push`: Push local commits to the remote rep'
+  Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-4: gitlab_merge_requests_chunk_012 | score: 0.7173
-  Text: '* Only Maintainers and higher roles can merge into the default branch.\n  * Developers can merge any merge request that targets a non-protected branch.To determine if you have permission to merge a spe'
-  Source: data/raw/10_gitlab_merge_requests.md
-  Domain: gitlab
+Top-4: git_tools_rebasing_chunk_000 | score: 0.6128
+  Text: '# Git Tools — Rebasing\n\n## Rebasing\n\nIn Git, there are two main ways to integrate changes from one branch into another: the `merge` and the `rebase`. In this section you’ll learn what rebasing is, how'
+  Source: data/raw/06_git_tools_rebasing.md
+  Domain: git
 
 
-Top-5: gitlab_merge_requests_chunk_002 | score: 0.7002
-  Text: 'For more information, see assign an assignee and request a reviewer.\n\n## Create a merge request\n\nLearn the different ways to create a merge request.### Use merge request templates\n\nWhen you create a m'
-  Source: data/raw/10_gitlab_merge_requests.md
-  Domain: gitlab
+Top-5: branching_branch_management_chunk_004 | score: 0.5996
+  Text: 'merged master\n      topicA\n      featureB\n\n### Changing a branch name\n\nCaution |  Do not rename branches that are still in use by other collaborators.Do not rename a branch like master/main/mainline w'
+  Source: data/raw/04_branching_branch_management.md
+  Domain: git
 
 
 
@@ -270,15 +270,15 @@ Top-3: gitlab_getting_started_chunk_000 | score: 0.5195
   Domain: gitlab
 
 
-Top-4: gitlab_merge_requests_chunk_017 | score: 0.51
-  Text: 'that are not compatible with your project, with license approval policies.\n  6. You request the approval from your manager.\n  7. Your manager:\n     1.Pushes a commit with their final review.\n     2. A'
-  Source: data/raw/10_gitlab_merge_requests.md
+Top-4: gitlab_getting_started_chunk_007 | score: 0.4949
+  Text: 'sitory that exists in your own namespace.\nUse this workflow when contributing to open-source projects or when your team uses a\ncentralized repository.## Install Git\n\nTo use Git commands and contribute'
+  Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-5: gitlab_merge_requests_chunk_010 | score: 0.506
-  Text: 'DK). To use Ona, you must turn on Ona in your user account.\n  * Push changes from the command line, if you are familiar with Git and the command line.## Assign a user to a merge request\n\nTo assign the'
-  Source: data/raw/10_gitlab_merge_requests.md
+Top-5: gitlab_getting_started_chunk_004 | score: 0.4493
+  Text: 'ify the same lines of code\nin both branches, GitLab flags these as merge conflicts.\nThese must be resolved manually by reviewing and editing the code.### Delete a branch\n\nAfter a successful merge, you'
+  Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
