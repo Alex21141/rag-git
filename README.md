@@ -4,44 +4,46 @@
 
 ## 1. Тема проєкту
 
-**Git/GitHub/GitLab tutoring assistant** — чат-бот для навчання основам Git, GitHub та GitLab. Цільова аудиторія — розробники, які починають працювати з системами керування версіями.
+**Git tutoring assistant** — чат-бот для навчання основам Git. Цільова аудиторія — розробники, які починають працювати з системами керування версіями.
 
 Тема охоплює:
+- Концепцію контролю версій (local, centralized, distributed VCS)
 - Базові команди Git (`init`, `clone`, `add`, `commit`, `push`, `pull`)
 - Роботу з гілками (branching, merging, rebasing)
 - Стешинг та очищення (stashing, cleaning)
 - Розподілені workflow (distributed workflows)
-- GitHub flow та командну роботу
-- GitLab Flow та merge requests
+- GitHub (About Git)
+- GitLab (Getting started with Git)
 
 ## 2. Джерела
 
 | # | Назва | URL | Тип |
 |---|-------|-----|-----|
 | 0 | Getting Started — About Version Control | https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control | концепт |
-| 1 | Git Basics — Getting a Repository | https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository | концепт + команди |
-| 2 | Git Basics — Recording Changes | https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository | команди |
-| 3 | Branching — Basic Branching and Merging | https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging | концепт + workflow |
-| 4 | Branching — Branch Management | https://git-scm.com/book/en/v2/Git-Branching-Branch-Management | довідник |
-| 5 | Distributed Workflows | https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows | workflow/концепт |
+| 1 | Git Basics — Getting a Git Repository | https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository | концепт |
+| 2 | Git Basics — Recording Changes to the Repository | https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository | команди |
+| 3 | Git Branching — Basic Branching and Merging | https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging | концепт + workflow |
+| 4 | Git Branching — Branch Management | https://git-scm.com/book/en/v2/Git-Branching-Branch-Management | довідник |
+| 5 | Distributed Git — Distributed Workflows | https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows | концепт + workflow |
 | 6 | Git Tools — Rebasing | https://git-scm.com/book/en/v2/Git-Branching-Rebasing | концепт + процедура |
 | 7 | Git Tools — Stashing and Cleaning | https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning | команди |
-| 8 | GitHub — About Git (intro) | https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git | концепт, доп. контекст |
+| 8 | GitHub — About Git | https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git | концепт |
 | 9 | GitLab — Getting started with Git | https://docs.gitlab.com/topics/git/get_started/index.md | концепт |
 
 ## 3. Структура метаданих
+
 Кожен чанк містить:
 
 ```json
 {
   "chunk_id": "git_basics_getting_repository_chunk_000",
-  "text": "текст чанку...",
+  "text": "# 2.1 Git Basics - Getting a Git Repository\n\nIf you can read only one chapter to get going with Git, this is it. This chapter covers every basic command you need to do the vast majority of the things ...",
   "metadata": {
     "document_id": "git_basics_getting_repository",
     "source_file": "data/raw/01_git_basics_getting_repository.md",
     "source_type": "markdown",
     "title": "Git Basics",
-    "section": "# Git Basics — Getting a Git Repository",
+    "section": "# 2.1 Git Basics - Getting a Git Repository",
     "chunk_index": 1,
     "language": "en",
     "domain": "git",
@@ -62,7 +64,7 @@
 | `chunk_index` | Послідовний номер чанку в документі |
 | `language` | Мова (en) |
 | `domain` | Домен (git / github / gitlab) |
-| `document_type` | Тип контенту (concept / commands / workflow / reference / procedure / procedural) |
+| `document_type` | Тип контенту (concept / commands / workflow / reference / procedure) |
 
 ## 4. Стратегія чанкінгу
 
@@ -82,7 +84,7 @@
 | Мінімальна довжина | 246 chars |
 | Максимальна довжина | 921 chars |
 | Всього chars | 117,117 |
-| Overlap coverage | 100% пар (134/134) |
+| Overlap coverage | 100% пар (143/143) |
 
 **По доменах:**
 | Домен | Чанків |
@@ -93,29 +95,9 @@
 
 ## 6. Аналіз перекриття даних
 
-**Тематичне перекриття (ключові терміни):** Високе — базові команди `add`, `commit`, `push`, `checkout`, `branch`, `merge` зустрічаються в 9-10 документах. Це природно — кожен документ контекстуально пояснює базові операції Git у своєму аспекті.
-
-| Термін | Кількість документів | Документи |
-|--------|---------------------|-----------|
-| add | 10 | усі |
-| commit | 9 | усі крім gitlab_getting_started |
-| push | 9 | усі крім git_about_version_control |
-| checkout | 9 | усі крім distributed_workflows, gitlab_getting_started |
-| branch | 9 | усі крім git_about_version_control |
-| merge | 9 | усі крім git_about_version_control, gitlab_getting_started |
-| clone | 8 | git_basics, git_basics_recording, distributed, rebasing, stashing, github, gitlab, version_control |
-| pull | 8 | git_basics, branching, distributed, rebasing, github, gitlab, version_control |
-| remote | 8 | git_basics, branching, distributed, rebasing, github, gitlab, version_control |
-| repository | 8 | git_basics, recording, branch_management, distributed, rebasing, github, gitlab, version_control |
-| conflict | 4 | recording, branching, stashing, gitlab |
-| stash | 2 | branching_basic, stashing_cleaning |
-| rebase | 2 | distributed_workflows, tools_rebasing |
+**Тематичне перекриття (ключові терміни):** Високе — базові команди `add`, `commit`, `push`, `checkout`, `branch`, `merge` зустрічаються в більшості документів. Це природно — кожен документ контекстуально пояснює базові операції Git у своєму аспекті.
 
 **Дослівне перекриття (10-слівні shingles, Jaccard similarity):** Низьке — жодна пара документів не має Jaccard >2%. Це означає відсутність дослівних дублікатів тексту між документами.
-
-**Найбільше спільного тексту:**
-- `branching_basic_branching_merging` × `git_basics_recording_changes`: 17 спільних shingles — стандартний вивід `git status` (`# will be ignored`, `use "git add"`)
-- `git_basics_recording_changes` × `git_tools_stashing_cleaning`: 24 спільних shingles — стандартний вивід `git status` (`use "git add <file>..."`)
 
 **Висновок:** Документи мають високе тематичне перекриття (одні й тіж базові команди повторюються в різних контекстах), але низьке дослівне перекриття. Для RAG-системи це означає:
 - ✅ Пошук по загальних термінах (clone, branch, merge) поверне релевантні чанки з багатьох документів — добре для всебічної відповіді
@@ -124,18 +106,18 @@
 
 ## 7. Приклади чанків
 
-### Приклад 1 — Git Basics (concept)
+### Приклад — Getting Started (git)
 
 ```json
 {
-  "chunk_id": "git_basics_getting_repository_chunk_000",
-  "text": "# Git Basics — Getting a Git Repository\n\nIf you can read only one chapter to get going with Git, this is it. This chapter covers every basic command you need to do the vast majority of the things you'll eventually spend your time doing with Git.",
+  "chunk_id": "git_about_version_control_chunk_000",
+  "text": "# 1.1 Getting Started - About Version Control\n\nThis chapter will be about getting started with Git. We will begin by explaining some background on version control tools, then move on to how to get Git...",
   "metadata": {
-    "document_id": "git_basics_getting_repository",
-    "source_file": "data/raw/01_git_basics_getting_repository.md",
+    "document_id": "git_about_version_control",
+    "source_file": "data/raw/00_git_about_version_control.md",
     "source_type": "markdown",
-    "title": "Git Basics",
-    "section": "# Git Basics — Getting a Git Repository",
+    "title": "Getting Started",
+    "section": "# 1.1 Getting Started - About Version Control",
     "chunk_index": 1,
     "language": "en",
     "domain": "git",
@@ -144,12 +126,32 @@
 }
 ```
 
-### Приклад 2 — GitHub (concept)
+### Приклад — Git Basics (git)
+
+```json
+{
+  "chunk_id": "git_basics_getting_repository_chunk_000",
+  "text": "# 2.1 Git Basics - Getting a Git Repository\n\nIf you can read only one chapter to get going with Git, this is it. This chapter covers every basic command you need to do the vast majority of the things ...",
+  "metadata": {
+    "document_id": "git_basics_getting_repository",
+    "source_file": "data/raw/01_git_basics_getting_repository.md",
+    "source_type": "markdown",
+    "title": "Git Basics",
+    "section": "# 2.1 Git Basics - Getting a Git Repository",
+    "chunk_index": 1,
+    "language": "en",
+    "domain": "git",
+    "document_type": "concept"
+  }
+}
+```
+
+### Приклад — GitHub (github)
 
 ```json
 {
   "chunk_id": "github_about_git_chunk_000",
-  "text": "# GitHub — About Git\n\nLearn about the version control system, Git, and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together.",
+  "text": "# GitHub — About Git\n\n# About Git\n\nLearn about the version control system, Git, and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of...",
   "metadata": {
     "document_id": "github_about_git",
     "source_file": "data/raw/08_github_about_git.md",
@@ -164,18 +166,18 @@
 }
 ```
 
-### Приклад 3 — GitLab (concept)
+### Приклад — GitLab (gitlab)
 
 ```json
 {
   "chunk_id": "gitlab_getting_started_chunk_000",
-  "text": "# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others. GitLab is a web-based Git repository manager that provides CI/CD and other features to help you manage your software development lifecycle.\n\nYou can use the GitLab web interface for many Git operations, but understanding Git commands provides you with additional flexibility and control.",
+  "text": "# GitLab — Getting started with Git\n\n# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others.\nGitLab is a web-based Git repository man...",
   "metadata": {
     "document_id": "gitlab_getting_started",
     "source_file": "data/raw/09_gitlab_getting_started.md",
     "source_type": "markdown",
     "title": "GitLab",
-    "section": "# Get started with Git",
+    "section": "# GitLab — Getting started with Git",
     "chunk_index": 1,
     "language": "en",
     "domain": "gitlab",
@@ -188,18 +190,18 @@
 
 **Що вийшло добре:**
 - ✅ 10 якісних джерел з трьох доменів (Git, GitHub, GitLab)
-- ✅ Оригінальні заголовки документів збережено (без нумерації та дублів)
+- ✅ Нумеровані заголовки документів збережено (формат `# X.Y Title`)
 - ✅ Повна metadata структура — 10 полів, включаючи section, domain, document_type
 - ✅ Contiguous sliding window chunking з overlap — 100% пар чанків мають перекриття (150 chars)
 - ✅ Word-boundary розриви — чанки не обриваються посеред слів
 - ✅ Sentence-aware break — пріоритет розриву на кордонах речень
-- ✅ Очистка від посилань, жирного тексту, навігаційного сміття, prev|next, порожніх заголовків
+- ✅ Очистка від посилань, жирного тексту, figure captions, навігаційного сміття, prev|next
 - ✅ Низьке дослівне перекриття між документами (Jaccard <2%)
 
 **Що треба покращити:**
-- ⚠️ Середня довжина (812 chars) — можна збільшити chunk_size до 850-900
+- ⚠️ Середня довжина (813 chars) — можна збільшити chunk_size до 850-900
 - ⚠️ Немає семантичного чанкінгу — розбиття на основі змісту, а не фіксованих розмірів
-- ⚠️ Високе тематичне перекриття базових команд (9-10 документів) — може ускладнювати точний пошук контексту
+- ⚠️ Високе тематичне перекриття базових команд (10 документів) — може ускладнювати точний пошук контексту
 - ⚠️ Немає валідації JSONL — бажано додати скрипт перевірки валідності кожного рядка
 
 ## 9. Структура проєкту
@@ -220,8 +222,8 @@ rag-github/
 │   │   ├── 08_github_about_git.md
 │   │   └── 09_gitlab_getting_started.md
 │   └── processed/                     ← оброблені дані
-│       └── chunks.jsonl               ← 147 чанків
+│       └── chunks.jsonl               ← 144 чанків
 └── scripts/
-    ├── download_sources.py            ← збір даних з веб-сторінок
+    ├── download_sources.py            ← збір даних з веб-сторінок + очистка
     └── prepare_knowledge_base.py      ← нормалізація + чанкінг
 ```
