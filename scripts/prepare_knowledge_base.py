@@ -19,6 +19,7 @@ Output:
 import json
 import os
 import re
+from collections import defaultdict
 from pathlib import Path
 
 # ── Configuration ──────────────────────────────────────────────────────────
@@ -246,7 +247,24 @@ def prepare_chunks():
                   f"({text_len} chars) with next chunk")
         merged.append(c)
     all_chunks = merged
-    print(f"  {len(all_chunks)} chunks after merging")
+
+    # Step 2.6: Renumper chunk_index & chunk_id per document (sequential)
+    print(f"\n{'=' * 60}")
+    print("Step 2.6: Renumbering chunk indices")
+    print("=" * 60)
+    by_doc = defaultdict(list)
+    for c in all_chunks:
+        did = c["metadata"]["document_id"]
+        by_doc[did].append(c)
+
+    fixed = []
+    for did in sorted(by_doc.keys()):
+        for idx, c in enumerate(by_doc[did]):
+            c["metadata"]["chunk_index"] = idx + 1
+            c["chunk_id"] = f"{did}_chunk_{idx + 1:03d}"
+        fixed.extend(by_doc[did])
+    all_chunks = fixed
+    print(f"  All chunk_index now sequential per document")
 
     # Save to JSONL
     print(f"\n{'=' * 60}")
@@ -282,7 +300,6 @@ def prepare_chunks():
 
     # Overlap analysis
     print(f"\n  Overlap analysis:")
-    from collections import defaultdict
     by_doc = defaultdict(list)
     for c in all_chunks:
         by_doc[c["metadata"]["document_id"]].append(c)
