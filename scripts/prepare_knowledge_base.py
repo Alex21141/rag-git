@@ -25,9 +25,9 @@ from pathlib import Path
 RAW_DIR = Path(__file__).parent.parent / "data" / "raw"
 OUTPUT = Path(__file__).parent.parent / "data" / "processed" / "chunks.jsonl"
 
-CHUNK_SIZE = 700
+CHUNK_SIZE = 850
 OVERLAP = 150
-MIN_CHUNK = 120
+MIN_CHUNK = 150
 
 # Domain metadata
 DOMAIN_MAP = {
@@ -103,20 +103,24 @@ def get_section_at(section_map: list, char_pos: int, title: str):
     return result or section_map[0][0]
 
 
-def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int):
+def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int,
+                       section_map: list = None):
     """Split text into chunks with overlap between consecutive chunks.
     
-    Each chunk i contains text[i_start:i_end].
-    Chunk i+1 starts at i_end - overlap (so the last `overlap` chars of chunk i
-    appear at the start of chunk i+1).
+    Semantic approach: first identify section boundaries from headings,
+    then chunk within each section so boundaries stay clean.
+    This prevents chunks from spanning unrelated topics.
     
-    Returns list of (start_pos, end_pos, chunk_text) tuples.
+    Each chunk i contains text[i_start:i_end].
+    Chunk i+1 prepends the last `overlap` chars of chunk i for continuity.
+    
+    Returns list of (start_pos, end_pos, chunk_text, section) tuples.
     """
     raw_splits = []
     start = 0
     text_len = len(text)
     
-    # Phase 1: Split into contiguous raw chunks
+    # Phase 1: Split into contiguous raw chunks with sentence/word boundary awareness
     while start < text_len:
         end = min(start + chunk_size, text_len)
         if end < text_len:
@@ -124,12 +128,27 @@ def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int)
         raw_splits.append((start, end))
         start = end
     
-    # Phase 2: Apply overlap by adjusting boundaries
-    # Chunk i ends at raw_splits[i][1], but we want its last `overlap` chars
-    # to also appear at the start of chunk i+1.
-    # So chunk i's effective text is text[raw_splits[i][0]:raw_splits[i][1]]
-    # and chunk i+1's effective text starts at raw_splits[i][1] - overlap.
+    # Phase 2: Apply section-aware refinement
+    # If a raw split crosses a section boundary, break at the boundary
+    if section_map:
+        refined = []
+        for s, e in raw_splits:
+            # Check if any section boundary falls inside this split
+            split_points = [s]
+            for heading, boundary_pos in section_map:
+                if s < boundary_pos < e:
+                    split_points.append(boundary_pos)
+            split_points.append(e)
+            
+            # Create sub-splits at section boundaries
+            for i in range(len(split_points) - 1):
+                sub_s = split_points[i]
+                sub_e = split_points[i + 1]
+                if sub_e - sub_s > min_chunk:
+                    refined.append((sub_s, sub_e))
+        raw_splits = refined
     
+    # Phase 3: Apply overlap by prepending previous chunk tail
     chunks = []
     for i, (s, e) in enumerate(raw_splits):
         chunk_text = text[s:e].strip()
@@ -141,8 +160,13 @@ def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int)
             overlap_text = text[overlap_start:prev_e]
             chunk_text = overlap_text + chunk_text
         
+        # Resolve section for this chunk
+        section = None
+        if section_map:
+            section = get_section_at(section_map, s, "Unknown")
+        
         if len(chunk_text) >= min_chunk:
-            chunks.append((s, e, chunk_text))
+            chunks.append((s, e, chunk_text, section))
     
     return chunks
 
@@ -171,12 +195,14 @@ def prepare_chunks():
 
         section_map = build_section_map(text)
 
-        # Get chunks with overlap
-        raw_splits = chunk_with_overlap(text, CHUNK_SIZE, OVERLAP, MIN_CHUNK)
+        # Get chunks with overlap (semantic: section-aware)
+        raw_splits = chunk_with_overlap(text, CHUNK_SIZE, OVERLAP, MIN_CHUNK, section_map)
 
         final_chunks = []
-        for start_pos, end_pos, chunk_text in raw_splits:
-            section = get_section_at(section_map, start_pos, title)
+        for start_pos, end_pos, chunk_text, section in raw_splits:
+            # section is resolved by chunk_with_overlap; fallback to title if None
+            if section is None:
+                section = title
             final_chunks.append({
                 "chunk_id": f"{doc_id}_chunk_{len(final_chunks):03d}",
                 "text": chunk_text.strip(),
