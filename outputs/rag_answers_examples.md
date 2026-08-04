@@ -4,7 +4,7 @@
 
 **Індекс**: FAISS IndexFlatIP (dim=384)
 
-**Чанків у KB**: 147
+**Чанків у KB**: 145
 
 **Генерація**: Шаблонна (LLM недоступний)
 
@@ -17,13 +17,13 @@
 |---|-----------|-------------|-----------|
 | 1 | How do I clone a Git repository? | 0.73 | ✅ Grounded |
 | 2 | What is a Git branch and how do I create one? | 0.63 | ✅ Grounded |
-| 3 | How to resolve merge conflicts in Git? | 0.71 | ✅ Grounded |
+| 3 | How to resolve merge conflicts in Git? | 0.73 | ✅ Grounded |
 | 4 | What is the difference between git add and git commit? | 0.62 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.62 | ✅ Grounded |
 | 6 | How do I merge a branch in GitLab? | 0.74 | ✅ Grounded |
 | 7 | How do I view the commit history? | 0.57 | ✅ Grounded |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
-| 9 | What is rebasing and when should I use it? | 0.50 | ✅ Grounded |
+| 9 | What is rebasing and when should I use it? | 0.56 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.71 | ✅ Grounded |
 
 ## Запитання 1: How do I clone a Git repository?
@@ -60,14 +60,14 @@
 
 ## Запитання 3: How to resolve merge conflicts in Git?
 
-**Знайдено чанків**: branching_basic_branching_merging_chunk_015 (score: 0.71), branching_basic_branching_merging_chunk_012 (score: 0.71), branching_basic_branching_merging_chunk_016 (score: 0.71)
+**Знайдено чанків**: branching_basic_branching_merging_chunk_010 (score: 0.73), branching_basic_branching_merging_chunk_014 (score: 0.71), branching_basic_branching_merging_chunk_011 (score: 0.71)
 
 **Відповідь**: Конфлікти злиття виникають, коли Git не може автоматично поєднати зміни з двох гілок. Для вирішення: 1) Відкрийте файли з маркерами конфлікту (`<<<<<<<`, `=======`, `>>>>>>>`). 2) Виправте конфлікти вручну — залиште бажаний код. 3) `git add <файл>` — позначте як вирішене. 4) `git commit` — зафіксуйте результат злиття.
 
 **Знайдено в контексті:**
-  - branching_basic_branching_merging_chunk_015 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
-  - branching_basic_branching_merging_chunk_012 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
-  - branching_basic_branching_merging_chunk_016 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_010 (score: 0.73) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_014 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_011 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
 
 **Джерело**: data/raw/03_branching_basic_branching_merging.md
 
@@ -124,14 +124,14 @@
 
 ## Запитання 7: How do I view the commit history?
 
-**Знайдено чанків**: github_about_git_chunk_000 (score: 0.57), git_tools_rebasing_chunk_016 (score: 0.53), git_basics_recording_changes_chunk_027 (score: 0.53)
+**Знайдено чанків**: github_about_git_chunk_000 (score: 0.57), git_basics_recording_changes_chunk_027 (score: 0.53), git_tools_rebasing_chunk_009 (score: 0.53)
 
 **Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
 
 **Знайдено в контексті:**
   - github_about_git_chunk_000 (score: 0.57) [data/raw/08_github_about_git.md]
-  - git_tools_rebasing_chunk_016 (score: 0.53) [data/raw/06_git_tools_rebasing.md]
   - git_basics_recording_changes_chunk_027 (score: 0.53) [data/raw/02_git_basics_recording_changes.md]
+  - git_tools_rebasing_chunk_009 (score: 0.53) [data/raw/06_git_tools_rebasing.md]
 
 **Джерело**: data/raw/08_github_about_git.md
 
@@ -156,14 +156,14 @@
 
 ## Запитання 9: What is rebasing and when should I use it?
 
-**Знайдено чанків**: git_tools_rebasing_chunk_009 (score: 0.50), git_tools_rebasing_chunk_017 (score: 0.48), git_tools_rebasing_chunk_008 (score: 0.47)
+**Знайдено чанків**: git_tools_rebasing_chunk_016 (score: 0.56), git_tools_rebasing_chunk_004 (score: 0.52), git_tools_rebasing_chunk_000 (score: 0.51)
 
 **Відповідь**: Ребейзинг (rebase) — перенесення комітів з однієї гілки на іншу для створення чистішої, лінійної історії. Команда: `git rebase <target-гілка>`. Використовуйте для локальних гілок, ще не опублікованих. Не використовуйте для спільних (shared) гілок.
 
 **Знайдено в контексті:**
-  - git_tools_rebasing_chunk_009 (score: 0.50) [data/raw/06_git_tools_rebasing.md]
-  - git_tools_rebasing_chunk_017 (score: 0.48) [data/raw/06_git_tools_rebasing.md]
-  - git_tools_rebasing_chunk_008 (score: 0.47) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_016 (score: 0.56) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_004 (score: 0.52) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_000 (score: 0.51) [data/raw/06_git_tools_rebasing.md]
 
 **Джерело**: data/raw/06_git_tools_rebasing.md
 
