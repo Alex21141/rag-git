@@ -150,9 +150,9 @@ QUERY_TOPIC_OVERRIDES = {
     "resolve merge conflict": "branch_merge_conflict",
     "difference between git add and git commit": "add_commit",
     "stash my changes": "stash",
-    "merge a branch in GitLab": "gitlab_merge",
-    "GitLab Flow": "gitlab_flow",
-    "SSH keys for GitLab": "ssh_gitlab",
+    "merge a branch in gitlab": "gitlab_merge",
+    "gitlab flow": "gitlab_flow",
+    "ssh keys for gitlab": "ssh_gitlab",
     "rebasing and when should i use": "rebase",
     "push changes to a remote": "push_remote",
 }

@@ -21,7 +21,7 @@
 | 4 | What is the difference between git add and git commit? | 0.62 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.62 | ✅ Grounded |
 | 6 | How do I merge a branch in GitLab? | 0.74 | ✅ Grounded |
-| 7 | What is GitLab Flow? | 0.53 | ✅ Grounded |
+| 7 | What is GitLab Flow? | 0.53 | ❌ Fallback |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
 | 9 | What is rebasing and when should I use it? | 0.50 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.72 | ✅ Grounded |
@@ -126,33 +126,18 @@
 
 **Знайдено чанків**: gitlab_getting_started_chunk_000 (score: 0.53), gitlab_merge_requests_chunk_000 (score: 0.52), gitlab_merge_requests_chunk_017 (score: 0.51)
 
-**Відповідь**: Для злиття гілки в GitLab створіть Merge Request: 1) Push'ніть вашу гілку на віддалений репозиторій. 2) У веб-інтерфейсі GitLab натисніть "Compare & merge request". 3) Вкажіть цільову гілку (зазвичай main/master). 4) Після рецензування натисніть "Merge".
-
-**Знайдено в контексті:**
-  - gitlab_getting_started_chunk_000 (score: 0.53) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_merge_requests_chunk_000 (score: 0.52) [data/raw/10_gitlab_merge_requests.md]
-  - gitlab_merge_requests_chunk_017 (score: 0.51) [data/raw/10_gitlab_merge_requests.md]
+**Відповідь**: Не маю достатньої інформації для надання відповіді на це питання. Запитання стосується теми, яка не покрита в базі знань. Найкращий знайдений чанк (gitlab_getting_started_chunk_000, gitlab_merge_requests_chunk_000) має бал релевантності 0.53, що недостатньо для надання надійної відповіді.
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
-**Коментар**: Partial — контекст частково релевантний
+**Коментар**: Fallback — недостатньо релевантного контексту
 
 
 ## Запитання 8: How to set up SSH keys for GitLab?
 
 **Знайдено чанків**: gitlab_getting_started_chunk_009 (score: 0.74), gitlab_getting_started_chunk_008 (score: 0.74), gitlab_getting_started_chunk_000 (score: 0.52)
 
-**Відповідь**: На основі знайденого контексту: ssword each time.
-
-To use SSH with GitLab, you must:
-
-1. Generate an SSH key pair on your local system.
-1. Add your SSH key to your GitLab account.
-1.Verify your SSH connection to GitLab.
-
-For more in
-
-
+**Відповідь**: Для налаштування SSH-ключів для GitLab: 1) Згенеруйте ключ: `ssh-keygen -t ed25519 -C "ваша_email"`. 2) Скопіюйте публічний ключ: `cat ~/.ssh/id_ed25519.pub`. 3) Додайте ключ у GitLab: Profile → Settings → SSH Keys. 4) Перевірте підключення: `ssh -T git@gitlab.com`.
 
 **Знайдено в контексті:**
   - gitlab_getting_started_chunk_009 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
