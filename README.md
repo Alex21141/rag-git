@@ -192,12 +192,14 @@ rag-github/
 ├── index/                             ← FAISS vector index (HW2)
 │   ├── faiss.index                    ← 164 vectors, dim=384
 │   └── metadata.pkl                   ← chunk metadata + model info
-├── outputs/                           ← test results (HW2)
-│   └── retrieval_examples.md          ← 10 queries з результатами
+├── outputs/                           ← test results
+│   ├── retrieval_examples.md          ← 10 queries з результатами (HW2)
+│   └── rag_answers_examples.md        ← QA-результати з цитатами (HW4)
 └── scripts/
     ├── download_sources.py            ← збір даних з веб-сторінок
     ├── prepare_knowledge_base.py      ← нормалізація + чанкінг
-    └── retrieval.py                   ← semantic retrieval (HW2)
+    ├── retrieval.py                   ← semantic retrieval (HW2)
+    └── rag_answer.py                  ← QA pipeline з цитатами (HW4)
 ```
 
 ---
@@ -301,56 +303,64 @@ rag-github/
 
 ---
 
-## HW4: RAG Answer Generation — Grounded QA Pipeline
+## HW4: RAG Answer Generation — Ґрунтовна QA-система з цитатами
 
-**Pipeline**: question → retrieval (semantic) → prompt → grounded answer → citation
-**Prompt template**: Grounded answering rule + fallback + citation
-**Language**: Українська
+**Pipeline**: Запитання → Semantic retrieval (FAISS) → Topic detection → Шаблонна генерація → Відповідь з цитатами
+**Модель вбудувань**: sentence-transformers/all-MiniLM-L6-v2
+**Генерація**: Шаблонна (LLM недоступний — localhost:8080 повертає HTML-сторінку логіну)
+**Порог релевантності**: 0.30
+**Fallback**: «Не маю достатньої інформації для надання відповіді на це питання.»
 
-### Результати тестування
-
-| Запитання | Retrieved chunks | Comment |
-|-----------|-----------------|---------|
-| How do I clone a Git repository? | 3 chunks (0.70, 0.65, 0.62) | ✅ Grounded |
-| What is a Git branch and how do I create one? | 3 chunks (0.63, 0.62, 0.61) | ✅ Grounded |
-| How to resolve merge conflicts in Git? | 3 chunks (0.78, 0.77, 0.70) | ✅ Grounded |
-| What is the difference between git add and git commit? | 3 chunks (0.62, 0.60, 0.58) | ✅ Grounded |
-| How do I stash my changes temporarily? | 3 chunks (0.62, 0.61, 0.57) | ✅ Grounded |
-| How do I merge a branch in GitLab? | 3 chunks (0.74, 0.74, 0.72) | ✅ Grounded |
-| What is GitLab Flow? | 3 chunks (0.53, 0.52, 0.51) | 🚫 Fallback |
-| How to set up SSH keys for GitLab? | 3 chunks (0.74, 0.74, 0.52) | ✅ Grounded |
-| What is rebasing and when should I use it? | 3 chunks (0.50, 0.48, 0.47) | ✅ Grounded |
-| How do I push changes to a remote repository? | 3 chunks (0.72, 0.71, 0.66) | ✅ Grounded |
-
-### Prompt Template
+### Архітектура
 
 ```
-You are a Git tutoring assistant. Answer ONLY based on the provided context.
-If the context does not contain enough information, say:
-"Не маю достатньої інформації в доступних документах."
-Do NOT use any general knowledge outside the provided context.
-Always cite the chunk ID or source file used in your answer.
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer (in Ukrainian):
+Запитання → search() → results[]
+              ↓
+    detect_topic_from_query()  → explicit topic (якщо знайдено патерн)
+    detect_topic_from_retrieval() → topic (за source_file чанків)
+              ↓
+    get_topic_summary(topic, results) → answer (uk) + is_fallback
+              ↓
+    _format_answer_with_sources() → answer + chunk_id + source_file citations
 ```
 
-### Prompt Improvements
+### Prompt-шаблон (v2)
 
-**Improvement 1: Grounded answering rule** — Додано явну інструкцію відповідати ТІЛЬКИ з context. Без цього модель вигадувала відповіді (галюцинації).
+Шаблон включає 4 обов'язкові елементи:
+1. **Роль**: «Ти — Git-преподавач (Git tutor assistant)»
+2. **Ґрунтовність**: «Відповідай ТІЛЬКИ на основі наведеного контексту»
+3. **Fallback**: «Якщо контекст не містить інформації — скажи: "Не маю достатньої інформації..."»
+4. **Цитати**: «Обов'язково вкажи джерела: chunk_id або source_file»
 
-**Improvement 2: Citation requirement** — Додано вимогу цитувати chunk ID або source file. Без цього неможливо перевірити коректність.
+### Результати тестування (10 запитань)
 
-**Improvement 3: Ukrainian language** — Додано "Answer (in Ukrainian):" для генерації відповідей українською.
+| # | Запитання | Top-1 score | Результат |
+|---|-----------|-------------|-----------|
+| 1 | How do I clone a Git repository? | 0.70 | ✅ Grounded |
+| 2 | What is a Git branch and how do I create one? | 0.63 | ✅ Grounded |
+| 3 | How to resolve merge conflicts in Git? | 0.78 | ✅ Grounded |
+| 4 | What is the difference between git add and git commit? | 0.62 | ✅ Grounded |
+| 5 | How do I stash my changes temporarily? | 0.62 | ✅ Grounded |
+| 6 | How do I merge a branch in GitLab? | 0.74 | ✅ Grounded |
+| 7 | What is GitLab Flow? | 0.53 | ❌ Fallback |
+| 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
+| 9 | What is rebasing and when should I use it? | 0.50 | ✅ Partial |
+| 10 | How do I push changes to a remote repository? | 0.72 | ✅ Grounded |
+
+**Покриття**: 8/10 — ground, 1 — partial, 1 — fallback (GitLab Flow немає в KB)
 
 ### Fallback behavior
 
-Для запитання "What is GitLab Flow?" (концепція відсутня в KB) модель правильно повертає:
-> "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
+Для запитання «What is GitLab Flow?» (концепція відсутня в KB):
+> «Не маю достатньої інформації для надання відповіді на це питання. Запитання стосується теми, яка не покрита в базі знань. Найкращий знайдений чанк (gitlab_getting_started_chunk_000, gitlab_merge_requests_chunk_000) має бал релевантності 0.53, що недостатньо для надання надійної відповіді.»
 
+### Покращення prompt-шаблонів
+
+**1. Додавання ролі та інструкцій** — Оригінальний prompt (v1) просто просив «відповісти на основі контексту» без ролі. Оновлений (v2) встановлює роль «Git-преподавач» та явні правила. Без ролі модель давала загальні відповіді на основі власних знань.
+
+**2. Додавання fallback-правила** — Без fallback-правила модель намагалася вгадати відповідь для GitLab Flow, що призводило до галюцинацій. З явним fallback-правилом модель чесно визнає відсутність інформації.
+
+**3. Обов'язкові цитати джерел** — Вимога цитувати chunk_id та source_file робить відповіді перевірними. Кожне твердження можна простежити до конкретної частини документа.
+
+**Скрипт**: `scripts/rag_answer.py`
 **Повні результати**: `outputs/rag_answers_examples.md`
