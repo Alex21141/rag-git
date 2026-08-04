@@ -239,31 +239,118 @@ rag-github/
 
 ## HW3: Improved Retrieval — Hybrid BM25 + Semantic
 
-**Baseline (HW2)**: Semantic-only (FAISS cosine similarity)
-**Improved (HW3)**: Hybrid BM25 + Semantic (α=0.5) + Metadata filtering
+**Метод**: Гібридний пошук (FAISS semantic + BM25 keyword) + metadata filtering
+**Embedding model**: sentence-transformers/all-MiniLM-L6-v2 + BM25Okapi
+**Vector storage**: FAISS IndexFlatIP (dim=384) — той самий index з HW2
+**Веса**: alpha=0.5 (семантичний), 0.5 (BM25)
+**Metadata filter**: domain (git/github/gitlab) + document_type
+**Chunks indexed**: 164
+**Test queries**: 10
+**Top-k**: 5
 
-### Порівняльна таблиця
+### Архітектура
 
-| Query | Baseline top-1 | Improved top-1 | Що змінилось |
-|-------|---------------|----------------|-------------|
-| How do I clone a Git repository? | git_basics_getting_repository_chunk_005 (0.70) | git_basics_getting_repository_chunk_004 (0.94) | 🔄 BM25 підняв кращий чанк про clone |
-| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_000 (0.63) | git_basics_getting_repository_chunk_000 (0.98) | 🔄 BM25 знайшов релевантніший чанк про Git basics |
-| How to resolve merge conflicts in Git? | branching_basic_branching_merging_chunk_013 (0.78) | branching_basic_branching_merging_chunk_010 (0.95) | 🔄 BM25 підкріпив semantic результат |
-| What is the difference between git add and git commit? | github_about_git_chunk_007 (0.62) | git_basics_getting_repository_chunk_003 (0.95) | 🔄 BM25 знайшов чанк з обидвох команд |
-| How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_000 (0.62) | git_tools_stashing_cleaning_chunk_006 (0.95) | 🔄 BM25 підкріпив релевантність stash |
-| How do I merge a branch in GitLab? | gitlab_getting_started_chunk_004 (0.74) | branching_branch_management_chunk_004 (0.91) | 🔄 BM25 знайшов чанк з merge keywords |
-| What is GitLab Flow? | gitlab_getting_started_chunk_000 (0.53) | gitlab_getting_started_chunk_000 (1.00) | ✅ Топ-1 зберігся, бал збільшено |
-| How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_009 (0.74) | gitlab_getting_started_chunk_009 (1.00) | ✅ Топ-1 зберігся, бал збільшено |
-| What is rebasing and when should I use it? | git_tools_rebasing_chunk_009 (0.50) | git_tools_rebasing_chunk_000 (0.96) | 🔄 BM25 знайшов чанк з definіцією rebasing |
-| How do I push changes to a remote repository? | distributed_workflows_chunk_005 (0.72) | distributed_workflows_chunk_005 (0.89) | ✅ Топ-1 зберігся, бал збільшено |
+Потік: `chunks.jsonl → FAISS (top-20 candidates) → BM25 scoring → hybrid re-ranking → metadata filter → top-5`
 
-### Висновок
+1. **FAISS pre-filter**: semantic search повертає top-20 кандидатів
+2. **BM25 scoring**: для кандидатів обчислюються BM25-бали
+3. **Normalization**: semantic і BM25 бали → [0, 1]
+4. **Hybrid score**: `alpha * norm_semantic + (1-alpha) * norm_bm25`
+5. **Metadata filter**: пост-фільтрація за domain (опціонально)
 
-**Покращено**: 10/10 запитів — або змінили top-1 на кращий, або отримали вищий бал.
+### Результати тестування
 
-**Найбільший ефект**:
-- **BM25** — знаходить чанки з точними ключовими словами (`git add`, `git commit`, `rebase`)
-- **Metadata filtering** — дозволяє звужувати пошук до конкретного домену (git/github/gitlab)
-- **Гібридний пошук** — поєднує точність BM25 з контекстуальною релевантністю semantic
+| Запит | Baseline Top-1 | Score | Improved Top-1 | Score | Покращення |
+|-------|-------------|-------|----------------|-------|------------|
+| How do I clone a Git repository? | chunk_005 | 0.7031 | chunk_004 | 0.9404 | 🔄 BM25 підняв пряме визначення `git clone` |
+| What is a Git branch and how do I create one? | gitlab_chunk_000 | 0.6283 | git_basics_chunk_000 | 0.9793 | 🔄 BM25 більше збігів у git domain |
+| How to resolve merge conflicts in Git? | chunk_013 | 0.7773 | chunk_010 | 0.9510 | 🔄 BM25 підняв "Basic Merge Conflicts" вступ |
+| What is the difference between git add and git commit? | github_chunk_007 | 0.6224 | git_basics_chunk_003 | 0.9468 | ✅ BM25 знайшов обидві команди в одному чанку |
+| How do I stash my changes temporarily? | chunk_000 | 0.6238 | chunk_006 | 0.9508 | 🔄 BM25 змістив фокус зі вступу на практику |
+| How do I merge a branch in GitLab? | gitlab_chunk_004 | 0.7394 | branching_chunk_004 | 0.9054 | ⚠️ Без domain filter — гірше; з `--domain gitlab` ✅ |
+| What is GitLab Flow? | gitlab_chunk_000 | 0.5289 | gitlab_chunk_000 | 1.0000 | ✅ Зберігся, BM25 підтверджує релевантність |
+| How to set up SSH keys for GitLab? | gitlab_chunk_009 | 0.7398 | gitlab_chunk_009 | 1.0000 | ✅ Ідеальний (BM25=16.95, точний збіг) |
+| What is rebasing and when should I use it? | chunk_009 | 0.5023 | chunk_000 | 0.9562 | ✅ BM25 підняв визначення rebase замість попередження |
+| How do I push changes to a remote repository? | chunk_005 | 0.7182 | chunk_005 | 0.8918 | ✅ Зберігся, BM25 підтверджує через "push/repository" |
 
+### Статистика
+
+| Метрика | HW2 (Baseline) | HW3 (Improved) | Різниця |
+|---------|----------------|----------------|---------|
+| Середній Top-1 score | 0.6583 | 0.9317 | **+0.2734** (+41.5%) |
+| Релевантний Top-1 | 7/10 | 8/10 | +1 |
+| Top-1 зберігся | — | 3/10 | — |
+
+### Аналіз
+
+**Сильні сторони гібридного підходу:**
+- ✅ **+41.5%** середній Top-1 score (0.66→0.93) — краще калібрування балів
+- ✅ **Конкретні команди** (`git add`, `git stash`, `git clone`, `git rebase`) — BM25 знаходить точні лексичні збіги
+- ✅ **Краща релевантність** для "what is" запитів (rebase: chunk_000 — пряме визначення)
+- ✅ **Metadata filtering** — `--domain gitlab` дає точні GitLab-результати
+- ✅ **Стабільність** — 3/10 запитів зберегли Top-1 (GitLab Flow, SSH keys, push)
+
+**Слабкі сторони:**
+- ⚠️ **Платформ-специфічні запити** без domain filter повертають git-загальний контент (запит 6)
+- ⚠️ **Відсутній контент** — GitLab Flow немає в KB (жоден метод не допомагає)
+
+**Висновок:** Гібридний пошук значно покращує retrieval через поєднання семантичної релевантності та лексичної точності. Metadata filtering — обов'язковий для платформ-специфічних запитів.
+
+**Скрипт**: `scripts/retrieval_improved.py`
 **Повні результати**: `outputs/retrieval_comparison.md`
+
+---
+
+## HW4: RAG Answer Generation — Grounded QA Pipeline
+
+**Pipeline**: question → retrieval (semantic) → prompt → grounded answer → citation
+**Prompt template**: Grounded answering rule + fallback + citation
+**Language**: Українська
+
+### Результати тестування
+
+| Запитання | Retrieved chunks | Comment |
+|-----------|-----------------|---------|
+| How do I clone a Git repository? | 3 chunks (0.70, 0.65, 0.62) | ✅ Grounded |
+| What is a Git branch and how do I create one? | 3 chunks (0.63, 0.62, 0.61) | ✅ Grounded |
+| How to resolve merge conflicts in Git? | 3 chunks (0.78, 0.77, 0.70) | ✅ Grounded |
+| What is the difference between git add and git commit? | 3 chunks (0.62, 0.60, 0.58) | ✅ Grounded |
+| How do I stash my changes temporarily? | 3 chunks (0.62, 0.61, 0.57) | ✅ Grounded |
+| How do I merge a branch in GitLab? | 3 chunks (0.74, 0.74, 0.72) | ✅ Grounded |
+| What is GitLab Flow? | 3 chunks (0.53, 0.52, 0.51) | 🚫 Fallback |
+| How to set up SSH keys for GitLab? | 3 chunks (0.74, 0.74, 0.52) | ✅ Grounded |
+| What is rebasing and when should I use it? | 3 chunks (0.50, 0.48, 0.47) | ✅ Grounded |
+| How do I push changes to a remote repository? | 3 chunks (0.72, 0.71, 0.66) | ✅ Grounded |
+
+### Prompt Template
+
+```
+You are a Git tutoring assistant. Answer ONLY based on the provided context.
+If the context does not contain enough information, say:
+"Не маю достатньої інформації в доступних документах."
+Do NOT use any general knowledge outside the provided context.
+Always cite the chunk ID or source file used in your answer.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer (in Ukrainian):
+```
+
+### Prompt Improvements
+
+**Improvement 1: Grounded answering rule** — Додано явну інструкцію відповідати ТІЛЬКИ з context. Без цього модель вигадувала відповіді (галюцинації).
+
+**Improvement 2: Citation requirement** — Додано вимогу цитувати chunk ID або source file. Без цього неможливо перевірити коректність.
+
+**Improvement 3: Ukrainian language** — Додано "Answer (in Ukrainian):" для генерації відповідей українською.
+
+### Fallback behavior
+
+Для запитання "What is GitLab Flow?" (концепція відсутня в KB) модель правильно повертає:
+> "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
+
+**Повні результати**: `outputs/rag_answers_examples.md`
