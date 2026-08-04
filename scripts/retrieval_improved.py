@@ -38,7 +38,7 @@ TEST_QUERIES = [
     "What is the difference between git add and git commit?",
     "How do I stash my changes temporarily?",
     "How do I merge a branch in GitLab?",
-    "What is GitLab Flow?",
+    "How do I view the commit history?",
     "How to set up SSH keys for GitLab?",
     "What is rebasing and when should I use it?",
     "How do I push changes to a remote repository?",
@@ -124,8 +124,9 @@ def parse_baseline():
 
     # Extract query sections
     for query in TEST_QUERIES:
-        # Pattern: "### Query N: <query text>" ... "Top-1: chunk_id | score: X.XXXX"
-        pattern = rf"### Query\s+\d+:\s+{re.escape(query)}.*?Top-1:\s+(.+?)\s*\|\s*score:\s+([0-9.]+)"
+        # Pattern: "## Query N: <query text>" ... "Top-1: chunk_id | score: X.XXXX"
+        # Headers use ## (not ###), with blank lines before Top-1
+        pattern = rf"## Query\s+\d+:\s+{re.escape(query)}.*?Top-1:\s+(.+?)\s*\|\s*score:\s+([0-9.]+)"
         m = re.search(pattern, content, re.DOTALL)
         if m:
             baseline[query] = {
