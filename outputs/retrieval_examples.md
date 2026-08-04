@@ -54,28 +54,28 @@ Top-5: git_basics_getting_repository_chunk_005 | score: 0.5993
 
 ## Query 2: What is a Git branch and how do I create one?
 
-Top-1: distributed_workflows_chunk_013 | score: 0.6231
+Top-1: gitlab_getting_started_chunk_001 | score: 0.6397
+  Text: '# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others.\nGitLab is a web-based Git repository manager that provides CI/CD and other fe'
+  Source: data/raw/09_gitlab_getting_started.md
+  Domain: gitlab
+
+
+Top-2: distributed_workflows_chunk_013 | score: 0.6231
   Text: 'De Branches". This guide covers all the common Git workflows, and explains how/when to use them. There’s also a section comparing high and low integra tion frequencies. <>\n\n### Workflows Summary\n\nThes'
   Source: data/raw/05_distributed_workflows.md
   Domain: git
 
 
-Top-2: gitlab_getting_started_chunk_011 | score: 0.6182
+Top-3: gitlab_getting_started_chunk_011 | score: 0.6182
   Text: 'Ow.\nA standard Git workflow includes the following steps:\n\n1. Clone a repository: Create a local copy of the repository by cloning it to your machine. You can work on the project without affecting the'
   Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-3: github_about_git_chunk_004 | score: 0.6137
+Top-4: github_about_git_chunk_004 | score: 0.6137
   Text: 'On barriers between teams and keep them focused on doing their best work. Plus, Git makes it possible to align experts across a business to collaborat e on major projects.\n\n## About repositories\n\nA re'
   Source: data/raw/08_github_about_git.md
   Domain: github
-
-
-Top-4: git_about_version_control_chunk_001 | score: 0.6126
-  Text: '# Getting Started — About Version Control\n\n# 1.1 Getting Started - About Version Control\n\nThis chapter will be about getting started with Git. We will begin by explaining some background on version co'
-  Source: data/raw/00_git_about_version_control.md
-  Domain: git
 
 
 Top-5: gitlab_getting_started_chunk_015 | score: 0.6083
@@ -264,20 +264,20 @@ Top-2: gitlab_getting_started_chunk_016 | score: 0.6254
   Domain: gitlab
 
 
-Top-3: gitlab_getting_started_chunk_005 | score: 0.5034
+Top-3: gitlab_getting_started_chunk_001 | score: 0.5358
+  Text: '# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others.\nGitLab is a web-based Git repository manager that provides CI/CD and other fe'
+  Source: data/raw/09_gitlab_getting_started.md
+  Domain: gitlab
+
+
+Top-4: gitlab_getting_started_chunk_005 | score: 0.5034
   Text: 'Your local repository.\n- Push: Push your changes to a remote Git repository hosted on GitLab. This makes your changes available to other team members. - Pull: Pull changes made by others from the remo'
   Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-4: gitlab_getting_started_chunk_014 | score: 0.4859
+Top-5: gitlab_getting_started_chunk_014 | score: 0.4859
   Text: 'Y of the repository that exists in your own namespace.\nUse this workflow when contributing to open-source projects or when your team uses a\ncentralize d repository.\n\n## Install Git\n\nTo use Git command'
-  Source: data/raw/09_gitlab_getting_started.md
-  Domain: gitlab
-
-
-Top-5: gitlab_getting_started_chunk_006 | score: 0.4516
-  Text: 'By others from the remote repository, and ensure that your local repository is updated with the latest changes.\n\nFor more information, see common Git commands.\n\n## Branches\n\nIn Git, you can use branch'
   Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 

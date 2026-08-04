@@ -16,7 +16,7 @@
 | # | Запитання | Top-1 score | Результат |
 |---|-----------|-------------|-----------|
 | 1 | How do I clone a Git repository? | 0.71 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | 0.62 | ✅ Grounded |
+| 2 | What is a Git branch and how do I create one? | 0.64 | ✅ Grounded |
 | 3 | How to resolve merge conflicts in Git? | 0.77 | ✅ Grounded |
 | 4 | What is the difference between git add and git commit? | 0.60 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.64 | ✅ Grounded |
@@ -44,16 +44,16 @@
 
 ## Запитання 2: What is a Git branch and how do I create one?
 
-**Знайдено чанків**: distributed_workflows_chunk_013 (score: 0.62), gitlab_getting_started_chunk_011 (score: 0.62), github_about_git_chunk_004 (score: 0.61)
+**Знайдено чанків**: gitlab_getting_started_chunk_001 (score: 0.64), distributed_workflows_chunk_013 (score: 0.62), gitlab_getting_started_chunk_011 (score: 0.62)
 
 **Відповідь**: Гілка (branch) у Git — це легковага посилання на коміт, що представляє незалежну лінію розвитку. Для створення: `git branch <name>`. Для перемикання: `git checkout <name>` або `git switch <name>`. Для створення та перемикання одночасно: `git checkout -b <name>`.
 
 **Знайдено в контексті:**
+  - gitlab_getting_started_chunk_001 (score: 0.64) [data/raw/09_gitlab_getting_started.md]
   - distributed_workflows_chunk_013 (score: 0.62) [data/raw/05_distributed_workflows.md]
   - gitlab_getting_started_chunk_011 (score: 0.62) [data/raw/09_gitlab_getting_started.md]
-  - github_about_git_chunk_004 (score: 0.61) [data/raw/08_github_about_git.md]
 
-**Джерело**: data/raw/05_distributed_workflows.md
+**Джерело**: data/raw/09_gitlab_getting_started.md
 
 **Коментар**: Grounded — відповідь на основі релевантного чанку
 
@@ -140,14 +140,14 @@
 
 ## Запитання 8: How to set up SSH keys for GitLab?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_017 (score: 0.75), gitlab_getting_started_chunk_016 (score: 0.63), gitlab_getting_started_chunk_005 (score: 0.50)
+**Знайдено чанків**: gitlab_getting_started_chunk_017 (score: 0.75), gitlab_getting_started_chunk_016 (score: 0.63), gitlab_getting_started_chunk_001 (score: 0.54)
 
 **Відповідь**: Для налаштування SSH-ключів для GitLab: 1) Згенеруйте ключ: `ssh-keygen -t ed25519 -C "ваша_email"`. 2) Скопіюйте публічний ключ: `cat ~/.ssh/id_ed25519.pub`. 3) Додайте ключ у GitLab: Profile → Settings → SSH Keys. 4) Перевірте підключення: `ssh -T git@gitlab.com`.
 
 **Знайдено в контексті:**
   - gitlab_getting_started_chunk_017 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_016 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_005 (score: 0.50) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_001 (score: 0.54) [data/raw/09_gitlab_getting_started.md]
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
