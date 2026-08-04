@@ -226,12 +226,18 @@ rag-github/
 | What is rebasing and when should I use it? | git_tools_rebasing_chunk_009 | 0.50 | ⚠️ Partially |
 | How do I push changes to a remote repository? | distributed_workflows_chunk_005 | 0.72 | ✅ Relevant |
 
-### Аналіз
+### Висновок
 
-**Сильні сторони:** Специфічні терміни (stash, merge conflict, clone, SSH keys, push) дають високі scores (0.62-0.78). У 8/10 запитів Top-1 релевантний.
+**Де retrieval добре працює:**
+- ✅ **Специфічні команди** (`git clone`, `git stash`, `git merge`, `git push`, `git add`, `git commit`, SSH keys) — score 0.62–0.78. У 8/10 запитів Top-1 релевантний.
+- ✅ **Унікальні терміни** — `conflict`, `stash`, `merge`, `repository`, `clone` — семантичні вектори добре розрізняють ці поняття.
+- ✅ **Домен-специфічні запити** — `gitlab_getting_started` правильно знаходить GitLab SSH та merge workflow.
 
-**Слабкі сторони:** Загальні терміни (branch, rebase, commit history) повертають вступи замість конкретики.
+**Де retrieval погано працює:**
+- ⚠️ **Загальні терміни** (`branch`, `rebase`, `commit history`) — повертають вступи замість конкретики. Напр. `branch` знаходить `gitlab_getting_started_chunk_000` (вступ про Git) замість розділу про гілки.
+- ⚠️ **Low-score запити** — `rebase` (0.50) і `commit history` (0.57) — семантичний embedding не розрізняє контекст (warning vs реалізацію).
+- ⚠️ **Відсутня лексична точність** — чистий semantic не знаходить точні збіги ключових слів (напр. `git add` vs `add`).
 
-**Висновок:** Базовий semantic retrieval працює задовільно для конкретних питань. Для покращення потрібен metadata filtering (HW3).
+**Висновок:** Базовий semantic retrieval задовільно працює для конкретних команд, але потребує гібридного підходу для покращення на загальних термінах.
 
 **Повні результати**: `outputs/retrieval_examples.md`
