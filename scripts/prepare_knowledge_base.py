@@ -3,17 +3,17 @@
 Prepare knowledge base: read raw documents → chunk with overlap → save as JSONL.
 
 Chunking approach:
-  1. Sliding window across entire document text
-  2. Break at sentence boundaries for readability
-  3. Overlap: last N chars of each chunk are prepended to the next chunk
+ 1. Sliding window across entire document text
+ 2. Break at sentence boundaries for readability
+ 3. Overlap: last N chars of each chunk are prepended to the next chunk
 
 Configuration:
-    CHUNK_SIZE    — max characters per raw chunk
-    OVERLAP       — characters to overlap between chunks
-    MIN_CHUNK     — minimum characters per chunk (filtered out)
+ CHUNK_SIZE — max characters per raw chunk
+ OVERLAP — characters to overlap between chunks
+ MIN_CHUNK — minimum characters per chunk (filtered out)
 
 Output:
-    data/processed/chunks.jsonl  — one JSON line per chunk
+ data/processed/chunks.jsonl — one JSON line per chunk
 """
 
 import json
@@ -43,6 +43,15 @@ DOMAIN_MAP = {
     "github_about_git": ("GitHub", "github", "concept"),
     "gitlab_getting_started": ("GitLab", "gitlab", "concept"),
 }
+
+
+def filename_to_docid(filename: str) -> str:
+    """Strip numeric prefix from filename stem.
+
+    '01_git_basics_getting_repository.md' → 'git_basics_getting_repository'
+    """
+    stem = Path(filename).stem
+    return re.sub(r'^\d+_', '', stem)
 
 
 def find_sentence_break(text: str, pos: int, window: int = 80) -> int:
@@ -90,7 +99,7 @@ def build_section_map(text: str):
     return sections
 
 
-def get_section_at(section_map: list, char_pos: int, title: str):
+def resolve_section(section_map: list, char_pos: int, title: str):
     """Get the section heading that contains the given character position."""
     if not section_map:
         return title
@@ -100,27 +109,27 @@ def get_section_at(section_map: list, char_pos: int, title: str):
     for heading, end_pos in section_map:
         if char_pos <= end_pos:
             return result
-        result = heading
+    result = heading
     return result or section_map[0][0]
 
 
-def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int,
-                       section_map: list = None):
+def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
+                   section_map: list = None):
     """Split text into chunks with overlap between consecutive chunks.
-    
+
     Semantic approach: first identify section boundaries from headings,
     then chunk within each section so boundaries stay clean.
     This prevents chunks from spanning unrelated topics.
-    
+
     Each chunk i contains text[i_start:i_end].
     Chunk i+1 prepends the last `overlap` chars of chunk i for continuity.
-    
+
     Returns list of (start_pos, end_pos, chunk_text, section) tuples.
     """
     raw_splits = []
     start = 0
     text_len = len(text)
-    
+
     # Phase 1: Split into contiguous raw chunks with sentence/word boundary awareness
     while start < text_len:
         end = min(start + chunk_size, text_len)
@@ -128,68 +137,62 @@ def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int,
             end = find_chunk_end(text, start, end)
         raw_splits.append((start, end))
         start = end
-    
+
     # Phase 2: Apply section-aware refinement
     # If a raw split crosses a section boundary, break at the boundary
     if section_map:
         refined = []
         for s, e in raw_splits:
-            # Check if any section boundary falls inside this split
             split_points = [s]
             for heading, boundary_pos in section_map:
                 if s < boundary_pos < e:
                     split_points.append(boundary_pos)
             split_points.append(e)
-            
-            # Create sub-splits at section boundaries
+
             for i in range(len(split_points) - 1):
                 sub_s = split_points[i]
                 sub_e = split_points[i + 1]
                 if sub_e - sub_s > min_chunk:
                     refined.append((sub_s, sub_e))
         raw_splits = refined
-    
+
     # Phase 3: Apply overlap by prepending previous chunk tail
     chunks = []
     for i, (s, e) in enumerate(raw_splits):
         chunk_text = text[s:e].strip()
-        
+
         if i > 0:
-            # Prepend overlap from previous raw split
             prev_s, prev_e = raw_splits[i - 1]
             overlap_start = max(prev_s, prev_e - overlap)
-            overlap_text = text[overlap_start:prev_e]
-            # Add space between overlap tail and new content if needed
-            separator = " " if overlap_text and not overlap_text.endswith((" ", "\n")) else ""
-            chunk_text = overlap_text + separator + chunk_text
-        
-        # Resolve section for this chunk
+            overlap_text = text[overlap_start:prev_e].strip()
+
+            if overlap_text and chunk_text:
+                if not overlap_text.endswith((" ", "\n", "\t")) and not chunk_text.startswith((" ", "\n", "\t")):
+                    chunk_text = overlap_text + " " + chunk_text
+                else:
+                    chunk_text = overlap_text + chunk_text
+
         section = None
         if section_map:
-            section = get_section_at(section_map, s, "Unknown")
-        
+            section = resolve_section(section_map, s, "Unknown")
+
         if len(chunk_text) >= min_chunk:
             chunks.append((s, e, chunk_text, section))
-    
+
     return chunks
 
 
 def _capitalize_chunk(text: str) -> str:
-    """Capitalize first letter of chunk text.
-
-    If chunk starts with lowercase (e.g. overlap cut mid-sentence),
-    capitalize the first alphabetic character.
-    """
+    """Capitalize first letter of chunk text."""
     if not text:
         return text
-    # Find first alphabetic character
     for i, ch in enumerate(text):
         if ch.isalpha():
             return text[:i] + ch.upper() + text[i+1:]
     return text
 
 
-def prepare_chunks():
+def prepare_knowledge_base():
     """Read all raw documents, chunk them, and save as JSONL."""
     os.makedirs(OUTPUT.parent, exist_ok=True)
 
@@ -203,8 +206,7 @@ def prepare_chunks():
     print(f"  Found {len(doc_files)} documents\n")
 
     for doc_file in doc_files:
-        raw_doc_id = doc_file.stem
-        doc_id = re.sub(r'^\d+_', '', raw_doc_id)
+        doc_id = filename_to_docid(doc_file.name)
         domain_info = DOMAIN_MAP.get(doc_id, (doc_id, "git", "reference"))
         title, domain, doc_type = domain_info
 
@@ -212,13 +214,10 @@ def prepare_chunks():
             text = f.read()
 
         section_map = build_section_map(text)
-
-        # Get chunks with overlap (semantic: section-aware)
-        raw_splits = chunk_with_overlap(text, CHUNK_SIZE, OVERLAP, MIN_CHUNK, section_map)
+        raw_splits = chunk_semantic(text, CHUNK_SIZE, OVERLAP, MIN_CHUNK, section_map)
 
         final_chunks = []
         for start_pos, end_pos, chunk_text, section in raw_splits:
-            # section is resolved by chunk_with_overlap; fallback to title if None
             if section is None:
                 section = title
             final_chunks.append({
@@ -240,7 +239,7 @@ def prepare_chunks():
         all_chunks.extend(final_chunks)
         print(f"  {doc_file.name}: {len(final_chunks)} chunks")
 
-    # Step 2.5: Merge small chunks (<300 chars) with next chunk
+    # Merge small chunks (<300 chars) with next chunk
     print(f"\n{'=' * 60}")
     print("Step 2.5: Merging small chunks")
     print("=" * 60)
@@ -252,7 +251,6 @@ def prepare_chunks():
             continue
         text_len = len(c["text"])
         if text_len < 300 and i + 1 < len(all_chunks):
-            # Merge with next chunk
             next_c = all_chunks[i + 1]
             merged_text = c["text"] + " " + next_c["text"]
             c["text"] = merged_text.strip()
@@ -263,7 +261,7 @@ def prepare_chunks():
         merged.append(c)
     all_chunks = merged
 
-    # Step 2.6: Renumper chunk_index & chunk_id per document (sequential)
+    # Renumber chunk_index & chunk_id per document (sequential)
     print(f"\n{'=' * 60}")
     print("Step 2.6: Renumbering chunk indices")
     print("=" * 60)
@@ -339,4 +337,4 @@ def prepare_chunks():
 
 
 if __name__ == "__main__":
-    prepare_chunks()
+    prepare_knowledge_base()

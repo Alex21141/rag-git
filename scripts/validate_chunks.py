@@ -18,7 +18,7 @@ VALID_DOMAINS = {"git", "github", "gitlab"}
 VALID_TYPES = {"concept", "commands", "workflow", "reference", "procedure"}
 
 
-def validate():
+def validate_chunks():
     errors, warnings = [], []
     total, valid, text_len = 0, 0, 0
 
@@ -142,5 +142,5 @@ def validate():
 
 
 if __name__ == "__main__":
-    ok = validate()
+    ok = validate_chunks()
     sys.exit(0 if ok else 1)
