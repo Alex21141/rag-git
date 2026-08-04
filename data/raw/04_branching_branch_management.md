@@ -1,5 +1,7 @@
 # Git Branching — Branch Management
 
+# 3.3 Git Branching - Branch Management
+
 ## Branch Management
 
 Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.
@@ -39,16 +41,19 @@ This shows your other branch. Because it contains work that isn’t merged in ye
 
 If you really do want to delete the branch and lose that work, you can force it with `-D`, as the helpful message points out.
 
-The options described above, `--merged` and `--no-merged` will, if not given a commit or branch name as an argument, show you what is, respectively, merged or not merged into your _current_ branch. You can always provide an additional argument to ask about the merge state with respect to some other branch without checking that other branch out first, as in, what is not merged into the `master` branch?
+  The options described above, `--merged` and `--no-merged` will, if not given a commit or branch name as an argument, show you what is, respectively, merged or not merged into your _current_ branch. You can always provide an additional argument to ask about the merge state with respect to some other branch without checking that other branch out first, as in, what is not merged into the `master` branch?
 
     $ git checkout testing
     $ git branch --no-merged master
       topicA
       featureB
 
+---|---
+
 ### Changing a branch name
 
 Caution |  Do not rename branches that are still in use by other collaborators. Do not rename a branch like master/main/mainline without having read the section Changing the master branch name.
+---|---
 
 Suppose you have a branch that is called `bad-branch-name` and you want to change it to `corrected-branch-name`, while keeping all history. You also want to change the branch name on the remote (GitHub, GitLab, other server). How do you do this?
 
@@ -78,6 +83,7 @@ Now the bad branch name is fully replaced with the corrected branch name.
 #### Changing the master branch name
 
 Warning |  Changing the name of a branch like master/main/mainline/default will break the integrations, services, helper utilities and build/release scripts that your repository uses. Before you do this, make sure you consult with your collaborators. Also, make sure you do a thorough search through your repo and update any references to the old branch name in your code and scripts.
+---|---
 
 Rename your local `master` branch into `main` with the following command:
 

@@ -18,6 +18,7 @@
 
 | # | Назва | URL | Тип |
 |---|-------|-----|-----|
+| 0 | Getting Started — About Version Control | https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control | концепт |
 | 1 | Git Basics — Getting a Repository | https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository | концепт + команди |
 | 2 | Git Basics — Recording Changes | https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository | команди |
 | 3 | Branching — Basic Branching and Merging | https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging | концепт + workflow |
@@ -75,37 +76,37 @@
 
 | Метрика | Значення |
 |---------|----------|
-| Документів | 9 |
-| Чанків | 138 |
-| Середня довжина | 819 chars |
-| Мінімальна довжина | 283 chars |
-| Максимальна довжина | 920 chars |
-| Всього chars | 112,969 |
-| Overlap coverage | 100% пар (129/129) |
+| Документів | 10 |
+| Чанків | 147 |
+| Середня довжина | 812 chars |
+| Мінімальна довжина | 242 chars |
+| Максимальна довжина | 915 chars |
+| Всього chars | 119,406 |
+| Overlap coverage | 100% пар (137/137) |
 
 **По доменах:**
 | Домен | Чанків |
 |-------|--------|
-| git | 114 |
+| git | 123 |
 | github | 14 |
 | gitlab | 10 |
 
 ## 6. Аналіз перекриття даних
 
-**Тематичне перекриття (ключові терміни):** Високе — базові команди `add`, `commit`, `push`, `checkout`, `branch`, `merge` зустрічаються в 8-9 документах. Це природно — кожен документ контекстуально пояснює базові операції Git у своєму аспекті.
+**Тематичне перекриття (ключові терміни):** Високе — базові команди `add`, `commit`, `push`, `checkout`, `branch`, `merge` зустрічаються в 9-10 документах. Це природно — кожен документ контекстуально пояснює базові операції Git у своєму аспекті.
 
 | Термін | Кількість документів | Документи |
 |--------|---------------------|-----------|
-| add | 9 | усі |
-| commit | 8 | усі крім gitlab_getting_started |
-| push | 8 | усі крім git_basics_getting_repository |
-| checkout | 8 | усі крім distributed_workflows, gitlab_getting_started |
-| branch | 8 | усі крім git_basics_getting_repository |
-| merge | 8 | усі крім git_basics_getting_repository, gitlab_getting_started |
-| clone | 7 | git_basics, git_basics_recording, distributed, rebasing, stashing, github, gitlab |
-| pull | 7 | git_basics, branching, distributed, rebasing, github, gitlab |
-| remote | 7 | git_basics, branching, distributed, rebasing, github, gitlab |
-| repository | 7 | git_basics, recording, branch_management, distributed, rebasing, github, gitlab |
+| add | 10 | усі |
+| commit | 9 | усі крім gitlab_getting_started |
+| push | 9 | усі крім git_about_version_control |
+| checkout | 9 | усі крім distributed_workflows, gitlab_getting_started |
+| branch | 9 | усі крім git_about_version_control |
+| merge | 9 | усі крім git_about_version_control, gitlab_getting_started |
+| clone | 8 | git_basics, git_basics_recording, distributed, rebasing, stashing, github, gitlab, version_control |
+| pull | 8 | git_basics, branching, distributed, rebasing, github, gitlab, version_control |
+| remote | 8 | git_basics, branching, distributed, rebasing, github, gitlab, version_control |
+| repository | 8 | git_basics, recording, branch_management, distributed, rebasing, github, gitlab, version_control |
 | conflict | 4 | recording, branching, stashing, gitlab |
 | stash | 2 | branching_basic, stashing_cleaning |
 | rebase | 2 | distributed_workflows, tools_rebasing |
@@ -186,7 +187,7 @@
 ## 8. Висновок
 
 **Що вийшло добре:**
-- ✅ 9 якісних джерел з трьох доменів (Git, GitHub, GitLab)
+- ✅ 10 якісних джерел з трьох доменів (Git, GitHub, GitLab)
 - ✅ Оригінальні заголовки документів збережено (без нумерації та дублів)
 - ✅ Повна metadata структура — 10 полів, включаючи section, domain, document_type
 - ✅ Contiguous sliding window chunking з overlap — 100% пар чанків мають перекриття (150 chars)
@@ -196,9 +197,9 @@
 - ✅ Низьке дослівне перекриття між документами (Jaccard <2%)
 
 **Що треба покращити:**
-- ⚠️ Середня довжина (819 chars) — можна збільшити chunk_size до 850-900
+- ⚠️ Середня довжина (812 chars) — можна збільшити chunk_size до 850-900
 - ⚠️ Немає семантичного чанкінгу — розбиття на основі змісту, а не фіксованих розмірів
-- ⚠️ Високе тематичне перекриття базових команд (8-9 документів) — може ускладнювати точний пошук контексту
+- ⚠️ Високе тематичне перекриття базових команд (9-10 документів) — може ускладнювати точний пошук контексту
 - ⚠️ Немає валідації JSONL — бажано додати скрипт перевірки валідності кожного рядка
 
 ## 9. Структура проєкту
@@ -207,7 +208,8 @@
 rag-github/
 ├── README.md                          ← цей файл
 ├── data/
-│   ├── raw/                           ← початкові документи (9 .md)
+│   ├── raw/                           ← початкові документи (10 .md)
+│   │   ├── 00_git_about_version_control.md
 │   │   ├── 01_git_basics_getting_repository.md
 │   │   ├── 02_git_basics_recording_changes.md
 │   │   ├── 03_branching_basic_branching_merging.md
@@ -218,7 +220,7 @@ rag-github/
 │   │   ├── 08_github_about_git.md
 │   │   └── 09_gitlab_getting_started.md
 │   └── processed/                     ← оброблені дані
-│       └── chunks.jsonl               ← 138 чанків
+│       └── chunks.jsonl               ← 147 чанків
 └── scripts/
     ├── download_sources.py            ← збір даних з веб-сторінок
     └── prepare_knowledge_base.py      ← нормалізація + чанкінг
