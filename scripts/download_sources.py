@@ -191,18 +191,24 @@ def clean_prev_next_navigation(text: str) -> str:
 
 
 def clean_tip_note_markers(text: str) -> str:
-    """Remove 'Tip |' / 'Note |' block markers (git-scm book formatting)."""
+    """Remove 'Tip |' / 'Note |' / 'Caution |' / 'Warning |' block markers (git-scm book formatting)."""
     text = re.sub(r'^Tip\s*\|', '', text, flags=re.MULTILINE)
     text = re.sub(r'^Note\s*\|', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^Caution\s*\|', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^Warning\s*\|', '', text, flags=re.MULTILINE)
     return text
 
 
 def clean_note_tip_dividers(text: str) -> str:
     """Remove '---|---' / '---|---|---' closing dividers from Note/Tip blocks.
-    
-    These are artifacts of git-scm's two-column Note/Tip layout that ends with ---|---."""
-    # Only remove if it's a standalone line (not a table separator with content columns)
-    text = re.sub(r'^(\|-?)+(\\n|)$', '', text, flags=re.MULTILINE)
+
+    These are artifacts of git-scm's two-column Note/Tip layout that ends with ---|---.
+    Also removes standalone table-like divider lines.
+    """
+    # Remove lines that are just ---|--- or variations (standalone)
+    text = re.sub(r'^(\|---+)+\|?\s*$', '', text, flags=re.MULTILINE)
+    # Remove ---|--- anywhere in text (inline, not just standalone lines)
+    text = re.sub(r'---\|--+', '', text)
     return text
 
 
