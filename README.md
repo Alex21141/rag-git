@@ -8,7 +8,7 @@
 
 Тема охоплює:
 - Концепцію контролю версій (local, centralized, distributed VCS)
-- Базові команди Git (\`init\`, \`clone\`, \`add\`, \`commit\`, \`push\`, \`pull\`)
+- Базові команди Git (`init`, `clone`, `add`, `commit`, `push`, `pull`)
 - Роботу з гілками (branching, merging, rebasing)
 - Стешинг та очищення (stashing, cleaning)
 - Розподілені workflow (distributed workflows)
@@ -91,23 +91,23 @@ Now that you have a remote Git repository set up as a focal point for all the de
 
 | Поле | Опис |
 |------|------|
-| \`chunk_id\` | Унікальний ідентифікатор чанку |
-| \`text\` | Текст чанку |
-| \`document_id\` | Ідентифікатор документу (без префікса номеру) |
-| \`source_file\` | Шлях до raw файлу |
-| \`source_type\` | Формат джерела (markdown) |
-| \`title\` | Назва тематичної групи |
-| \`section\` | Заголовок секції, з якої взятий чанк |
-| \`chunk_index\` | Послідовний номер чанку в документі |
-| \`language\` | Мова (en) |
-| \`domain\` | Домен (git / github / gitlab) |
-| \`document_type\` | Тип контенту (concept / commands / workflow / reference / procedure) |
+| `chunk_id` | Унікальний ідентифікатор чанку |
+| `text` | Текст чанку |
+| `document_id` | Ідентифікатор документу (без префікса номеру) |
+| `source_file` | Шлях до raw файлу |
+| `source_type` | Формат джерела (markdown) |
+| `title` | Назва тематичної групи |
+| `section` | Заголовок секції, з якої взятий чанк |
+| `chunk_index` | Послідовний номер чанку в документі |
+| `language` | Мова (en) |
+| `domain` | Домен (git / github / gitlab) |
+| `document_type` | Тип контенту (concept / commands / workflow / reference / procedure) |
 
 ## 4. Стратегія чанкінгу
 
 - **chunk_size**: 850 символів
 - **overlap**: 150 символів
-- **метод**: semantic chunking — спочатку розбивається по секціях (заголовки \`#\`), потім кожну секцію чанкується з overlap
+- **метод**: semantic chunking — спочатку розбивається по секціях (заголовки `#`), потім кожну секцію чанкується з overlap
 - **word-boundary cuts**: розриви на кордонах слів (не посеред слів)
 - **sentence-aware**: пріоритет розриву на кордонах речень
 
@@ -116,11 +116,11 @@ Now that you have a remote Git repository set up as a focal point for all the de
 | Метрика | Значення |
 |---------|---------|
 | Документів | 10 |
-| Чанків | 158 |
-| Текст всього | 115,759 chars |
-| Середня довжина | 733 chars |
-| Мінімальна довжина | 308 chars |
-| Максимальна довжина | 1079 chars |
+| Чанків | 157 |
+| Текст всього | 114,980 chars |
+| Середня довжина | 732 chars |
+| Мінімальна довжина | 303 chars |
+| Максимальна довжина | 1076 chars |
 
 ### За доменом
 
@@ -133,9 +133,9 @@ Now that you have a remote Git repository set up as a focal point for all the de
 ## 6. Приклади чанків
 
 
-- \`$branching_basic_branching_merging_chunk_001\` (654 chars, domain=git, section=# Git Branching — Basic Branching and Merging)
-- \`$branching_branch_management_chunk_001\` (867 chars, domain=git, section=# Git Branching — Branch Management)
-- \`$distributed_workflows_chunk_001\` (670 chars, domain=git, section=# Distributed Git — Distributed Workflows)
+- `$branching_basic_branching_merging_chunk_001` (654 chars, domain=git, section=# Git Branching — Basic Branching and Merging)
+- `$branching_branch_management_chunk_001` (867 chars, domain=git, section=# Git Branching — Branch Management)
+- `$distributed_workflows_chunk_001` (670 chars, domain=git, section=# Distributed Git — Distributed Workflows)
 
 ## 7. Виправлення та покращення
 
@@ -143,17 +143,17 @@ Now that you have a remote Git repository set up as a focal point for all the de
 - ✅ Small chunk merge — чанки <300 chars об'єднуються з наступним
 - ✅ Chunk index renumbering — послідовна нумерація після merge
 - ✅ Capitalize first letter — чанки починаються з великої літери
-- ✅ \`\`\`---|---\`\`\` cleanup — видалення артефактів таблиць/блоків
-- ✅ Caution\|/Warning\| cleanup — видалення маркерів блоків попереджень
+- ✅ `---|---` cleanup — видалення артефактів таблиць/блоків
+- ✅ Caution|/Warning| cleanup — видалення маркерів блоків попереджень
 - ✅ Sequential chunk_index — ренумерація після об'єднання чанків
 
 **Що треба покращити:**
 - ⚠️ Немає постаналізу — перевірки якості retrieval на реальних запитаннях
-- ⚠️ Metadata \`document_type\` присвоюється за DOMAIN_MAP — не аналізується реальний контент
+- ⚠️ Metadata `document_type` присвоюється за DOMAIN_MAP — не аналізується реальний контент
 
 ## 8. Структура проєкту
 
-\`\`\`
+```
 rag-github/
 ├── README.md ← цей файл
 ├── data/
@@ -169,9 +169,9 @@ rag-github/
 │ │ ├── 08_github_about_git.md
 │ │ └── 09_gitlab_getting_started.md
 │ └── processed/ ← оброблені дані
-│ └── chunks.jsonl ← 158 чанків
+│ └── chunks.jsonl ← 157 чанків
 └── scripts/
  ├── download_sources.py ← збір даних з веб-сторінок + очистка
  ├── prepare_knowledge_base.py ← нормалізація + semantic chunking + merge
  └── validate_chunks.py ← JSONL валідатор
-\`\`\`
+```
