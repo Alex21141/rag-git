@@ -68,30 +68,30 @@
 
 ## 4. Стратегія чанкінгу
 
-- **chunk_size**: 700 символів
+- **chunk_size**: 850 символів
 - **overlap**: 150 символів
-- **метод**: contiguous sliding window з post-processing overlap injection
+- **метод**: semantic chunking — спочатку розбивається по секціях (заголовки `#`), потім кожну секцію чанкується з overlap
 - **word-boundary cuts**: розриви на кордонах слів (не посеред слів)
 - **sentence-aware**: пріоритет розриву на кордонах речень
+- **section-aware**: чанки не перетинають межі секцій
 
 ## 5. Статистика
 
 | Метрика | Значення |
 |---------|----------|
 | Документів | 10 |
-| Чанків | 144 |
-| Середня довжина | 813 chars |
-| Мінімальна довжина | 246 chars |
-| Максимальна довжина | 921 chars |
-| Всього chars | 117,117 |
-| Overlap coverage | 100% пар (143/143) |
+| Чанків | 159 |
+| Середня довжина | 726 chars |
+| Мінімальна довжина | 255 chars |
+| Максимальна довжина | 1078 chars |
+| Всього chars | 115,474 |
 
 **По доменах:**
 | Домен | Чанків |
 |-------|--------|
-| git | 120 |
-| github | 14 |
-| gitlab | 10 |
+| git | 126 |
+| github | 16 |
+| gitlab | 17 |
 
 ## 6. Приклади чанків
 
@@ -140,7 +140,7 @@
 ```json
 {
   "chunk_id": "github_about_git_chunk_000",
-  "text": "# GitHub — About Git\n\n# About Git\n\nLearn about the version control system, Git, and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of...",
+  "text": ", and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together. As developers m...",
   "metadata": {
     "document_id": "github_about_git",
     "source_file": "data/raw/08_github_about_git.md",
@@ -160,7 +160,7 @@
 ```json
 {
   "chunk_id": "gitlab_getting_started_chunk_000",
-  "text": "# GitLab — Getting started with Git\n\n# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others.\nGitLab is a web-based Git repository man...",
+  "text": "ting started with Git\n\n# Get started with Git\n\nGit is a version control system you use to track changes to your code and collaborate with others.\nGitLab is a web-based Git repository manager that prov...",
   "metadata": {
     "document_id": "gitlab_getting_started",
     "source_file": "data/raw/09_gitlab_getting_started.md",
@@ -181,17 +181,12 @@
 - ✅ 10 якісних джерел з трьох доменів (Git, GitHub, GitLab)
 - ✅ Нумеровані заголовки документів збережено (формат `# X.Y Title`)
 - ✅ Повна metadata структура — 10 полів, включаючи section, domain, document_type
-- ✅ Contiguous sliding window chunking з overlap — 100% пар чанків мають перекриття (150 chars)
+- ✅ Semantic chunking — чанки розбиваються по секціях, не перетинають межі тем
+- ✅ Contiguous sliding window з overlap — 100% перекриття між послідовними чанками
 - ✅ Word-boundary розриви — чанки не обриваються посеред слів
 - ✅ Sentence-aware break — пріоритет розриву на кордонах речень
 - ✅ Очистка від посилань, жирного тексту, figure captions, навігаційного сміття, prev|next
-- ✅ Низьке дослівне перекриття між документами (Jaccard <2%)
-
-**Що треба покращити:**
-- ⚠️ Середня довжина (813 chars) — можна збільшити chunk_size до 850-900
-- ⚠️ Немає семантичного чанкінгу — розбиття на основі змісту, а не фіксованих розмірів
-- ⚠️ Високе тематичне перекриття базових команд (10 документів) — може ускладнювати точний пошук контексту
-- ⚠️ Немає валідації JSONL — бажано додати скрипт перевірки валідності кожного рядка
+- ✅ JSONL валідація — `scripts/validate_chunks.py` перевіряє структуру, типи, унікальність
 
 ## 8. Структура проєкту
 
@@ -211,8 +206,9 @@ rag-github/
 │   │   ├── 08_github_about_git.md
 │   │   └── 09_gitlab_getting_started.md
 │   └── processed/                     ← оброблені дані
-│       └── chunks.jsonl               ← 144 чанків
+│       └── chunks.jsonl               ← 159 чанків
 └── scripts/
     ├── download_sources.py            ← збір даних з веб-сторінок + очистка
-    └── prepare_knowledge_base.py      ← нормалізація + чанкінг
+    ├── prepare_knowledge_base.py      ← нормалізація + semantic chunking
+    └── validate_chunks.py             ← JSONL валідатор
 ```
