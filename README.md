@@ -25,7 +25,7 @@
 | 5 | Distributed Workflows | https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows | workflow/концепт |
 | 6 | Git Tools — Rebasing | https://git-scm.com/book/en/v2/Git-Branching-Rebasing | концепт + процедура |
 | 7 | Git Tools — Stashing and Cleaning | https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning | команди |
-| 8 | GitHub — About Git (intro) | https://docs.github.com/en/get-started/using-git/about-git | концепт, доп. контекст |
+| 8 | GitHub — About Git (intro) | https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git | концепт, доп. контекст |
 | 9 | GitLab — Getting started with Git | https://docs.gitlab.com/topics/git/get_started/index.md | концепт |
 
 ## 3. Структура метаданих
@@ -80,7 +80,7 @@
 | Середня довжина | 819 chars |
 | Мінімальна довжина | 283 chars |
 | Максимальна довжина | 920 chars |
-| Всього chars | 112,980 |
+| Всього chars | 112,969 |
 | Overlap coverage | 100% пар (129/129) |
 
 **По доменах:**
