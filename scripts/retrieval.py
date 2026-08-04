@@ -36,7 +36,7 @@ TEST_QUERIES = [
     "What is the difference between git add and git commit?",
     "How do I stash my changes temporarily?",
     "How do I merge a branch in GitLab?",
-    "What is GitLab Flow?",
+    "How do I view the commit history?",
     "How to set up SSH keys for GitLab?",
     "What is rebasing and when should I use it?",
     "How do I push changes to a remote repository?",

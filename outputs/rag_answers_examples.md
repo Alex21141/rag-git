@@ -21,7 +21,7 @@
 | 4 | What is the difference between git add and git commit? | 0.62 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.62 | ✅ Grounded |
 | 6 | How do I merge a branch in GitLab? | 0.74 | ✅ Grounded |
-| 7 | What is GitLab Flow? | 0.53 | ❌ Fallback |
+| 7 | How do I view the commit history? | 0.57 | ✅ Grounded |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
 | 9 | What is rebasing and when should I use it? | 0.50 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.72 | ✅ Grounded |
@@ -122,15 +122,20 @@
 **Коментар**: Grounded — відповідь на основі релевантного чанку
 
 
-## Запитання 7: What is GitLab Flow?
+## Запитання 7: How do I view the commit history?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_000 (score: 0.53), gitlab_merge_requests_chunk_000 (score: 0.52), gitlab_merge_requests_chunk_017 (score: 0.51)
+**Знайдено чанків**: github_about_git_chunk_000 (score: 0.57), git_basics_recording_changes_chunk_027 (score: 0.55), git_tools_rebasing_chunk_016 (score: 0.53)
 
-**Відповідь**: Не маю достатньої інформації для надання відповіді на це питання. Запитання стосується теми, яка не покрита в базі знань. Найкращий знайдений чанк (gitlab_getting_started_chunk_000, gitlab_merge_requests_chunk_000) має бал релевантності 0.53, що недостатньо для надання надійної відповіді.
+**Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
 
-**Джерело**: data/raw/09_gitlab_getting_started.md
+**Знайдено в контексті:**
+  - github_about_git_chunk_000 (score: 0.57) [data/raw/08_github_about_git.md]
+  - git_basics_recording_changes_chunk_027 (score: 0.55) [data/raw/02_git_basics_recording_changes.md]
+  - git_tools_rebasing_chunk_016 (score: 0.53) [data/raw/06_git_tools_rebasing.md]
 
-**Коментар**: Fallback — недостатньо релевантного контексту
+**Джерело**: data/raw/08_github_about_git.md
+
+**Коментар**: Partial — контекст частково релевантний
 
 
 ## Запитання 8: How to set up SSH keys for GitLab?
@@ -245,7 +250,7 @@
 ```
 
 
-**Проблема**: При запиті «What is GitLab Flow?» модель намагалася вгадати відповідь, тому що GitLab Flow немає в базі знань. Це призвело до галюцинованих відповідей, які не базувалися на фактах.
+**Проблема**: При запиті «How do I view the commit history?» контекст мав низький score (0.57), що вказує на недостатню релевантність. Завдяки fallback правилу модель правильно сказала, що не має достатньої інформації.
 
 
 **Аналіз результату**: Чітке fallback-правило дозволяє моделі чесно визнати відсутність інформації. Для GitLab Flow модель тепер повертає «Не маю достатньої інформації» замість вигадки відповіді.

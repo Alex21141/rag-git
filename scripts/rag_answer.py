@@ -475,7 +475,7 @@ def generate_report(all_results):
     )
     lines.append("```\n\n")
     lines.append(
-        "**Проблема**: При запиті «What is GitLab Flow?» модель намагалася вгадати "
+        "**Проблема**: При запиті «How do I view the commit history?» модель намагалася вгадати "
         "відповідь, тому що GitLab Flow немає в базі знань. Це призвело до "
         "галюцинованих відповідей, які не базувалися на фактах.\n\n"
     )
