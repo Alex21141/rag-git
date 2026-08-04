@@ -2,7 +2,7 @@
 
 **Model**: sentence-transformers/all-MiniLM-L6-v2
 
-**Chunks**: 147
+**Chunks**: 145
 
 **Index**: FAISS (IndexFlatIP, dim=384)
 
@@ -12,7 +12,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Total chunks indexed | 147 |
+| Total chunks indexed | 145 |
 | Embedding model | sentence-transformers/all-MiniLM-L6-v2 |
 | Embedding dimension | 384 |
 | Vector storage | FAISS IndexFlatIP |
@@ -87,32 +87,32 @@ Top-5: github_about_git_chunk_006 | score: 0.5974
 
 ## Query 3: How to resolve merge conflicts in Git?
 
-Top-1: branching_basic_branching_merging_chunk_015 | score: 0.7132
+Top-1: branching_basic_branching_merging_chunk_010 | score: 0.7285
+  Text: 'Auto-merging index.html\n    CONFLICT (content): Merge conflict in index.html\n    Automatic merge failed; fix conflicts and then commit the result.Git hasn’t automatically created a new merge commit. I'
+  Source: data/raw/03_branching_basic_branching_merging.md
+  Domain: git
+
+
+Top-2: branching_basic_branching_merging_chunk_014 | score: 0.7132
   Text: 'opendiff` in this case because the command was run on macOS), you can see all the supported tools listed at the top after “one of the following tools.” Just type the name of the tool you’d rather use.'
   Source: data/raw/03_branching_basic_branching_merging.md
   Domain: git
 
 
-Top-2: branching_basic_branching_merging_chunk_012 | score: 0.7093
+Top-3: branching_basic_branching_merging_chunk_011 | score: 0.7093
   Text: 's unmerged. Git adds standard conflict-resolution markers to the files that have conflicts, so you can open them manually and resolve those conflicts.Your file contains a section that looks something '
   Source: data/raw/03_branching_basic_branching_merging.md
   Domain: git
 
 
-Top-3: branching_basic_branching_merging_chunk_016 | score: 0.7073
+Top-4: branching_basic_branching_merging_chunk_015 | score: 0.7073
   Text: 'If you’re happy with that, and you verify that everything that had conflicts has been staged, you can type `git commit` to finalize the merge commit.The commit message by default looks something like '
   Source: data/raw/03_branching_basic_branching_merging.md
   Domain: git
 
 
-Top-4: branching_basic_branching_merging_chunk_011 | score: 0.6964
-  Text: 'rge conflict in index.html\n    Automatic merge failed; fix conflicts and then commit the result.\n\nGit hasn’t automatically created a new merge commit.It has paused the process while you resolve the co'
-  Source: data/raw/03_branching_basic_branching_merging.md
-  Domain: git
-
-
-Top-5: branching_basic_branching_merging_chunk_010 | score: 0.6945
-  Text: 'ial in that it has more than one parent.\n\nFigure 25. A merge commit\n\nNow that your work is merged in, you have no further need for the `iss53` branch.You can close the issue in your issue-tracking sys'
+Top-5: branching_basic_branching_merging_chunk_009 | score: 0.6714
+  Text: 'e and automatically creates a new commit that points to it. This is referred to as a merge commit, and is special in that it has more than one parent.Now that your work is merged in, you have no furth'
   Source: data/raw/03_branching_basic_branching_merging.md
   Domain: git
 
@@ -204,7 +204,7 @@ Top-3: gitlab_getting_started_chunk_008 | score: 0.63
   Domain: gitlab
 
 
-Top-4: git_tools_rebasing_chunk_000 | score: 0.6054
+Top-4: git_tools_rebasing_chunk_000 | score: 0.6086
   Text: '# Git Tools — Rebasing\n\n# 3.6 Git Branching - Rebasing\n\n## Rebasing\n\nIn Git, there are two main ways to integrate changes from one branch into another: the `merge` and the `rebase`. In this section yo'
   Source: data/raw/06_git_tools_rebasing.md
   Domain: git
@@ -225,15 +225,15 @@ Top-1: github_about_git_chunk_000 | score: 0.5686
   Domain: github
 
 
-Top-2: git_tools_rebasing_chunk_016 | score: 0.5321
-  Text: 'ht, and shouldn’t be tampered with. From this angle, changing the commit history is almost blasphemous; you’re _lying_ about what actually transpired.So what if there was a messy series of merge commi'
-  Source: data/raw/06_git_tools_rebasing.md
+Top-2: git_basics_recording_changes_chunk_027 | score: 0.5311
+  Text: 'pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor so you can see exactly what changes you’re committing.---|---\n\nWhen you exit the editor, Git creates your'
+  Source: data/raw/02_git_basics_recording_changes.md
   Domain: git
 
 
-Top-3: git_basics_recording_changes_chunk_027 | score: 0.5311
-  Text: 'pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor so you can see exactly what changes you’re committing.---|---\n\nWhen you exit the editor, Git creates your'
-  Source: data/raw/02_git_basics_recording_changes.md
+Top-3: git_tools_rebasing_chunk_009 | score: 0.5262
+  Text: 'rk off that. Your commit history looks like this:\n\nNow, someone else does more work that includes a merge, and pushes that work to the central server.You fetch it and merge the new remote branch into '
+  Source: data/raw/06_git_tools_rebasing.md
   Domain: git
 
 
@@ -285,32 +285,32 @@ Top-5: gitlab_getting_started_chunk_004 | score: 0.4493
 
 ## Query 9: What is rebasing and when should I use it?
 
-Top-1: git_tools_rebasing_chunk_009 | score: 0.5023
-  Text: '’ll be scorned by friends and family.\n\nWhen you rebase stuff, you’re abandoning existing commits and creating new ones that are similar but different.If you push commits somewhere and others pull them'
+Top-1: git_tools_rebasing_chunk_016 | score: 0.564
+  Text: 'he way that’s best for future readers.\n\nNow, to the question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple.Git is a powerful tool, and allows you to do many '
   Source: data/raw/06_git_tools_rebasing.md
   Domain: git
 
 
-Top-2: git_tools_rebasing_chunk_017 | score: 0.4847
-  Text: 'from A to B. People in this camp use tools like `rebase` and `filter-branch` to rewrite their commits before they’re merged into the mainline branch.They use tools like `rebase` and `filter-branch`, t'
+Top-2: git_tools_rebasing_chunk_004 | score: 0.5231
+  Text: 'the last of the rebased commits for a rebase or the final merge commit after a merge, is the same snapshot — it’s only the history that is different.Rebasing replays changes from one line of work onto'
   Source: data/raw/06_git_tools_rebasing.md
   Domain: git
 
 
-Top-3: git_tools_rebasing_chunk_008 | score: 0.4676
-  Text: 'h (`master`):\n\n    $ git checkout master\n    $ git merge server\n\nYou can remove the `client` and `server` branches because all the work is integrated and you don’t need them anymore, leaving your hist'
-  Source: data/raw/06_git_tools_rebasing.md
-  Domain: git
-
-
-Top-4: git_tools_rebasing_chunk_000 | score: 0.4512
+Top-3: git_tools_rebasing_chunk_000 | score: 0.5096
   Text: '# Git Tools — Rebasing\n\n# 3.6 Git Branching - Rebasing\n\n## Rebasing\n\nIn Git, there are two main ways to integrate changes from one branch into another: the `merge` and the `rebase`. In this section yo'
   Source: data/raw/06_git_tools_rebasing.md
   Domain: git
 
 
-Top-5: git_tools_rebasing_chunk_004 | score: 0.4502
-  Text: 'is case, you’d do your work in a branch and then rebase your work onto `origin/master` when you were ready to submit your patches to the main project.That way, the maintainer doesn’t have to do any in'
+Top-4: git_tools_rebasing_chunk_007 | score: 0.4688
+  Text: 'master server\n\nThis replays your `server` work on top of your `master` work, as shown in Rebasing your `server` branch on top of your `master` branch.Then, you can fast-forward the base branch (`maste'
+  Source: data/raw/06_git_tools_rebasing.md
+  Domain: git
+
+
+Top-5: git_tools_rebasing_chunk_002 | score: 0.4379
+  Text: 'g: added staged command\n\nThis operation works by going to the common ancestor of the two branches (the one you’re on and the one you’re rebasing onto), getting the diff introduced by each commit of th'
   Source: data/raw/06_git_tools_rebasing.md
   Domain: git
 
@@ -342,8 +342,8 @@ Top-4: gitlab_getting_started_chunk_005 | score: 0.6358
   Domain: gitlab
 
 
-Top-5: distributed_workflows_chunk_005 | score: 0.6122
-  Text: 'epositories, it’s possible to have a workflow where each developer has write access to their own public repository and read access to everyone else’s.This scenario often includes a canonical repositor'
+Top-5: distributed_workflows_chunk_006 | score: 0.6224
+  Text: 'to their public repository.\n\n  2. A contributor clones that repository and makes changes.\n\n  3. The contributor pushes to their own public copy.\n\n  4.The contributor sends the maintainer an email aski'
   Source: data/raw/05_distributed_workflows.md
   Domain: git
 

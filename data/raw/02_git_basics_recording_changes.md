@@ -12,8 +12,6 @@ Untracked files are everything else — any files in your working directory that
 
 As you edit files, Git sees them as modified, because you’ve changed them since your last commit. As you work, you selectively stage these modified files and then commit all those staged changes, and the cycle repeats.
 
-Figure 8. The lifecycle of the status of your files
-
 ### Checking the Status of Your Files
 
 The main tool you use to determine which files are in which state is the `git status` command. If you run this command directly after a clone, you should see something like this:

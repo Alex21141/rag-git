@@ -26,8 +26,6 @@ At this stage, you’ll receive a call that another issue is critical and you ne
 
 First, let’s say you’re working on your project and have a couple of commits already on the `master` branch.
 
-Figure 18. A simple commit history
-
 You’ve decided that you’re going to work on issue #53 in whatever issue-tracking system your company uses. To create a new branch and switch to it at the same time, you can run the `git checkout` command with the `-b` switch:
 
     $ git checkout -b iss53
@@ -38,14 +36,10 @@ This is shorthand for:
     $ git branch iss53
     $ git checkout iss53
 
-Figure 19. Creating a new branch pointer
-
 You work on your website and do some commits. Doing so moves the `iss53` branch forward, because you have it checked out (that is, your `HEAD` is pointing to it):
 
     $ vim index.html
     $ git commit -a -m 'Create new footer [issue 53]'
-
-Figure 20. The `iss53` branch has moved forward with your work
 
 Now you get the call that there is an issue with the website, and you need to fix it immediately. With Git, you don’t have to deploy your fix along with the `iss53` changes you’ve made, and you don’t have to put a lot of effort into reverting those changes before you can work on applying your fix to what is in production. All you have to do is switch back to your `master` branch.
 
@@ -65,8 +59,6 @@ Next, you have a hotfix to make. Let’s create a `hotfix` branch on which to wo
     [hotfix 1fb7853] Fix broken email address
      1 file changed, 2 insertions(+)
 
-Figure 21. Hotfix branch based on `master`
-
 You can run your tests, make sure the hotfix is what you want, and finally merge the `hotfix` branch back into your `master` branch to deploy to production. You do this with the `git merge` command:
 
     $ git checkout master
@@ -79,8 +71,6 @@ You can run your tests, make sure the hotfix is what you want, and finally merge
 You’ll notice the phrase “fast-forward” in that merge. Because the commit `C4` pointed to by the branch `hotfix` you merged in was directly ahead of the commit `C2` you’re on, Git simply moves the pointer forward. To phrase that another way, when you try to merge one commit with a commit that can be reached by following the first commit’s history, Git simplifies things by moving the pointer forward because there is no divergent work to merge together — this is called a “fast-forward.”
 
 Your change is now in the snapshot of the commit pointed to by the `master` branch, and you can deploy the fix.
-
-Figure 22. `master` is fast-forwarded to `hotfix`
 
 After your super-important fix is deployed, you’re ready to switch back to the work you were doing before you were interrupted. However, first you’ll delete the `hotfix` branch, because you no longer need it — the `master` branch points at the same place. You can delete it with the `-d` option to `git branch`:
 
@@ -95,8 +85,6 @@ Now you can switch back to your work-in-progress branch on issue #53 and continu
     $ git commit -a -m 'Finish the new footer [issue 53]'
     [iss53 ad82d7a] Finish the new footer [issue 53]
     1 file changed, 1 insertion(+)
-
-Figure 23. Work continues on `iss53`
 
 It’s worth noting here that the work you did in your `hotfix` branch is not contained in the files in your `iss53` branch. If you need to pull it in, you can merge your `master` branch into your `iss53` branch by running `git merge master`, or you can wait to integrate those changes until you decide to pull the `iss53` branch back into `master` later.
 
@@ -113,11 +101,7 @@ Suppose you’ve decided that your issue #53 work is complete and ready to be me
 
 This looks a bit different than the `hotfix` merge you did earlier. In this case, your development history has diverged from some older point. Because the commit on the branch you’re on isn’t a direct ancestor of the branch you’re merging in, Git has to do some work. In this case, Git does a simple three-way merge, using the two snapshots pointed to by the branch tips and the common ancestor of the two.
 
-Figure 24. Three snapshots used in a typical merge
-
 Instead of just moving the branch pointer forward, Git creates a new snapshot that results from this three-way merge and automatically creates a new commit that points to it. This is referred to as a merge commit, and is special in that it has more than one parent.
-
-Figure 25. A merge commit
 
 Now that your work is merged in, you have no further need for the `iss53` branch. You can close the issue in your issue-tracking system, and delete the branch:
 
