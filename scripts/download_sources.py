@@ -146,11 +146,12 @@ def clean_raw_document(text: str, filename: str) -> str:
     6. Remove markdown links [text](url) → keep text only
     7. Remove **bold** formatting → keep text only
     8. Remove bare URLs (https://..., http://..., //docs.github...)
-    9. Remove numbered duplicate headings (# X.Y Title where # Title already exists)
-    10. Remove empty headings (## with no text)
-    11. Fix broken multi-row tables (merge |---|---|---... into single separator)
-    12. Remove image alt-text brackets [](/path/to/image.png)
-    13. Clean up extra blank lines
+    9. Remove figure captions (Figure 1. ..., Figure 2. ...) — orphaned image references
+    10. Remove numbered duplicate headings (# X.Y Title where # Title already exists)
+    11. Remove empty headings (## with no text)
+    12. Fix broken multi-row tables (merge |---|---|---... into single separator)
+    13. Remove image alt-text brackets [](/path/to/image.png)
+    14. Clean up extra blank lines
     """
     text = clean_source_metadata(text)
     text = clean_horizontal_rules(text)
@@ -160,6 +161,7 @@ def clean_raw_document(text: str, filename: str) -> str:
     text = clean_markdown_links(text)
     text = clean_bold_formatting(text)
     text = clean_bare_urls(text)
+    text = clean_figure_captions(text)
     text = clean_duplicate_headings(text)
     text = clean_empty_headings(text)
     text = clean_table_separators(text)
@@ -237,6 +239,13 @@ def clean_bare_urls(text: str) -> str:
             line = re.sub(r'\[\]\([^)]*\)', '', line)
         result.append(line)
     return '\n'.join(result)
+
+
+def clean_figure_captions(text: str) -> str:
+    """Remove orphaned figure captions (Figure 1. ..., Figure 2. ...) that reference
+    images removed during HTML→markdown conversion."""
+    text = re.sub(r'Figure \d+\. .+\n', '', text)
+    return text
 
 
 def clean_duplicate_headings(text: str) -> str:
