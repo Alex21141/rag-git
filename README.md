@@ -1,3 +1,6 @@
+# Git tutoring assistant
+
+Домашнє завдання №2 — Базовий semantic retrieval layer
 
 ## HW2: Semantic Retrieval Layer
 
