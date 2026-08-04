@@ -65,9 +65,9 @@ SOURCES = [
     },
     {
         "filename": "08_github_about_git.md",
-        "url": "https://docs.github.com/en/get-started/using-git/about-git",
+        "url": "https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git",
         "title": "GitHub — About Git",
-        "selector": "article",
+        "selector": "body",
     },
     {
         "filename": "09_gitlab_flow.md",

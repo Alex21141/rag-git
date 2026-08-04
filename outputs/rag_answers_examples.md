@@ -18,10 +18,10 @@
 | 1 | How do I clone a Git repository? | 0.70 | ✅ Grounded |
 | 2 | What is a Git branch and how do I create one? | 0.63 | ✅ Grounded |
 | 3 | How to resolve merge conflicts in Git? | 0.78 | ✅ Grounded |
-| 4 | What is the difference between git add and git commit? | 0.62 | ✅ Grounded |
+| 4 | What is the difference between git add and git commit? | 0.65 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.62 | ✅ Grounded |
 | 6 | How do I merge a branch in GitLab? | 0.74 | ✅ Grounded |
-| 7 | How do I view the commit history? | 0.57 | ✅ Grounded |
+| 7 | How do I view the commit history? | 0.56 | ✅ Grounded |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
 | 9 | What is rebasing and when should I use it? | 0.50 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.72 | ✅ Grounded |
@@ -44,14 +44,14 @@
 
 ## Запитання 2: What is a Git branch and how do I create one?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_000 (score: 0.63), git_basics_getting_repository_chunk_000 (score: 0.62), github_about_git_chunk_009 (score: 0.61)
+**Знайдено чанків**: gitlab_getting_started_chunk_000 (score: 0.63), github_about_git_chunk_006 (score: 0.63), git_basics_getting_repository_chunk_000 (score: 0.62)
 
 **Відповідь**: Гілка (branch) у Git — це легковага посилання на коміт, що представляє незалежну лінію розвитку. Для створення: `git branch <name>`. Для перемикання: `git checkout <name>` або `git switch <name>`. Для створення та перемикання одночасно: `git checkout -b <name>`.
 
 **Знайдено в контексті:**
   - gitlab_getting_started_chunk_000 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
+  - github_about_git_chunk_006 (score: 0.63) [data/raw/08_github_about_git.md]
   - git_basics_getting_repository_chunk_000 (score: 0.62) [data/raw/01_git_basics_getting_repository.md]
-  - github_about_git_chunk_009 (score: 0.61) [data/raw/08_github_about_git.md]
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
@@ -76,14 +76,14 @@
 
 ## Запитання 4: What is the difference between git add and git commit?
 
-**Знайдено чанків**: github_about_git_chunk_007 (score: 0.62), git_basics_recording_changes_chunk_029 (score: 0.60), github_about_git_chunk_009 (score: 0.58)
+**Знайдено чанків**: github_about_git_chunk_007 (score: 0.65), git_basics_recording_changes_chunk_029 (score: 0.60), gitlab_getting_started_chunk_001 (score: 0.57)
 
 **Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
 
 **Знайдено в контексті:**
-  - github_about_git_chunk_007 (score: 0.62) [data/raw/08_github_about_git.md]
+  - github_about_git_chunk_007 (score: 0.65) [data/raw/08_github_about_git.md]
   - git_basics_recording_changes_chunk_029 (score: 0.60) [data/raw/02_git_basics_recording_changes.md]
-  - github_about_git_chunk_009 (score: 0.58) [data/raw/08_github_about_git.md]
+  - gitlab_getting_started_chunk_001 (score: 0.57) [data/raw/09_gitlab_getting_started.md]
 
 **Джерело**: data/raw/08_github_about_git.md
 
@@ -124,12 +124,20 @@
 
 ## Запитання 7: How do I view the commit history?
 
-**Знайдено чанків**: github_about_git_chunk_000 (score: 0.57), git_basics_recording_changes_chunk_027 (score: 0.55), git_tools_rebasing_chunk_016 (score: 0.53)
+**Знайдено чанків**: github_about_git_chunk_000 (score: 0.56), git_basics_recording_changes_chunk_027 (score: 0.55), git_tools_rebasing_chunk_016 (score: 0.53)
 
-**Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
+**Відповідь**: На основі знайденого контексту: About Git
+
+Learn about the version control system, Git, and how it works with GitHub.
+
+About version control and Git
+
+A version control system, or VCS, tracks the history of changes as people and
+
+
 
 **Знайдено в контексті:**
-  - github_about_git_chunk_000 (score: 0.57) [data/raw/08_github_about_git.md]
+  - github_about_git_chunk_000 (score: 0.56) [data/raw/08_github_about_git.md]
   - git_basics_recording_changes_chunk_027 (score: 0.55) [data/raw/02_git_basics_recording_changes.md]
   - git_tools_rebasing_chunk_016 (score: 0.53) [data/raw/06_git_tools_rebasing.md]
 
@@ -172,14 +180,14 @@
 
 ## Запитання 10: How do I push changes to a remote repository?
 
-**Знайдено чанків**: distributed_workflows_chunk_005 (score: 0.72), github_about_git_chunk_009 (score: 0.71), github_about_git_chunk_011 (score: 0.66)
+**Знайдено чанків**: distributed_workflows_chunk_005 (score: 0.72), github_about_git_chunk_011 (score: 0.66), gitlab_getting_started_chunk_006 (score: 0.64)
 
 **Відповідь**: Для надсилання змін на віддалений репозиторій: `git push <remote> <branch>`. Для впершого створення зв'язку: `git push -u origin <branch>`. Force push (обережно!): `git push --force`.
 
 **Знайдено в контексті:**
   - distributed_workflows_chunk_005 (score: 0.72) [data/raw/05_distributed_workflows.md]
-  - github_about_git_chunk_009 (score: 0.71) [data/raw/08_github_about_git.md]
   - github_about_git_chunk_011 (score: 0.66) [data/raw/08_github_about_git.md]
+  - gitlab_getting_started_chunk_006 (score: 0.64) [data/raw/09_gitlab_getting_started.md]
 
 **Джерело**: data/raw/05_distributed_workflows.md
 

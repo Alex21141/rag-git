@@ -27,8 +27,8 @@ Top-1: git_basics_getting_repository_chunk_005 | score: 0.7031
   Domain: git
 
 
-Top-2: github_about_git_chunk_006 | score: 0.6456
-  Text: 'copy, create, change, and combine code. These commands can be executed directly from the command line or by using an application like GitHub Desktop.Here are some common commands for using Git:\n\n  * `'
+Top-2: github_about_git_chunk_006 | score: 0.6521
+  Text: 'son).\n\n## GitHub and the command line\n\n### Basic Git commands\n\nTo use Git, developers use specific commands to copy, create, change, and combine code.These commands can be executed directly from the c'
   Source: data/raw/08_github_about_git.md
   Domain: github
 
@@ -60,20 +60,20 @@ Top-1: gitlab_getting_started_chunk_000 | score: 0.6283
   Domain: gitlab
 
 
-Top-2: git_basics_getting_repository_chunk_000 | score: 0.6198
+Top-2: github_about_git_chunk_006 | score: 0.6251
+  Text: 'son).\n\n## GitHub and the command line\n\n### Basic Git commands\n\nTo use Git, developers use specific commands to copy, create, change, and combine code.These commands can be executed directly from the c'
+  Source: data/raw/08_github_about_git.md
+  Domain: github
+
+
+Top-3: git_basics_getting_repository_chunk_000 | score: 0.6198
   Text: '# Git Basics — Getting a Git Repository\n\nIf you can read only one chapter to get going with Git, this is it. This chapter covers every basic command you need to do the vast majority of the things you’'
   Source: data/raw/01_git_basics_getting_repository.md
   Domain: git
 
 
-Top-3: github_about_git_chunk_009 | score: 0.608
-  Text: 'it push` updates the remote repository with any commits made locally to a branch.\n\nFor more information, see the full reference guide to Git commands.### Example: Contribute to an existing repository\n'
-  Source: data/raw/08_github_about_git.md
-  Domain: github
-
-
-Top-4: github_about_git_chunk_005 | score: 0.6045
-  Text: 'development process. Work is organized into repositories where developers can outline requirements or direction and set expectations for team members.Then, using the GitHub flow, developers simply cre'
+Top-4: github_about_git_chunk_002 | score: 0.6179
+  Text: 'iduals, teams and businesses.\n\n* Git lets developers see the entire timeline of their changes, decisions, and progression of any project in one place.From the moment they access the history of a proje'
   Source: data/raw/08_github_about_git.md
   Domain: github
 
@@ -120,8 +120,8 @@ Top-5: branching_basic_branching_merging_chunk_009 | score: 0.6707
 
 ## Query 4: What is the difference between git add and git commit?
 
-Top-1: github_about_git_chunk_007 | score: 0.6224
-  Text: "e and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process.Any changes that are staged will become a part of "
+Top-1: github_about_git_chunk_007 | score: 0.6455
+  Text: "Git tracks changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history.This command performs staging, the first part of t"
   Source: data/raw/08_github_about_git.md
   Domain: github
 
@@ -132,22 +132,22 @@ Top-2: git_basics_recording_changes_chunk_029 | score: 0.5995
   Domain: git
 
 
-Top-3: github_about_git_chunk_009 | score: 0.58
-  Text: 'it push` updates the remote repository with any commits made locally to a branch.\n\nFor more information, see the full reference guide to Git commands.### Example: Contribute to an existing repository\n'
-  Source: data/raw/08_github_about_git.md
-  Domain: github
-
-
-Top-4: gitlab_getting_started_chunk_001 | score: 0.5745
+Top-3: gitlab_getting_started_chunk_001 | score: 0.5745
   Text: '- Understand Git concepts\n## Repositories\n\nA Git repository is a directory that contains all the files, folders, and version\nhistory of your project.It serves as a central hub where Git manages and tr'
   Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-5: git_basics_recording_changes_chunk_008 | score: 0.5647
+Top-4: git_basics_recording_changes_chunk_008 | score: 0.5647
   Text: 'section named “Changes not staged for commit” — which means that a file that is tracked has been modified in the working directory but not yet staged.To stage it, you run the `git add` command. `git a'
   Source: data/raw/02_git_basics_recording_changes.md
   Domain: git
+
+
+Top-5: github_about_git_chunk_008 | score: 0.5573
+  Text: 'it commit`.\n\n* `git status` shows the status of changes as untracked, modified, or staged.\n\n* `git branch` shows the branches being worked on locally.* `git merge` merges lines of development together'
+  Source: data/raw/08_github_about_git.md
+  Domain: github
 
 
 
@@ -219,8 +219,8 @@ Top-5: branching_branch_management_chunk_004 | score: 0.5996
 
 ## Query 7: How do I view the commit history?
 
-Top-1: github_about_git_chunk_000 | score: 0.5679
-  Text: '# GitHub — About Git\n\nLearn about the version control system, Git, and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of changes as p'
+Top-1: github_about_git_chunk_000 | score: 0.5553
+  Text: '# About Git\n\nLearn about the version control system, Git, and how it works with GitHub.\n\n## About version control and Git\n\nA version control system, or VCS, tracks the history of changes as people and'
   Source: data/raw/08_github_about_git.md
   Domain: github
 
@@ -243,10 +243,10 @@ Top-4: git_basics_recording_changes_chunk_021 | score: 0.5159
   Domain: git
 
 
-Top-5: git_basics_recording_changes_chunk_026 | score: 0.5108
-  Text: "reen):\n\n    # Please enter the commit message for your changes. Lines starting\n    # with '#' will be ignored, and an empty message aborts the commit.# On branch master\n    # Your branch is up-to-date"
-  Source: data/raw/02_git_basics_recording_changes.md
-  Domain: git
+Top-5: github_about_git_chunk_007 | score: 0.5111
+  Text: "Git tracks changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history.This command performs staging, the first part of t"
+  Source: data/raw/08_github_about_git.md
+  Domain: github
 
 
 
@@ -324,26 +324,26 @@ Top-1: distributed_workflows_chunk_005 | score: 0.7182
   Domain: git
 
 
-Top-2: github_about_git_chunk_009 | score: 0.7134
-  Text: 'it push` updates the remote repository with any commits made locally to a branch.\n\nFor more information, see the full reference guide to Git commands.### Example: Contribute to an existing repository\n'
+Top-2: github_about_git_chunk_011 | score: 0.6627
+  Text: 'file in the project\ntouch README.md\n\n# git isn\'t aware of the file, stage it\ngit add README.md\n\n# take a snapshot of the staging area\ngit commit -m "add README to initial commit"\n\n# provide the path f'
   Source: data/raw/08_github_about_git.md
   Domain: github
 
 
-Top-3: github_about_git_chunk_011 | score: 0.6608
-  Text: 'touch README.md\n\n    # git isn\'t aware of the file, stage it\n    git add README.md\n\n    # take a snapshot of the staging area\n    git commit -m "add README to initial commit"\n\n    # provide the path f'
-  Source: data/raw/08_github_about_git.md
-  Domain: github
-
-
-Top-4: gitlab_getting_started_chunk_006 | score: 0.6361
+Top-3: gitlab_getting_started_chunk_006 | score: 0.6361
   Text: 'Commit your staged changes to your local repository.\n   A commit saves a snapshot of your work and creates a history of the changes to your files.\n1.Push changes: To share your changes with others, pu'
   Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
 
 
-Top-5: gitlab_getting_started_chunk_005 | score: 0.6358
+Top-4: gitlab_getting_started_chunk_005 | score: 0.6358
   Text: 'sitory: Create a local copy of the repository by cloning it to your machine.\n   You can work on the project without affecting the original repository.1. Create a new branch: Before you make any change'
   Source: data/raw/09_gitlab_getting_started.md
   Domain: gitlab
+
+
+Top-5: git_basics_getting_repository_chunk_001 | score: 0.6228
+  Text: 'mits, and how to push and pull from remote repositories.\n\n## Getting a Git Repository\n\nYou typically obtain a Git repository in one of two ways:\n\n  1.You can take a local directory that is currently n'
+  Source: data/raw/01_git_basics_getting_repository.md
+  Domain: git
 
