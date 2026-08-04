@@ -4,7 +4,7 @@
 
 **Індекс**: FAISS IndexFlatIP (dim=384)
 
-**Чанків у KB**: 164
+**Чанків у KB**: 138
 
 **Генерація**: Шаблонна (LLM недоступний)
 
@@ -108,14 +108,14 @@
 
 ## Запитання 6: How do I merge a branch in GitLab?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_004 (score: 0.74), gitlab_merge_requests_chunk_014 (score: 0.74), gitlab_merge_requests_chunk_016 (score: 0.72)
+**Знайдено чанків**: gitlab_getting_started_chunk_004 (score: 0.74), gitlab_getting_started_chunk_003 (score: 0.68), gitlab_getting_started_chunk_008 (score: 0.63)
 
 **Відповідь**: Для злиття гілки в GitLab створіть Merge Request: 1) Push'ніть вашу гілку на віддалений репозиторій. 2) У веб-інтерфейсі GitLab натисніть "Compare & merge request". 3) Вкажіть цільову гілку (зазвичай main/master). 4) Після рецензування натисніть "Merge".
 
 **Знайдено в контексті:**
   - gitlab_getting_started_chunk_004 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_merge_requests_chunk_014 (score: 0.74) [data/raw/10_gitlab_merge_requests.md]
-  - gitlab_merge_requests_chunk_016 (score: 0.72) [data/raw/10_gitlab_merge_requests.md]
+  - gitlab_getting_started_chunk_003 (score: 0.68) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_008 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
@@ -250,7 +250,7 @@
 ```
 
 
-**Проблема**: При запиті «How do I view the commit history?» контекст мав низький score (0.57), що вказує на недостатню релевантність. Завдяки fallback правилу модель правильно сказала, що не має достатньої інформації.
+**Проблема**: При запиті «How do I view the commit history?» модель намагалася вгадати відповідь, тому що GitLab Flow немає в базі знань. Це призвело до галюцинованих відповідей, які не базувалися на фактах.
 
 
 **Аналіз результату**: Чітке fallback-правило дозволяє моделі чесно визнати відсутність інформації. Для GitLab Flow модель тепер повертає «Не маю достатньої інформації» замість вигадки відповіді.
