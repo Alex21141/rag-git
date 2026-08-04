@@ -44,16 +44,16 @@
 
 ## Запитання 2: What is a Git branch and how do I create one?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_011 (score: 0.62), github_about_git_chunk_004 (score: 0.61), gitlab_getting_started_chunk_015 (score: 0.61)
+**Знайдено чанків**: distributed_workflows_chunk_013 (score: 0.62), gitlab_getting_started_chunk_011 (score: 0.62), github_about_git_chunk_004 (score: 0.61)
 
 **Відповідь**: Гілка (branch) у Git — це легковага посилання на коміт, що представляє незалежну лінію розвитку. Для створення: `git branch <name>`. Для перемикання: `git checkout <name>` або `git switch <name>`. Для створення та перемикання одночасно: `git checkout -b <name>`.
 
 **Знайдено в контексті:**
+  - distributed_workflows_chunk_013 (score: 0.62) [data/raw/05_distributed_workflows.md]
   - gitlab_getting_started_chunk_011 (score: 0.62) [data/raw/09_gitlab_getting_started.md]
   - github_about_git_chunk_004 (score: 0.61) [data/raw/08_github_about_git.md]
-  - gitlab_getting_started_chunk_015 (score: 0.61) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/09_gitlab_getting_started.md
+**Джерело**: data/raw/05_distributed_workflows.md
 
 **Коментар**: Grounded — відповідь на основі релевантного чанку
 
