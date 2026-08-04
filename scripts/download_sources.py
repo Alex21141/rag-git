@@ -22,6 +22,12 @@ OUTPUT_DIR = "data/raw"
 # Список источников: (filename, url, css-селектор основного контента)
 SOURCES = [
     {
+        "filename": "00_git_about_version_control.md",
+        "url": "https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control",
+        "title": "Getting Started — About Version Control",
+        "selector": "#main",
+    },
+    {
         "filename": "01_git_basics_getting_repository.md",
         "url": "https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository",
         "title": "Git Basics — Getting a Git Repository",
@@ -70,16 +76,10 @@ SOURCES = [
         "selector": "body",
     },
     {
-        "filename": "09_gitlab_flow.md",
+        "filename": "09_gitlab_getting_started.md",
         "url": "https://docs.gitlab.com/topics/git/get_started/index.md",
         "title": "GitLab — Getting started with Git",
         "selector": "#main-content",
-    },
-    {
-        "filename": "10_gitlab_merge_requests.md",
-        "url": "https://docs.gitlab.com/user/project/merge_requests/",
-        "title": "GitLab — Merge Requests",
-        "selector": "article",
     },
 ]
 

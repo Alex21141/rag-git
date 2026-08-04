@@ -1,3 +1,5 @@
+# GitHub — About Git
+
 # About Git
 
 Learn about the version control system, Git, and how it works with GitHub.
@@ -33,9 +35,9 @@ Through platforms like GitHub, Git also provides more opportunities for project 
 
 GitHub hosts Git repositories and provides developers with tools to ship better code through command line features, issues (threaded discussions), pull requests, code review, or the use of a collection of free and for-purchase apps in the GitHub Marketplace. With collaboration layers like the GitHub flow, a community of 100 million developers, and an ecosystem with hundreds of integrations, GitHub changes the way software is built.
 
-GitHub builds collaboration directly into the development process. Work is organized into repositories where developers can outline requirements or direction and set expectations for team members. Then, using the GitHub flow, developers simply create a branch to work on updates, commit changes to save them, open a pull request to propose and discuss changes, and merge pull requests once everyone is on the same page. For more information, see [GitHub flow](/en/get-started/using-github/github-flow).
+GitHub builds collaboration directly into the development process. Work is organized into repositories where developers can outline requirements or direction and set expectations for team members. Then, using the GitHub flow, developers simply create a branch to work on updates, commit changes to save them, open a pull request to propose and discuss changes, and merge pull requests once everyone is on the same page. For more information, see GitHub flow.
 
-For GitHub plans and costs, see [GitHub Pricing](https://github.com/pricing). For information on how GitHub Enterprise compares to other options, see [Comparing GitHub to other DevOps solutions](https://github.com/resources/articles/devops-tools-comparison).
+For GitHub plans and costs, see GitHub Pricing. For information on how GitHub Enterprise compares to other options, see Comparing GitHub to other DevOps solutions.
 
 ## GitHub and the command line
 
@@ -61,7 +63,7 @@ To use Git, developers use specific commands to copy, create, change, and combin
 
 * `git push` updates the remote repository with any commits made locally to a branch.
 
-For more information, see the [full reference guide to Git commands](https://git-scm.com/docs).
+For more information, see the full reference guide to Git commands.
 
 ### Example: Contribute to an existing repository
 
@@ -93,7 +95,7 @@ git push --set-upstream origin my-branch
 
 ### Example: Start a new repository and publish it to GitHub
 
-First, you will need to create a new repository on GitHub. For more information, see [Hello World](/en/get-started/using-github/hello-world). **Do not** initialize the repository with a README, .gitignore or License file. This empty repository will await your code.
+First, you will need to create a new repository on GitHub. For more information, see Hello World. Do not initialize the repository with a README, .gitignore or License file. This empty repository will await your code.
 
 ```bash
 # create a new directory, and initialize it with git-specific functions
@@ -153,4 +155,4 @@ There are two primary ways people collaborate on GitHub:
 
 With a shared repository, individuals and teams are explicitly designated as contributors with read, write, or administrator access. This simple permission structure, combined with features like protected branches, helps teams progress quickly when they adopt GitHub.
 
-For an open source project, or for projects to which anyone can contribute, managing individual permissions can be challenging, but a fork and pull model allows anyone who can view the project to contribute. A fork is a copy of a project under a developer's personal account. Every developer has full control of their fork and is free to implement a fix or a new feature. Work completed in forks is either kept separate, or is surfaced back to the original project via a pull request. There, maintainers can review the suggested changes before they're merged. For more information, see [Contributing to a project](/en/get-started/exploring-projects-on-github/contributing-to-a-project).
+For an open source project, or for projects to which anyone can contribute, managing individual permissions can be challenging, but a fork and pull model allows anyone who can view the project to contribute. A fork is a copy of a project under a developer's personal account. Every developer has full control of their fork and is free to implement a fix or a new feature. Work completed in forks is either kept separate, or is surfaced back to the original project via a pull request. There, maintainers can review the suggested changes before they're merged. For more information, see Contributing to a project.
