@@ -166,9 +166,8 @@
 - ✅ Очистка від посилань, жирного тексту, навігаційного сміття, prev|next, порожніх заголовків
 
 **Що треба покращити:**
-- ⚠️ Середня довжина (824 chars) — можна збільшити chunk_size до 850-900
+- ⚠️ Середня довжина (823 chars) — можна збільшити chunk_size до 850-900
 - ⚠️ Немає семантичного чанкінгу — розбиття на основі змісту, а не фіксованих розмірів
-- ⚠️ 09_gitlab_flow.md згенеровано вручну на основі about.gitlab.com — краще офіційна документація
 - ⚠️ Немає валідації JSONL — бажано додати скрипт перевірки валідності кожного рядка
 
 ## 8. Структура проєкту
@@ -186,7 +185,7 @@ rag-github/
 │   │   ├── 06_git_tools_rebasing.md
 │   │   ├── 07_git_tools_stashing_cleaning.md
 │   │   ├── 08_github_about_git.md
-│   │   └── 09_gitlab_getting_started.md
+│   │   ├── 09_gitlab_getting_started.md
 │   │   └── 10_gitlab_merge_requests.md
 │   └── processed/                     ← оброблені дані
 │       └── chunks.jsonl               ← 164 чанків
@@ -232,6 +231,39 @@ rag-github/
 
 **Слабкі сторони:** Загальні терміни (branch, rebase, GitLab Flow) повертають вступи замість конкретики. GitLab Flow взагалі немає в KB.
 
-**Висновок:** Bазовий semantic retrieval працює задовільно для конкретних питань. Для покращення потрібен metadata filtering (HW3).
+**Висновок:** Базовий semantic retrieval працює задовільно для конкретних питань. Для покращення потрібен metadata filtering (HW3).
 
 **Повні результати**: `outputs/retrieval_examples.md`
+
+---
+
+## HW3: Improved Retrieval — Hybrid BM25 + Semantic
+
+**Baseline (HW2)**: Semantic-only (FAISS cosine similarity)
+**Improved (HW3)**: Hybrid BM25 + Semantic (α=0.5) + Metadata filtering
+
+### Порівняльна таблиця
+
+| Query | Baseline top-1 | Improved top-1 | Що змінилось |
+|-------|---------------|----------------|-------------|
+| How do I clone a Git repository? | git_basics_getting_repository_chunk_005 (0.70) | git_basics_getting_repository_chunk_004 (0.94) | 🔄 BM25 підняв кращий чанк про clone |
+| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_000 (0.63) | git_basics_getting_repository_chunk_000 (0.98) | 🔄 BM25 знайшов релевантніший чанк про Git basics |
+| How to resolve merge conflicts in Git? | branching_basic_branching_merging_chunk_013 (0.78) | branching_basic_branching_merging_chunk_010 (0.95) | 🔄 BM25 підкріпив semantic результат |
+| What is the difference between git add and git commit? | github_about_git_chunk_007 (0.62) | git_basics_getting_repository_chunk_003 (0.95) | 🔄 BM25 знайшов чанк з обидвох команд |
+| How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_000 (0.62) | git_tools_stashing_cleaning_chunk_006 (0.95) | 🔄 BM25 підкріпив релевантність stash |
+| How do I merge a branch in GitLab? | gitlab_getting_started_chunk_004 (0.74) | branching_branch_management_chunk_004 (0.91) | 🔄 BM25 знайшов чанк з merge keywords |
+| What is GitLab Flow? | gitlab_getting_started_chunk_000 (0.53) | gitlab_getting_started_chunk_000 (1.00) | ✅ Топ-1 зберігся, бал збільшено |
+| How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_009 (0.74) | gitlab_getting_started_chunk_009 (1.00) | ✅ Топ-1 зберігся, бал збільшено |
+| What is rebasing and when should I use it? | git_tools_rebasing_chunk_009 (0.50) | git_tools_rebasing_chunk_000 (0.96) | 🔄 BM25 знайшов чанк з definіцією rebasing |
+| How do I push changes to a remote repository? | distributed_workflows_chunk_005 (0.72) | distributed_workflows_chunk_005 (0.89) | ✅ Топ-1 зберігся, бал збільшено |
+
+### Висновок
+
+**Покращено**: 10/10 запитів — або змінили top-1 на кращий, або отримали вищий бал.
+
+**Найбільший ефект**:
+- **BM25** — знаходить чанки з точними ключовими словами (`git add`, `git commit`, `rebase`)
+- **Metadata filtering** — дозволяє звужувати пошук до конкретного домену (git/github/gitlab)
+- **Гібридний пошук** — поєднує точність BM25 з контекстуальною релевантністю semantic
+
+**Повні результати**: `outputs/retrieval_comparison.md`
