@@ -158,7 +158,9 @@ def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int,
             prev_s, prev_e = raw_splits[i - 1]
             overlap_start = max(prev_s, prev_e - overlap)
             overlap_text = text[overlap_start:prev_e]
-            chunk_text = overlap_text + chunk_text
+            # Add space between overlap tail and new content if needed
+            separator = " " if overlap_text and not overlap_text.endswith((" ", "\n")) else ""
+            chunk_text = overlap_text + separator + chunk_text
         
         # Resolve section for this chunk
         section = None
@@ -221,6 +223,30 @@ def prepare_chunks():
 
         all_chunks.extend(final_chunks)
         print(f"  {doc_file.name}: {len(final_chunks)} chunks")
+
+    # Step 2.5: Merge small chunks (<300 chars) with next chunk
+    print(f"\n{'=' * 60}")
+    print("Step 2.5: Merging small chunks")
+    print("=" * 60)
+    merged = []
+    skip_next = False
+    for i, c in enumerate(all_chunks):
+        if skip_next:
+            skip_next = False
+            continue
+        text_len = len(c["text"])
+        if text_len < 300 and i + 1 < len(all_chunks):
+            # Merge with next chunk
+            next_c = all_chunks[i + 1]
+            merged_text = c["text"] + " " + next_c["text"]
+            c["text"] = merged_text.strip()
+            c["chunk_id"] = f"{c['metadata']['document_id']}_chunk_{c['metadata']['chunk_index']:03d}"
+            skip_next = True
+            print(f"  Merged {c['metadata']['document_id']}_chunk_{c['metadata']['chunk_index']:03d} "
+                  f"({text_len} chars) with next chunk")
+        merged.append(c)
+    all_chunks = merged
+    print(f"  {len(all_chunks)} chunks after merging")
 
     # Save to JSONL
     print(f"\n{'=' * 60}")
