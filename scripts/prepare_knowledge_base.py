@@ -31,6 +31,7 @@ MIN_CHUNK = 120
 
 # Domain metadata
 DOMAIN_MAP = {
+    "git_about_version_control": ("Getting Started", "git", "concept"),
     "git_basics_getting_repository": ("Git Basics", "git", "concept"),
     "git_basics_recording_changes": ("Git Basics", "git", "commands"),
     "branching_basic_branching_merging": ("Branching", "git", "workflow"),
@@ -40,7 +41,6 @@ DOMAIN_MAP = {
     "git_tools_stashing_cleaning": ("Git Tools", "git", "commands"),
     "github_about_git": ("GitHub", "github", "concept"),
     "gitlab_getting_started": ("GitLab", "gitlab", "concept"),
-    "gitlab_merge_requests": ("GitLab", "gitlab", "procedural"),
 }
 
 
