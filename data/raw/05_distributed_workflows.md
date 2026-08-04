@@ -1,5 +1,3 @@
-# Distributed Git — Distributed Workflows
-
 # 5.1 Distributed Git - Distributed Workflows
 
 Now that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affords you.

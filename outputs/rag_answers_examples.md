@@ -4,7 +4,7 @@
 
 **Індекс**: FAISS IndexFlatIP (dim=384)
 
-**Чанків у KB**: 145
+**Чанків у KB**: 144
 
 **Генерація**: Шаблонна (LLM недоступний)
 
@@ -15,27 +15,27 @@
 
 | # | Запитання | Top-1 score | Результат |
 |---|-----------|-------------|-----------|
-| 1 | How do I clone a Git repository? | 0.73 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | 0.63 | ✅ Grounded |
+| 1 | How do I clone a Git repository? | 0.70 | ✅ Grounded |
+| 2 | What is a Git branch and how do I create one? | 0.62 | ✅ Grounded |
 | 3 | How to resolve merge conflicts in Git? | 0.73 | ✅ Grounded |
 | 4 | What is the difference between git add and git commit? | 0.62 | ✅ Grounded |
-| 5 | How do I stash my changes temporarily? | 0.62 | ✅ Grounded |
+| 5 | How do I stash my changes temporarily? | 0.63 | ✅ Grounded |
 | 6 | How do I merge a branch in GitLab? | 0.74 | ✅ Grounded |
 | 7 | How do I view the commit history? | 0.57 | ✅ Grounded |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
 | 9 | What is rebasing and when should I use it? | 0.56 | ✅ Grounded |
-| 10 | How do I push changes to a remote repository? | 0.71 | ✅ Grounded |
+| 10 | How do I push changes to a remote repository? | 0.72 | ✅ Grounded |
 
 ## Запитання 1: How do I clone a Git repository?
 
-**Знайдено чанків**: git_basics_getting_repository_chunk_005 (score: 0.73), git_basics_getting_repository_chunk_004 (score: 0.68), github_about_git_chunk_009 (score: 0.65)
+**Знайдено чанків**: git_basics_getting_repository_chunk_005 (score: 0.70), github_about_git_chunk_009 (score: 0.65), github_about_git_chunk_006 (score: 0.65)
 
 **Відповідь**: Для клонування Git-репозиторію використайте команду `git clone <url>`. Вона створює повну локальну копію репозиторію з усією історією комітів. Ви також можете клонувати з GitHub (`git clone https://github.com/...`) або через SSH (`git clone git@github.com:...`).
 
 **Знайдено в контексті:**
-  - git_basics_getting_repository_chunk_005 (score: 0.73) [data/raw/01_git_basics_getting_repository.md]
-  - git_basics_getting_repository_chunk_004 (score: 0.68) [data/raw/01_git_basics_getting_repository.md]
+  - git_basics_getting_repository_chunk_005 (score: 0.70) [data/raw/01_git_basics_getting_repository.md]
   - github_about_git_chunk_009 (score: 0.65) [data/raw/08_github_about_git.md]
+  - github_about_git_chunk_006 (score: 0.65) [data/raw/08_github_about_git.md]
 
 **Джерело**: data/raw/01_git_basics_getting_repository.md
 
@@ -44,16 +44,16 @@
 
 ## Запитання 2: What is a Git branch and how do I create one?
 
-**Знайдено чанків**: branching_branch_management_chunk_000 (score: 0.63), github_about_git_chunk_002 (score: 0.62), github_about_git_chunk_005 (score: 0.60)
+**Знайдено чанків**: github_about_git_chunk_002 (score: 0.62), github_about_git_chunk_005 (score: 0.60), gitlab_getting_started_chunk_000 (score: 0.60)
 
 **Відповідь**: Гілка (branch) у Git — це легковага посилання на коміт, що представляє незалежну лінію розвитку. Для створення: `git branch <name>`. Для перемикання: `git checkout <name>` або `git switch <name>`. Для створення та перемикання одночасно: `git checkout -b <name>`.
 
 **Знайдено в контексті:**
-  - branching_branch_management_chunk_000 (score: 0.63) [data/raw/04_branching_branch_management.md]
   - github_about_git_chunk_002 (score: 0.62) [data/raw/08_github_about_git.md]
   - github_about_git_chunk_005 (score: 0.60) [data/raw/08_github_about_git.md]
+  - gitlab_getting_started_chunk_000 (score: 0.60) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/04_branching_branch_management.md
+**Джерело**: data/raw/08_github_about_git.md
 
 **Коментар**: Grounded — відповідь на основі релевантного чанку
 
@@ -92,13 +92,13 @@
 
 ## Запитання 5: How do I stash my changes temporarily?
 
-**Знайдено чанків**: git_tools_stashing_cleaning_chunk_000 (score: 0.62), git_tools_stashing_cleaning_chunk_001 (score: 0.59), git_tools_stashing_cleaning_chunk_004 (score: 0.55)
+**Знайдено чанків**: git_tools_stashing_cleaning_chunk_000 (score: 0.63), git_tools_stashing_cleaning_chunk_001 (score: 0.60), git_tools_stashing_cleaning_chunk_004 (score: 0.55)
 
 **Відповідь**: Git stash дозволяє тимчасово зберегти незафіксовані зміни: `git stash`. Для відновлення з стеку: `git stash pop`. Для перегляду: `git stash list`. Для відновлення без видалення зі стеку: `git stash apply`. Stash корисний для швидкого перемикання між гілками.
 
 **Знайдено в контексті:**
-  - git_tools_stashing_cleaning_chunk_000 (score: 0.62) [data/raw/07_git_tools_stashing_cleaning.md]
-  - git_tools_stashing_cleaning_chunk_001 (score: 0.59) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_000 (score: 0.63) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_001 (score: 0.60) [data/raw/07_git_tools_stashing_cleaning.md]
   - git_tools_stashing_cleaning_chunk_004 (score: 0.55) [data/raw/07_git_tools_stashing_cleaning.md]
 
 **Джерело**: data/raw/07_git_tools_stashing_cleaning.md
@@ -156,14 +156,14 @@
 
 ## Запитання 9: What is rebasing and when should I use it?
 
-**Знайдено чанків**: git_tools_rebasing_chunk_016 (score: 0.56), git_tools_rebasing_chunk_004 (score: 0.52), git_tools_rebasing_chunk_000 (score: 0.51)
+**Знайдено чанків**: git_tools_rebasing_chunk_016 (score: 0.56), git_tools_rebasing_chunk_000 (score: 0.53), git_tools_rebasing_chunk_004 (score: 0.52)
 
 **Відповідь**: Ребейзинг (rebase) — перенесення комітів з однієї гілки на іншу для створення чистішої, лінійної історії. Команда: `git rebase <target-гілка>`. Використовуйте для локальних гілок, ще не опублікованих. Не використовуйте для спільних (shared) гілок.
 
 **Знайдено в контексті:**
   - git_tools_rebasing_chunk_016 (score: 0.56) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_000 (score: 0.53) [data/raw/06_git_tools_rebasing.md]
   - git_tools_rebasing_chunk_004 (score: 0.52) [data/raw/06_git_tools_rebasing.md]
-  - git_tools_rebasing_chunk_000 (score: 0.51) [data/raw/06_git_tools_rebasing.md]
 
 **Джерело**: data/raw/06_git_tools_rebasing.md
 
@@ -172,16 +172,16 @@
 
 ## Запитання 10: How do I push changes to a remote repository?
 
-**Знайдено чанків**: git_basics_getting_repository_chunk_001 (score: 0.71), github_about_git_chunk_011 (score: 0.66), gitlab_getting_started_chunk_006 (score: 0.64)
+**Знайдено чанків**: distributed_workflows_chunk_005 (score: 0.72), github_about_git_chunk_011 (score: 0.66), gitlab_getting_started_chunk_006 (score: 0.64)
 
 **Відповідь**: Для надсилання змін на віддалений репозиторій: `git push <remote> <branch>`. Для впершого створення зв'язку: `git push -u origin <branch>`. Force push (обережно!): `git push --force`.
 
 **Знайдено в контексті:**
-  - git_basics_getting_repository_chunk_001 (score: 0.71) [data/raw/01_git_basics_getting_repository.md]
+  - distributed_workflows_chunk_005 (score: 0.72) [data/raw/05_distributed_workflows.md]
   - github_about_git_chunk_011 (score: 0.66) [data/raw/08_github_about_git.md]
   - gitlab_getting_started_chunk_006 (score: 0.64) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/01_git_basics_getting_repository.md
+**Джерело**: data/raw/05_distributed_workflows.md
 
 **Коментар**: Grounded — відповідь на основі релевантного чанку
 

@@ -1,5 +1,3 @@
-# Git Tools — Stashing and Cleaning
-
 # 7.3 Git Tools - Stashing and Cleaning
 
 ## Stashing and Cleaning
