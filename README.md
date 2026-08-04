@@ -1,4 +1,4 @@
-# RAG Git/GitHub/GitLab Tutoring Assistant
+# Git tutoring assistant
 
 Домашнє завдання №1 — Підготовка knowledge base
 
@@ -27,10 +27,8 @@
 | 7 | Git Tools — Stashing and Cleaning | https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning | команди |
 | 8 | GitHub — About Git (intro) | https://docs.github.com/en/get-started/using-git/about-git | концепт, доп. контекст |
 | 9 | GitLab — Getting started with Git | https://docs.gitlab.com/topics/git/get_started/index.md | концепт |
-| 10 | GitLab Merge Requests | https://docs.gitlab.com/ee/user/project/merge_requests/ | процедура |
 
 ## 3. Структура метаданих
-
 Кожен чанк містить:
 
 ```json
@@ -77,22 +75,53 @@
 
 | Метрика | Значення |
 |---------|----------|
-| Документів | 10 |
-| Чанків | 164 |
-| Середня довжина | 823 chars |
+| Документів | 9 |
+| Чанків | 138 |
+| Середня довжина | 819 chars |
 | Мінімальна довжина | 283 chars |
-| Максимальна довжина | 923 chars |
-| Всього chars | 134,935 |
-| Overlap coverage | 100% пар (154/154) |
+| Максимальна довжина | 920 chars |
+| Всього chars | 112,980 |
+| Overlap coverage | 100% пар (129/129) |
 
 **По доменах:**
 | Домен | Чанків |
 |-------|--------|
 | git | 114 |
-| gitlab | 36 |
 | github | 14 |
+| gitlab | 10 |
 
-## 6. Приклади чанків
+## 6. Аналіз перекриття даних
+
+**Тематичне перекриття (ключові терміни):** Високе — базові команди `add`, `commit`, `push`, `checkout`, `branch`, `merge` зустрічаються в 8-9 документах. Це природно — кожен документ контекстуально пояснює базові операції Git у своєму аспекті.
+
+| Термін | Кількість документів | Документи |
+|--------|---------------------|-----------|
+| add | 9 | усі |
+| commit | 8 | усі крім gitlab_getting_started |
+| push | 8 | усі крім git_basics_getting_repository |
+| checkout | 8 | усі крім distributed_workflows, gitlab_getting_started |
+| branch | 8 | усі крім git_basics_getting_repository |
+| merge | 8 | усі крім git_basics_getting_repository, gitlab_getting_started |
+| clone | 7 | git_basics, git_basics_recording, distributed, rebasing, stashing, github, gitlab |
+| pull | 7 | git_basics, branching, distributed, rebasing, github, gitlab |
+| remote | 7 | git_basics, branching, distributed, rebasing, github, gitlab |
+| repository | 7 | git_basics, recording, branch_management, distributed, rebasing, github, gitlab |
+| conflict | 4 | recording, branching, stashing, gitlab |
+| stash | 2 | branching_basic, stashing_cleaning |
+| rebase | 2 | distributed_workflows, tools_rebasing |
+
+**Дослівне перекриття (10-слівні shingles, Jaccard similarity):** Низьке — жодна пара документів не має Jaccard >2%. Це означає відсутність дослівних дублікатів тексту між документами.
+
+**Найбільше спільного тексту:**
+- `branching_basic_branching_merging` × `git_basics_recording_changes`: 17 спільних shingles — стандартний вивід `git status` (`# will be ignored`, `use "git add"`)
+- `git_basics_recording_changes` × `git_tools_stashing_cleaning`: 24 спільних shingles — стандартний вивід `git status` (`use "git add <file>..."`)
+
+**Висновок:** Документи мають високе тематичне перекриття (одні й тіж базові команди повторюються в різних контекстах), але низьке дослівне перекриття. Для RAG-системи це означає:
+- ✅ Пошук по загальних термінах (clone, branch, merge) поверне релевантні чанки з багатьох документів — добре для всебічної відповіді
+- ⚠️ Семантичний embedding може мати труднощі розрізнити контекст (напр. `branch` у branching vs `branch` у merge workflow)
+- ⚠️ Для специфічних термінів (stash, rebase, conflict) пошук буде точнішим через менше перекриття
+
+## 7. Приклади чанків
 
 ### Приклад 1 — Git Basics (concept)
 
@@ -154,30 +183,31 @@
 }
 ```
 
-## 7. Висновок
+## 8. Висновок
 
 **Що вийшло добре:**
-- ✅ 10 якісних джерел з трьох доменів (Git, GitHub, GitLab)
+- ✅ 9 якісних джерел з трьох доменів (Git, GitHub, GitLab)
 - ✅ Оригінальні заголовки документів збережено (без нумерації та дублів)
 - ✅ Повна metadata структура — 10 полів, включаючи section, domain, document_type
 - ✅ Contiguous sliding window chunking з overlap — 100% пар чанків мають перекриття (150 chars)
 - ✅ Word-boundary розриви — чанки не обриваються посеред слів
 - ✅ Sentence-aware break — пріоритет розриву на кордонах речень
 - ✅ Очистка від посилань, жирного тексту, навігаційного сміття, prev|next, порожніх заголовків
+- ✅ Низьке дослівне перекриття між документами (Jaccard <2%)
 
 **Що треба покращити:**
-- ⚠️ Середня довжина (824 chars) — можна збільшити chunk_size до 850-900
+- ⚠️ Середня довжина (819 chars) — можна збільшити chunk_size до 850-900
 - ⚠️ Немає семантичного чанкінгу — розбиття на основі змісту, а не фіксованих розмірів
-- ⚠️ 09_gitlab_flow.md згенеровано вручну на основі about.gitlab.com — краще офіційна документація
+- ⚠️ Високе тематичне перекриття базових команд (8-9 документів) — може ускладнювати точний пошук контексту
 - ⚠️ Немає валідації JSONL — бажано додати скрипт перевірки валідності кожного рядка
 
-## 8. Структура проєкту
+## 9. Структура проєкту
 
 ```
 rag-github/
 ├── README.md                          ← цей файл
 ├── data/
-│   ├── raw/                           ← початкові документи (10 .md)
+│   ├── raw/                           ← початкові документи (9 .md)
 │   │   ├── 01_git_basics_getting_repository.md
 │   │   ├── 02_git_basics_recording_changes.md
 │   │   ├── 03_branching_basic_branching_merging.md
@@ -187,9 +217,8 @@ rag-github/
 │   │   ├── 07_git_tools_stashing_cleaning.md
 │   │   ├── 08_github_about_git.md
 │   │   └── 09_gitlab_getting_started.md
-│   │   └── 10_gitlab_merge_requests.md
 │   └── processed/                     ← оброблені дані
-│       └── chunks.jsonl               ← 164 чанків
+│       └── chunks.jsonl               ← 138 чанків
 └── scripts/
     ├── download_sources.py            ← збір даних з веб-сторінок
     └── prepare_knowledge_base.py      ← нормалізація + чанкінг

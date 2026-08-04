@@ -75,12 +75,6 @@ SOURCES = [
         "title": "GitLab — Getting started with Git",
         "selector": "#main-content",
     },
-    {
-        "filename": "10_gitlab_merge_requests.md",
-        "url": "https://docs.gitlab.com/user/project/merge_requests/",
-        "title": "GitLab — Merge Requests",
-        "selector": "article",
-    },
 ]
 
 HEADERS = {
