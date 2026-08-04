@@ -395,10 +395,10 @@ def main():
         # Apply full cleaning pipeline
         cleaned = clean_raw_document(raw_text, src["filename"])
 
-        # Write final clean document
+        # Write final clean document (no extra title — clean_raw_document already
+        # includes the section heading like "# 1.1 Getting Started - About Version Control")
         out_path = os.path.join(OUTPUT_DIR, src["filename"])
         with open(out_path, "w", encoding="utf-8") as f:
-            f.write(f"# {src['title']}\n\n")
             f.write(cleaned)
 
         print(f"  -> сохранено: {out_path} ({len(cleaned)} символов)")

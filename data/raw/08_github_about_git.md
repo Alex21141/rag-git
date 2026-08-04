@@ -1,5 +1,3 @@
-# GitHub — About Git
-
 # About Git
 
 Learn about the version control system, Git, and how it works with GitHub.
