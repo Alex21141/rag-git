@@ -19,6 +19,7 @@ Output:
 import json
 import os
 import re
+from collections import defaultdict
 from pathlib import Path
 
 # ── Configuration ──────────────────────────────────────────────────────────
@@ -158,7 +159,9 @@ def chunk_with_overlap(text: str, chunk_size: int, overlap: int, min_chunk: int,
             prev_s, prev_e = raw_splits[i - 1]
             overlap_start = max(prev_s, prev_e - overlap)
             overlap_text = text[overlap_start:prev_e]
-            chunk_text = overlap_text + chunk_text
+            # Add space between overlap tail and new content if needed
+            separator = " " if overlap_text and not overlap_text.endswith((" ", "\n")) else ""
+            chunk_text = overlap_text + separator + chunk_text
         
         # Resolve section for this chunk
         section = None
@@ -222,6 +225,47 @@ def prepare_chunks():
         all_chunks.extend(final_chunks)
         print(f"  {doc_file.name}: {len(final_chunks)} chunks")
 
+    # Step 2.5: Merge small chunks (<300 chars) with next chunk
+    print(f"\n{'=' * 60}")
+    print("Step 2.5: Merging small chunks")
+    print("=" * 60)
+    merged = []
+    skip_next = False
+    for i, c in enumerate(all_chunks):
+        if skip_next:
+            skip_next = False
+            continue
+        text_len = len(c["text"])
+        if text_len < 300 and i + 1 < len(all_chunks):
+            # Merge with next chunk
+            next_c = all_chunks[i + 1]
+            merged_text = c["text"] + " " + next_c["text"]
+            c["text"] = merged_text.strip()
+            c["chunk_id"] = f"{c['metadata']['document_id']}_chunk_{c['metadata']['chunk_index']:03d}"
+            skip_next = True
+            print(f"  Merged {c['metadata']['document_id']}_chunk_{c['metadata']['chunk_index']:03d} "
+                  f"({text_len} chars) with next chunk")
+        merged.append(c)
+    all_chunks = merged
+
+    # Step 2.6: Renumper chunk_index & chunk_id per document (sequential)
+    print(f"\n{'=' * 60}")
+    print("Step 2.6: Renumbering chunk indices")
+    print("=" * 60)
+    by_doc = defaultdict(list)
+    for c in all_chunks:
+        did = c["metadata"]["document_id"]
+        by_doc[did].append(c)
+
+    fixed = []
+    for did in sorted(by_doc.keys()):
+        for idx, c in enumerate(by_doc[did]):
+            c["metadata"]["chunk_index"] = idx + 1
+            c["chunk_id"] = f"{did}_chunk_{idx + 1:03d}"
+        fixed.extend(by_doc[did])
+    all_chunks = fixed
+    print(f"  All chunk_index now sequential per document")
+
     # Save to JSONL
     print(f"\n{'=' * 60}")
     print("Step 2: Saving chunks")
@@ -256,7 +300,6 @@ def prepare_chunks():
 
     # Overlap analysis
     print(f"\n  Overlap analysis:")
-    from collections import defaultdict
     by_doc = defaultdict(list)
     for c in all_chunks:
         by_doc[c["metadata"]["document_id"]].append(c)

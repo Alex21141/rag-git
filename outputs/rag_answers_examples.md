@@ -4,7 +4,7 @@
 
 **Індекс**: FAISS IndexFlatIP (dim=384)
 
-**Чанків у KB**: 159
+**Чанків у KB**: 158
 
 **Генерація**: Шаблонна (LLM недоступний)
 
@@ -23,19 +23,19 @@
 | 6 | How do I merge a branch in GitLab? | 0.75 | ✅ Grounded |
 | 7 | How do I view the commit history? | 0.56 | ✅ Grounded |
 | 8 | How to set up SSH keys for GitLab? | 0.75 | ✅ Grounded |
-| 9 | What is rebasing and when should I use it? | 0.62 | ✅ Grounded |
+| 9 | What is rebasing and when should I use it? | 0.59 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.72 | ✅ Grounded |
 
 ## Запитання 1: How do I clone a Git repository?
 
-**Знайдено чанків**: git_basics_getting_repository_chunk_006 (score: 0.71), git_basics_getting_repository_chunk_005 (score: 0.66), github_about_git_chunk_008 (score: 0.64)
+**Знайдено чанків**: git_basics_getting_repository_chunk_007 (score: 0.71), git_basics_getting_repository_chunk_006 (score: 0.66), github_about_git_chunk_009 (score: 0.64)
 
 **Відповідь**: Для клонування Git-репозиторію використайте команду `git clone <url>`. Вона створює повну локальну копію репозиторію з усією історією комітів. Ви також можете клонувати з GitHub (`git clone https://github.com/...`) або через SSH (`git clone git@github.com:...`).
 
 **Знайдено в контексті:**
-  - git_basics_getting_repository_chunk_006 (score: 0.71) [data/raw/01_git_basics_getting_repository.md]
-  - git_basics_getting_repository_chunk_005 (score: 0.66) [data/raw/01_git_basics_getting_repository.md]
-  - github_about_git_chunk_008 (score: 0.64) [data/raw/08_github_about_git.md]
+  - git_basics_getting_repository_chunk_007 (score: 0.71) [data/raw/01_git_basics_getting_repository.md]
+  - git_basics_getting_repository_chunk_006 (score: 0.66) [data/raw/01_git_basics_getting_repository.md]
+  - github_about_git_chunk_009 (score: 0.64) [data/raw/08_github_about_git.md]
 
 **Джерело**: data/raw/01_git_basics_getting_repository.md
 
@@ -44,30 +44,30 @@
 
 ## Запитання 2: What is a Git branch and how do I create one?
 
-**Знайдено чанків**: github_about_git_chunk_003 (score: 0.62), gitlab_getting_started_chunk_010 (score: 0.62), gitlab_getting_started_chunk_001 (score: 0.61)
+**Знайдено чанків**: gitlab_getting_started_chunk_011 (score: 0.62), github_about_git_chunk_004 (score: 0.61), gitlab_getting_started_chunk_015 (score: 0.61)
 
 **Відповідь**: Гілка (branch) у Git — це легковага посилання на коміт, що представляє незалежну лінію розвитку. Для створення: `git branch <name>`. Для перемикання: `git checkout <name>` або `git switch <name>`. Для створення та перемикання одночасно: `git checkout -b <name>`.
 
 **Знайдено в контексті:**
-  - github_about_git_chunk_003 (score: 0.62) [data/raw/08_github_about_git.md]
-  - gitlab_getting_started_chunk_010 (score: 0.62) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_001 (score: 0.61) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_011 (score: 0.62) [data/raw/09_gitlab_getting_started.md]
+  - github_about_git_chunk_004 (score: 0.61) [data/raw/08_github_about_git.md]
+  - gitlab_getting_started_chunk_015 (score: 0.61) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/08_github_about_git.md
+**Джерело**: data/raw/09_gitlab_getting_started.md
 
 **Коментар**: Grounded — відповідь на основі релевантного чанку
 
 
 ## Запитання 3: How to resolve merge conflicts in Git?
 
-**Знайдено чанків**: branching_basic_branching_merging_chunk_013 (score: 0.77), branching_basic_branching_merging_chunk_009 (score: 0.71), branching_basic_branching_merging_chunk_011 (score: 0.69)
+**Знайдено чанків**: branching_basic_branching_merging_chunk_014 (score: 0.77), branching_basic_branching_merging_chunk_010 (score: 0.71), branching_basic_branching_merging_chunk_012 (score: 0.69)
 
 **Відповідь**: Конфлікти злиття виникають, коли Git не може автоматично поєднати зміни з двох гілок. Для вирішення: 1) Відкрийте файли з маркерами конфлікту (`<<<<<<<`, `=======`, `>>>>>>>`). 2) Виправте конфлікти вручну — залиште бажаний код. 3) `git add <файл>` — позначте як вирішене. 4) `git commit` — зафіксуйте результат злиття.
 
 **Знайдено в контексті:**
-  - branching_basic_branching_merging_chunk_013 (score: 0.77) [data/raw/03_branching_basic_branching_merging.md]
-  - branching_basic_branching_merging_chunk_009 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
-  - branching_basic_branching_merging_chunk_011 (score: 0.69) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_014 (score: 0.77) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_010 (score: 0.71) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_012 (score: 0.69) [data/raw/03_branching_basic_branching_merging.md]
 
 **Джерело**: data/raw/03_branching_basic_branching_merging.md
 
@@ -76,14 +76,14 @@
 
 ## Запитання 4: What is the difference between git add and git commit?
 
-**Знайдено чанків**: github_about_git_chunk_009 (score: 0.60), git_basics_recording_changes_chunk_008 (score: 0.56), git_basics_getting_repository_chunk_004 (score: 0.55)
+**Знайдено чанків**: github_about_git_chunk_010 (score: 0.60), git_basics_recording_changes_chunk_009 (score: 0.56), git_basics_recording_changes_chunk_010 (score: 0.55)
 
 **Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
 
 **Знайдено в контексті:**
-  - github_about_git_chunk_009 (score: 0.60) [data/raw/08_github_about_git.md]
-  - git_basics_recording_changes_chunk_008 (score: 0.56) [data/raw/02_git_basics_recording_changes.md]
-  - git_basics_getting_repository_chunk_004 (score: 0.55) [data/raw/01_git_basics_getting_repository.md]
+  - github_about_git_chunk_010 (score: 0.60) [data/raw/08_github_about_git.md]
+  - git_basics_recording_changes_chunk_009 (score: 0.56) [data/raw/02_git_basics_recording_changes.md]
+  - git_basics_recording_changes_chunk_010 (score: 0.55) [data/raw/02_git_basics_recording_changes.md]
 
 **Джерело**: data/raw/08_github_about_git.md
 
@@ -92,14 +92,14 @@
 
 ## Запитання 5: How do I stash my changes temporarily?
 
-**Знайдено чанків**: git_tools_stashing_cleaning_chunk_000 (score: 0.64), git_tools_stashing_cleaning_chunk_006 (score: 0.61), git_tools_stashing_cleaning_chunk_007 (score: 0.56)
+**Знайдено чанків**: git_tools_stashing_cleaning_chunk_001 (score: 0.64), git_tools_stashing_cleaning_chunk_007 (score: 0.61), git_tools_stashing_cleaning_chunk_008 (score: 0.56)
 
 **Відповідь**: Git stash дозволяє тимчасово зберегти незафіксовані зміни: `git stash`. Для відновлення з стеку: `git stash pop`. Для перегляду: `git stash list`. Для відновлення без видалення зі стеку: `git stash apply`. Stash корисний для швидкого перемикання між гілками.
 
 **Знайдено в контексті:**
-  - git_tools_stashing_cleaning_chunk_000 (score: 0.64) [data/raw/07_git_tools_stashing_cleaning.md]
-  - git_tools_stashing_cleaning_chunk_006 (score: 0.61) [data/raw/07_git_tools_stashing_cleaning.md]
-  - git_tools_stashing_cleaning_chunk_007 (score: 0.56) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_001 (score: 0.64) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_007 (score: 0.61) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_008 (score: 0.56) [data/raw/07_git_tools_stashing_cleaning.md]
 
 **Джерело**: data/raw/07_git_tools_stashing_cleaning.md
 
@@ -108,14 +108,14 @@
 
 ## Запитання 6: How do I merge a branch in GitLab?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_007 (score: 0.75), gitlab_getting_started_chunk_006 (score: 0.70), gitlab_getting_started_chunk_008 (score: 0.69)
+**Знайдено чанків**: gitlab_getting_started_chunk_008 (score: 0.75), gitlab_getting_started_chunk_007 (score: 0.69), gitlab_getting_started_chunk_009 (score: 0.69)
 
 **Відповідь**: Для злиття гілки в GitLab створіть Merge Request: 1) Push'ніть вашу гілку на віддалений репозиторій. 2) У веб-інтерфейсі GitLab натисніть "Compare & merge request". 3) Вкажіть цільову гілку (зазвичай main/master). 4) Після рецензування натисніть "Merge".
 
 **Знайдено в контексті:**
-  - gitlab_getting_started_chunk_007 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_006 (score: 0.70) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_008 (score: 0.69) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_008 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_007 (score: 0.69) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_009 (score: 0.69) [data/raw/09_gitlab_getting_started.md]
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
@@ -124,14 +124,14 @@
 
 ## Запитання 7: How do I view the commit history?
 
-**Знайдено чанків**: git_tools_rebasing_chunk_016 (score: 0.56), git_basics_recording_changes_chunk_028 (score: 0.54), git_tools_rebasing_chunk_010 (score: 0.54)
+**Знайдено чанків**: git_tools_rebasing_chunk_016 (score: 0.56), git_tools_rebasing_chunk_010 (score: 0.54), git_basics_recording_changes_chunk_029 (score: 0.54)
 
 **Відповідь**: Ребейзинг (rebase) — перенесення комітів з однієї гілки на іншу для створення чистішої, лінійної історії. Команда: `git rebase <target-гілка>`. Використовуйте для локальних гілок, ще не опублікованих. Не використовуйте для спільних (shared) гілок.
 
 **Знайдено в контексті:**
   - git_tools_rebasing_chunk_016 (score: 0.56) [data/raw/06_git_tools_rebasing.md]
-  - git_basics_recording_changes_chunk_028 (score: 0.54) [data/raw/02_git_basics_recording_changes.md]
   - git_tools_rebasing_chunk_010 (score: 0.54) [data/raw/06_git_tools_rebasing.md]
+  - git_basics_recording_changes_chunk_029 (score: 0.54) [data/raw/02_git_basics_recording_changes.md]
 
 **Джерело**: data/raw/06_git_tools_rebasing.md
 
@@ -140,14 +140,14 @@
 
 ## Запитання 8: How to set up SSH keys for GitLab?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_016 (score: 0.75), gitlab_getting_started_chunk_015 (score: 0.63), gitlab_getting_started_chunk_004 (score: 0.50)
+**Знайдено чанків**: gitlab_getting_started_chunk_017 (score: 0.75), gitlab_getting_started_chunk_016 (score: 0.63), gitlab_getting_started_chunk_005 (score: 0.50)
 
 **Відповідь**: Для налаштування SSH-ключів для GitLab: 1) Згенеруйте ключ: `ssh-keygen -t ed25519 -C "ваша_email"`. 2) Скопіюйте публічний ключ: `cat ~/.ssh/id_ed25519.pub`. 3) Додайте ключ у GitLab: Profile → Settings → SSH Keys. 4) Перевірте підключення: `ssh -T git@gitlab.com`.
 
 **Знайдено в контексті:**
-  - gitlab_getting_started_chunk_016 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_015 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_004 (score: 0.50) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_017 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_016 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_005 (score: 0.50) [data/raw/09_gitlab_getting_started.md]
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
@@ -156,30 +156,30 @@
 
 ## Запитання 9: What is rebasing and when should I use it?
 
-**Знайдено чанків**: git_tools_rebasing_chunk_000 (score: 0.62), git_tools_rebasing_chunk_008 (score: 0.59), git_tools_rebasing_chunk_017 (score: 0.56)
+**Знайдено чанків**: git_tools_rebasing_chunk_008 (score: 0.59), git_tools_rebasing_chunk_001 (score: 0.57), git_tools_rebasing_chunk_017 (score: 0.56)
 
 **Відповідь**: Ребейзинг (rebase) — перенесення комітів з однієї гілки на іншу для створення чистішої, лінійної історії. Команда: `git rebase <target-гілка>`. Використовуйте для локальних гілок, ще не опублікованих. Не використовуйте для спільних (shared) гілок.
 
 **Знайдено в контексті:**
-  - git_tools_rebasing_chunk_000 (score: 0.62) [data/raw/06_git_tools_rebasing.md]
   - git_tools_rebasing_chunk_008 (score: 0.59) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_001 (score: 0.57) [data/raw/06_git_tools_rebasing.md]
   - git_tools_rebasing_chunk_017 (score: 0.56) [data/raw/06_git_tools_rebasing.md]
 
 **Джерело**: data/raw/06_git_tools_rebasing.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Коментар**: Partial — контекст частково релевантний
 
 
 ## Запитання 10: How do I push changes to a remote repository?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_011 (score: 0.72), gitlab_getting_started_chunk_004 (score: 0.70), distributed_workflows_chunk_007 (score: 0.67)
+**Знайдено чанків**: gitlab_getting_started_chunk_012 (score: 0.72), gitlab_getting_started_chunk_005 (score: 0.70), distributed_workflows_chunk_008 (score: 0.67)
 
 **Відповідь**: Для надсилання змін на віддалений репозиторій: `git push <remote> <branch>`. Для впершого створення зв'язку: `git push -u origin <branch>`. Force push (обережно!): `git push --force`.
 
 **Знайдено в контексті:**
-  - gitlab_getting_started_chunk_011 (score: 0.72) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_004 (score: 0.70) [data/raw/09_gitlab_getting_started.md]
-  - distributed_workflows_chunk_007 (score: 0.67) [data/raw/05_distributed_workflows.md]
+  - gitlab_getting_started_chunk_012 (score: 0.72) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_005 (score: 0.70) [data/raw/09_gitlab_getting_started.md]
+  - distributed_workflows_chunk_008 (score: 0.67) [data/raw/05_distributed_workflows.md]
 
 **Джерело**: data/raw/09_gitlab_getting_started.md
 
