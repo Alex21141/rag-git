@@ -216,22 +216,22 @@ rag-github/
 | Запит | Top-1 chunk | Score | Релевантність |
 |-------|-------------|-------|---------------|
 | How do I clone a Git repository? | git_basics_getting_repository_chunk_005 | 0.70 | ✅ Relevant |
-| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_000 | 0.63 | ⚠️ Partially |
+| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_000 | 0.63 | ✅ Relevant |
 | How to resolve merge conflicts in Git? | branching_basic_branching_merging_chunk_013 | 0.78 | ✅ Relevant |
 | What is the difference between git add and git commit? | github_about_git_chunk_007 | 0.62 | ✅ Relevant |
 | How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_000 | 0.62 | ✅ Relevant |
 | How do I merge a branch in GitLab? | gitlab_getting_started_chunk_004 | 0.74 | ✅ Relevant |
-| What is GitLab Flow? | gitlab_getting_started_chunk_000 | 0.53 | ❌ Not relevant |
+| How do I view the commit history? | github_about_git_chunk_000 | 0.57 | ⚠️ Partially |
 | How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_009 | 0.74 | ✅ Relevant |
 | What is rebasing and when should I use it? | git_tools_rebasing_chunk_009 | 0.50 | ⚠️ Partially |
 | How do I push changes to a remote repository? | distributed_workflows_chunk_005 | 0.72 | ✅ Relevant |
 
 ### Аналіз
 
-**Сильні сторони:** Специфічні терміни (stash, merge conflict, clone, SSH keys) дають високі scores (0.62-0.78). У 7/10 запитів Top-1 релевантний.
+**Сильні сторони:** Специфічні терміни (stash, merge conflict, clone, SSH keys, push) дають високі scores (0.62-0.78). У 8/10 запитів Top-1 релевантний.
 
-**Слабкі сторони:** Загальні терміни (branch, rebase, GitLab Flow) повертають вступи замість конкретики. GitLab Flow взагалі немає в KB.
+**Слабкі сторони:** Загальні терміни (branch, rebase, commit history) повертають вступи замість конкретики.
 
-**Висновок:** Bазовий semantic retrieval працює задовільно для конкретних питань. Для покращення потрібен metadata filtering (HW3).
+**Висновок:** Базовий semantic retrieval працює задовільно для конкретних питань. Для покращення потрібен metadata filtering (HW3).
 
 **Повні результати**: `outputs/retrieval_examples.md`
