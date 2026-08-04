@@ -80,20 +80,31 @@ def find_chunk_end(text: str, start: int, max_end: int) -> int:
 
 
 def build_section_map(text: str):
-    """Build a map of character positions → section headings."""
+    """Build a map of character positions → section headings.
+
+    Ignores headings inside code blocks (``` ... ```).
+    """
     sections = []
     current_heading = None
     pos = 0
+    in_code_block = False
     for line in text.split("\n"):
         stripped = line.strip()
+        # Skip code block toggles
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            pos += len(line) + 1
+            continue
+        # Skip headings inside code blocks
+        if in_code_block:
+            pos += len(line) + 1
+            continue
         header_match = re.match(r'^(#{1,6})\s+(.+)$', stripped)
         if header_match:
             if current_heading:
-                sections.append((current_heading, pos - len(line) - 1))
+                sections.append((current_heading, pos))
             current_heading = stripped
-            pos += len(line) + 1
-        else:
-            pos += len(line) + 1
+        pos += len(line) + 1
     if current_heading:
         sections.append((current_heading, pos))
     return sections
@@ -164,7 +175,21 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
         if i > 0:
             prev_s, prev_e = raw_splits[i - 1]
             overlap_start = max(prev_s, prev_e - overlap)
-            overlap_text = text[overlap_start:prev_e].strip()
+
+            # Trim overlap_start to word boundary (find next whitespace after overlap_start)
+            for k in range(overlap_start, min(prev_e, overlap_start + 200)):
+                if text[k] in ' \t\n':
+                    overlap_start = k + 1
+                    break
+
+            # Also trim overlap_end to word boundary
+            overlap_end = prev_e
+            for k in range(prev_e - 1, overlap_start - 1, -1):
+                if text[k] in ' \t\n':
+                    overlap_end = k + 1
+                    break
+
+            overlap_text = text[overlap_start:overlap_end].strip()
 
             if overlap_text and chunk_text:
                 if not overlap_text.endswith((" ", "\n", "\t")) and not chunk_text.startswith((" ", "\n", "\t")):
