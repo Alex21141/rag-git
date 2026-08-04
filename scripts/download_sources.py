@@ -65,21 +65,15 @@ SOURCES = [
     },
     {
         "filename": "08_github_about_git.md",
-        "url": "https://docs.github.com/en/get-started/using-git/about-git",
+        "url": "https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git",
         "title": "GitHub — About Git",
-        "selector": "article",
+        "selector": "body",
     },
     {
         "filename": "09_gitlab_flow.md",
         "url": "https://docs.gitlab.com/topics/git/get_started/index.md",
         "title": "GitLab — Getting started with Git",
         "selector": "#main-content",
-    },
-    {
-        "filename": "10_gitlab_merge_requests.md",
-        "url": "https://docs.gitlab.com/user/project/merge_requests/",
-        "title": "GitLab — Merge Requests",
-        "selector": "article",
     },
 ]
 
