@@ -249,12 +249,12 @@ def clean_figure_captions(text: str) -> str:
 
 
 def clean_duplicate_headings(text: str) -> str:
-    """Remove numbered duplicate headings.
+    """Remove unnumbered heading, keep numbered duplicate.
     
-    Pattern: '# Title\n\n# X.Y Title' → '# Title'
-    The first heading is the real one; the numbered one is a navigation artifact."""
-    # Match: # Some Title\n\n# X.Y Some Title\n\n → # Some Title\n\n
-    text = re.sub(r'(#[^#][^\n]+)\n\n# \d+\.\d+ [^\n]+\n\n', r'\1\n\n', text)
+    Pattern: '# Title — Subtitle\n\n# X.Y Title - Subtitle' → '# X.Y Title - Subtitle'
+    The first heading is a page title artifact; the numbered one is the real section heading."""
+    # Match: # Some Title\n\n# X.Y Some Title\n\n → # X.Y Some Title\n\n
+    text = re.sub(r'#[^#][^\n]+\n\n# (\d+\.\d+ [^\n]+)\n\n', r'# \1\n\n', text)
     return text
 
 
