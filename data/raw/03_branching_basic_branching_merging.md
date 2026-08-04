@@ -1,5 +1,7 @@
 # Git Branching — Basic Branching and Merging
 
+# 3.2 Git Branching - Basic Branching and Merging
+
 ## Basic Branching and Merging
 
 Let’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:
@@ -180,7 +182,8 @@ If you want to use a graphical tool to resolve these issues, you can run `git me
 
 If you want to use a merge tool other than the default (Git chose `opendiff` in this case because the command was run on macOS), you can see all the supported tools listed at the top after “one of the following tools.” Just type the name of the tool you’d rather use.
 
-If you need more advanced tools for resolving tricky merge conflicts, we cover more on merging in Advanced Merging.
+  If you need more advanced tools for resolving tricky merge conflicts, we cover more on merging in Advanced Merging.
+---|---
 
 After you exit the merge tool, Git asks you if the merge was successful. If you tell the script that it was, it stages the file to mark it as resolved for you. You can run `git status` again to verify that all conflicts have been resolved:
 

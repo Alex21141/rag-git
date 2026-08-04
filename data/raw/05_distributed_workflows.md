@@ -1,5 +1,7 @@
 # Distributed Git — Distributed Workflows
 
+# 5.1 Distributed Git - Distributed Workflows
+
 Now that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affords you.
 
 In this chapter, you’ll see how to work with Git in a distributed environment as a contributor and an integrator. That is, you’ll learn how to contribute code successfully to a project and make it as easy on you and the project maintainer as possible, and also how to maintain a project successfully with a number of developers contributing.
@@ -60,7 +62,8 @@ This kind of workflow isn’t common, but can be useful in very big projects, or
 
 ### Patterns for Managing Source Code Branches
 
-Martin Fowler has made a guide "Patterns for Managing Source Code Branches". This guide covers all the common Git workflows, and explains how/when to use them. There’s also a section comparing high and low integration frequencies. <>
+  Martin Fowler has made a guide "Patterns for Managing Source Code Branches". This guide covers all the common Git workflows, and explains how/when to use them. There’s also a section comparing high and low integration frequencies. <>
+---|---
 
 ### Workflows Summary
 
