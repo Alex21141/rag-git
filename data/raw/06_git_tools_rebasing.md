@@ -10,11 +10,7 @@ In Git, there are two main ways to integrate changes from one branch into anothe
 
 If you go back to an earlier example from Basic Merging, you can see that you diverged your work and made commits on two different branches.
 
-Figure 35. Simple divergent history
-
 The easiest way to integrate the branches, as we’ve already covered, is the `merge` command. It performs a three-way merge between the two latest branch snapshots (`C3` and `C4`) and the most recent common ancestor of the two (`C2`), creating a new snapshot (and commit).
-
-Figure 36. Merging to integrate diverged work history
 
 However, there is another way: you can take the patch of the change that was introduced in `C4` and reapply it on top of `C3`. In Git, this is called _rebasing_. With the `rebase` command, you can take all the changes that were committed on one branch and replay them on a different branch.
 
@@ -27,14 +23,10 @@ For this example, you would check out the `experiment` branch, and then rebase i
 
 This operation works by going to the common ancestor of the two branches (the one you’re on and the one you’re rebasing onto), getting the diff introduced by each commit of the branch you’re on, saving those diffs to temporary files, resetting the current branch to the same commit as the branch you are rebasing onto, and finally applying each change in turn.
 
-Figure 37. Rebasing the change introduced in `C4` onto `C3`
-
 At this point, you can go back to the `master` branch and do a fast-forward merge.
 
     $ git checkout master
     $ git merge experiment
-
-Figure 38. Fast-forwarding the `master` branch
 
 Now, the snapshot pointed to by `C4'` is exactly the same as the one that was pointed to by `C5` in the merge example. There is no difference in the end product of the integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it originally happened in parallel.
 
@@ -46,30 +38,22 @@ Note that the snapshot pointed to by the final commit you end up with, whether i
 
 You can also have your rebase replay on something other than the rebase target branch. Take a history like A history with a topic branch off another topic branch, for example. You branched a topic branch (`server`) to add some server-side functionality to your project, and made a commit. Then, you branched off that to make the client-side changes (`client`) and committed a few times. Finally, you went back to your `server` branch and did a few more commits.
 
-Figure 39. A history with a topic branch off another topic branch
-
 Suppose you decide that you want to merge your client-side changes into your mainline for a release, but you want to hold off on the server-side changes until it’s tested further. You can take the changes on `client` that aren’t on `server` (`C8` and `C9`) and replay them on your `master` branch by using the `--onto` option of `git rebase`:
 
     $ git rebase --onto master server client
 
 This basically says, “Take the `client` branch, figure out the patches since it diverged from the `server` branch, and replay these patches in the `client` branch as if it was based directly off the `master` branch instead.” It’s a bit complex, but the result is pretty cool.
 
-Figure 40. Rebasing a topic branch off another topic branch
-
 Now you can fast-forward your `master` branch (see Fast-forwarding your `master` branch to include the `client` branch changes):
 
     $ git checkout master
     $ git merge client
-
-Figure 41. Fast-forwarding your `master` branch to include the `client` branch changes
 
 Let’s say you decide to pull in your `server` branch as well. You can rebase the `server` branch onto the `master` branch without having to check it out first by running `git rebase <basebranch> <topicbranch>` — which checks out the topic branch (in this case, `server`) for you and replays it onto the base branch (`master`):
 
     $ git rebase master server
 
 This replays your `server` work on top of your `master` work, as shown in Rebasing your `server` branch on top of your `master` branch.
-
-Figure 42. Rebasing your `server` branch on top of your `master` branch
 
 Then, you can fast-forward the base branch (`master`):
 
@@ -80,8 +64,6 @@ You can remove the `client` and `server` branches because all the work is integr
 
     $ git branch -d client
     $ git branch -d server
-
-Figure 43. Final commit history
 
 ### The Perils of Rebasing
 
@@ -95,19 +77,11 @@ When you rebase stuff, you’re abandoning existing commits and creating new one
 
 Let’s look at an example of how rebasing work that you’ve made public can cause problems. Suppose you clone from a central server and then do some work off that. Your commit history looks like this:
 
-Figure 44. Clone a repository, and base some work on it
-
 Now, someone else does more work that includes a merge, and pushes that work to the central server. You fetch it and merge the new remote branch into your work, making your history look something like this:
-
-Figure 45. Fetch more commits, and merge them into your work
 
 Next, the person who pushed the merged work decides to go back and rebase their work instead; they do a `git push --force` to overwrite the history on the server. You then fetch from that server, bringing down the new commits.
 
-Figure 46. Someone pushes rebased commits, abandoning commits you’ve based your work on
-
 Now you’re both in a pickle. If you do a `git pull`, you’ll create a merge commit which includes both lines of history, and your repository will look like this:
-
-Figure 47. You merge in the same work again into a new merge commit
 
 If you run a `git log` when your history looks like this, you’ll see two commits that have the same author, date, and message, which will be confusing. Furthermore, if you push this history back up to the server, you’ll reintroduce all those rebased commits to the central server, which can further confuse people. It’s pretty safe to assume that the other developer doesn’t want `C4` and `C6` to be in the history; that’s why they rebased in the first place.
 
@@ -130,8 +104,6 @@ For instance, in the previous scenario, if instead of doing a merge when we’re
   * Apply those commits to the top of `teamone/master`
 
 So instead of the result we see in You merge in the same work again into a new merge commit, we would end up with something more like Rebase on top of force-pushed rebase work.
-
-Figure 48. Rebase on top of force-pushed rebase work
 
 This only works if `C4` and `C4'` that your partner made are almost exactly the same patch. Otherwise the rebase won’t be able to tell that it’s a duplicate and will add another `C4`-like patch (which will probably fail to apply cleanly, since the changes would already be at least somewhat there).
 

@@ -14,8 +14,6 @@ In contrast with Centralized Version Control Systems (CVCSs), the distributed na
 
 In centralized systems, there is generally a single collaboration model — the centralized workflow. One central hub, or _repository_ , can accept code, and everyone synchronizes their work with it. A number of developers are nodes — consumers of that hub — and synchronize with that centralized location.
 
-Figure 53. Centralized workflow
-
 This means that if two developers clone from the hub and both make changes, the first developer to push their changes back up can do so with no problems. The second developer must merge in the first one’s work before pushing changes up, so as not to overwrite the first developer’s changes. This concept is as true in Git as it is in Subversion (or any CVCS), and this model works perfectly well in Git.
 
 If you are already comfortable with a centralized workflow in your company or team, you can easily continue using that workflow with Git. Simply set up a single repository, and give everyone on your team push access; Git won’t let users overwrite each other.
@@ -40,8 +38,6 @@ Because Git allows you to have multiple remote repositories, it’s possible to 
 
   6. The maintainer pushes merged changes to the main repository.
 
-Figure 54. Integration-manager workflow
-
 This is a very common workflow with hub-based tools like GitHub or GitLab, where it’s easy to fork a project and push your changes into your fork for everyone to see. One of the main advantages of this approach is that you can continue to work, and the maintainer of the main repository can pull in your changes at any time. Contributors don’t have to wait for the project to incorporate their changes — each party can work at their own pace.
 
 ### Dictator and Lieutenants Workflow
@@ -55,8 +51,6 @@ This is a variant of a multiple-repository workflow. It’s generally used by hu
   3. The dictator merges the lieutenants' `master` branches into the dictator’s `master` branch.
 
   4. Finally, the dictator pushes that `master` branch to the reference repository so the other developers can rebase on it.
-
-Figure 55. Benevolent dictator workflow
 
 This kind of workflow isn’t common, but can be useful in very big projects, or in highly hierarchical environments. It allows the project leader (the dictator) to delegate much of the work and collect large subsets of code at multiple points before integrating them.
 
