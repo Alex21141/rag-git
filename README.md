@@ -9,7 +9,7 @@
 | **Чанків у KB** | 149 |
 | **Тестових запитів** | 10 |
 | **Prompt template** | Grounded answering + fallback + citation |
-| **Мова відповідей** | Українська |
+| **Мова відповідей** | Англійська |
 
 ### 1. Опис завдання
 
@@ -34,7 +34,7 @@ You are a Git tutoring assistant. Your job is to answer questions about Git, Git
 IMPORTANT RULES:
 1. Answer ONLY based on the provided context below.
 2. If the context does not contain enough information to answer the question, say:
-   "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
+   "I do not have enough information in the available documents to answer this question."
 3. Do NOT use any general knowledge outside the provided context.
 4. Always cite the source chunk ID or source file used in your answer.
 
@@ -44,7 +44,7 @@ Context:
 Question:
 {question}
 
-Answer (in Ukrainian):
+Answer:
 ```
 
 ### 3. QA Pipeline
@@ -77,7 +77,7 @@ Answer (in Ukrainian):
 ### 5. Fallback behavior
 
 Для запитів з низьким score (< 0.50) або недостатнім контекстом модель повертає:
-> "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
+> "I do not have enough information in the available documents to answer this question."
 
 ### 6. Prompt improvements
 
@@ -128,7 +128,7 @@ Always cite the source chunk ID or source file used in your answer.
 *After:*
 ```
 If the context does not contain enough information to answer the question, say:
-"Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
+"I do not have enough information in the available documents to answer this question."
 ```
 
 *Результат:* Модель чесно каже "не знаю" замість вигадування.
