@@ -149,7 +149,7 @@
 
 **Відомі обмеження:**
 - ⚠️ Overlap 99.3% — 1 пара чанків без повного перекриття (138/139) — через cross-section transition
-- ⚠️ 6 partial words — overlap розрізає слова на кордонах секцій (напр. `D continue`, `Hat conflict`)
+- ⚠️ 32 partial words — overlap розрізає слова на кордонах секцій (напр. `D continue`, `Hat conflict`)
 - ⚠️ `document_type` у метаданих — статичний (DOMAIN_MAP), не аналізується реальний контент
 
 ### 8. Структура проєкту
