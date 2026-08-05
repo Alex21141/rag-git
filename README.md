@@ -108,7 +108,7 @@ Now that you have a remote Git repository set up as a focal point for all the de
 ## 4. Стратегія чанкінгу
 
 - **chunk_size**: 850 символів
-- **overlap**: 150 символів (100% coverage між сусідніми чанками)
+- **overlap**: 150 символів (99.3% coverage між сусідніми чанками)
 - **метод**: sliding window — кожне наступне вікно зсувається на `chunk_size - overlap` символів назад. Розриви на кордонах речень/слів.
 - **word-boundary cuts**: розриви на кордонах слів (не посеред слів)
 - **sentence-aware**: пріоритет розриву на кордонах речень (`.` `!` `?`)
@@ -120,10 +120,10 @@ Now that you have a remote Git repository set up as a focal point for all the de
 |---------|---------|
 | Документів | 10 |
 | Чанків | 149 |
-| Текст всього | 117,621 chars |
-| Середня довжина | 789 chars |
+| Текст всього | 117,754 chars |
+| Середня довжина | 790 chars |
 | Мінімальна довжина | 392 chars |
-| Максимальна довжина | 851 chars |
+| Максимальна довжина | 875 chars |
 
 ### За доменом
 
@@ -145,7 +145,7 @@ Now that you have a remote Git repository set up as a focal point for all the de
 - ✅ Overlap 100% — переписано chunking на sliding window з гарантованим перекриттям 150 символів між усіма сусідніми чанками
 - ✅ Zero overlap fix — прибрано 3-фазний pipeline, який руйнував overlap на section boundaries
 - ✅ Infinite loop fix — guard `new_start <= start` запобігає зворотньому руху вікна
-- ✅ Unclosed backticks — автоматичне розширення чанку для включення закриваючого backtick (4/149 залишились)
+- ✅ Unclosed backticks — автоматичне розширення чанку для включення backtick (backward + forward search)
 - ✅ Small chunk merge — чанки <300 chars об'єднуються з наступним
 - ✅ Chunk index renumbering — послідовна нумерація після merge
 - ✅ Capitalize first letter — чанки починаються з великої літери
@@ -153,7 +153,7 @@ Now that you have a remote Git repository set up as a focal point for all the de
 - ✅ Caution|/Warning| cleanup — видалення маркерів блоків попереджень
 
 **Що треба покращити:**
-- ⚠️ 3 чанки з непарними backticks (<2%) — закриваючий backtick у наступному чанку за межами 200-символьного radius
+- ✅ Backticks 0/149 — backward search для opening backtick + forward search для closing
 - ⚠️ Немає постаналізу — перевірки якості retrieval на реальних запитаннях
 - ⚠️ Metadata `document_type` присвоюється за DOMAIN_MAP — не аналізується реальний контент
 
