@@ -166,8 +166,15 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
         raw_chunk = text[start:end].strip()
 
         # Prepend overlap from previous chunk (last `overlap` chars of raw text)
+        overlap_start = start  # default: no overlap
         if prev_end > 0:
             overlap_start = max(0, prev_end - overlap)
+            # Enforce word boundary on overlap start: don't cut mid-word
+            if overlap_start > 0 and not text[overlap_start].isspace() and text[overlap_start - 1].isalnum():
+                ws = overlap_start - 1
+                while ws >= 0 and text[ws].isalnum():
+                    ws -= 1
+                overlap_start = ws + 1
             overlap_text = text[overlap_start:prev_end].strip()
 
             if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
@@ -183,7 +190,7 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Fix unclosed inline backticks AFTER overlap prepending
         # (the combined text may have odd backticks from overlap + chunk)
-        chunk_text = fix_unclosed_backticks(chunk_text, text, start, end)
+        chunk_text = fix_unclosed_backticks(chunk_text, text, overlap_start, end)
 
         # Update prev_end BEFORE updating start (for next iteration overlap)
         prev_end = end
@@ -199,11 +206,24 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Advance start: sliding window with overlap
         new_start = end - overlap
+        # If we've reached the end of the text, this was the last chunk — exit
+        if end >= text_len:
+            break
         # Ensure forward progress — never go backward or stay still
         if new_start <= start:
             start = end  # fallback: no overlap if sentence break is too close
         else:
             start = new_start
+            # Enforce word boundary: if start lands mid-word, move to word start
+            if start < text_len and not text[start].isspace() and start > 0:
+                if text[start - 1].isalnum():
+                    ws = start - 1
+                    while ws >= 0 and text[ws].isalnum():
+                        ws -= 1
+                    word_start = ws + 1
+                    # Only move back if the word is reasonable length (<100 chars)
+                    if start - word_start < 100:
+                        start = word_start
 
     return chunks
 
