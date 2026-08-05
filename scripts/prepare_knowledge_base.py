@@ -112,7 +112,7 @@ def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int
     if inline_count % 2 == 1 and start < end < len(full_text):
         # Odd number of backticks — find the closing one
         search_start = end
-        search_end = min(end + 400, len(full_text))
+        search_end = min(end + 200, len(full_text))
         for pos in range(search_start, search_end):
             if full_text[pos] == '`':
                 # Include the closing backtick
@@ -129,8 +129,11 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
                    section_map: list = None):
     """Split text into chunks with overlap between consecutive chunks.
 
-    Overlap: last `overlap` chars of raw text, with word boundary enforcement
-    on both start and end to avoid mid-word splits.
+    Simplified sliding window approach:
+    1. Walk through text with step = chunk_size - overlap
+    2. Find best sentence break near each window end
+    3. Prepend overlap from previous chunk for continuity
+    4. Fix unclosed backticks
 
     Returns list of (start_pos, end_pos, chunk_text, section) tuples.
     """
@@ -145,60 +148,44 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Find best sentence break near end
         if end < text_len:
+            # Search backwards for sentence end
             best_end = end
             for delta in range(0, 80):
-                if end - delta > start + min_chunk and text[end - delta] in ".!?":
+                if end - delta > start + min_chunk and text[end - delta] in '.!?':
                     best_end = end - delta + 1
                     break
-                if end - delta > start + min_chunk and text[end - delta] in " \t\n":
+                # Also try word boundary
+                if end - delta > start + min_chunk and text[end - delta] in ' \t\n':
                     best_end = end - delta + 1
+
+            # Ensure forward progress
             if best_end > start:
                 end = best_end
 
-        # Enforce word boundary on end: push forward if mid-word
-        while end < text_len and text[end - 1].isalnum() and text[end].isalnum():
-            end += 1
-
-        # --- Overlap from raw text (not stored text) ---
-        overlap_text = ""
-        if prev_end > 0:
-            ov_end = prev_end
-            ov_start = max(0, prev_end - overlap)
-            # Word boundary on ov_start: scan back to word start
-            if ov_start > 0 and text[ov_start - 1].isalnum():
-                ws = ov_start - 1
-                while ws >= 0 and text[ws].isalnum():
-                    ws -= 1
-                ov_start = ws + 1
-
-            # If current start falls into overlap region, skip past it
-            if start < ov_end:
-                start = ov_end
-
-            overlap_text = text[ov_start:ov_end]
-
-        # Raw chunk from word boundary forward
+        # Extract chunk text (without overlap yet)
         raw_chunk = text[start:end].strip()
 
-        # Fix unclosed backticks on raw_chunk BEFORE overlap prepend
-        raw_chunk = fix_unclosed_backticks(raw_chunk, text, start, end)
+        # Prepend overlap from previous chunk (last `overlap` chars of raw text)
+        if prev_end > 0:
+            overlap_start = max(0, prev_end - overlap)
+            overlap_text = text[overlap_start:prev_end].strip()
 
-        # Merge overlap + raw_chunk: always add space (both are stripped)
-        if overlap_text:
-            overlap_tail = overlap_text.rstrip()
-            raw_head = raw_chunk.lstrip()
-            if overlap_tail and raw_head:
-                chunk_text = overlap_tail + " " + raw_head
-            elif overlap_tail:
-                chunk_text = overlap_tail + raw_head
-            elif raw_head:
-                chunk_text = raw_head
+            if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
+                # Add space if needed
+                if not overlap_text.endswith((" ", "\n", "\t")) and raw_chunk and not raw_chunk.startswith((" ", "\n", "\t")):
+                    chunk_text = overlap_text + " " + raw_chunk
+                else:
+                    chunk_text = overlap_text + raw_chunk
             else:
-                chunk_text = overlap_tail + raw_head
+                chunk_text = raw_chunk
         else:
             chunk_text = raw_chunk
 
-        # Store prev_end for next iteration overlap
+        # Fix unclosed inline backticks AFTER overlap prepending
+        # (the combined text may have odd backticks from overlap + chunk)
+        chunk_text = fix_unclosed_backticks(chunk_text, text, start, end)
+
+        # Update prev_end BEFORE updating start (for next iteration overlap)
         prev_end = end
 
         # Resolve section
@@ -210,49 +197,24 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
         if len(chunk_text) >= min_chunk:
             chunks.append((start, end, chunk_text, section))
 
-        # Advance: sliding window with overlap
+        # Advance start: sliding window with overlap
         new_start = end - overlap
-        if end >= text_len:
-            break
+        # Ensure forward progress — never go backward or stay still
         if new_start <= start:
-            start = end
+            start = end  # fallback: no overlap if sentence break is too close
         else:
             start = new_start
-            # Word boundary: don't start mid-word
-            if start < text_len and not text[start].isspace() and start > 0:
-                if text[start - 1].isalnum():
-                    ws = start - 1
-                    while ws >= 0 and text[ws].isalnum():
-                        ws -= 1
-                    word_start = ws + 1
-                    if start - word_start < 100:
-                        start = word_start
 
     return chunks
 
-def _capitalize_chunk(text: str) -> str:
-    """Capitalize first letter of chunk text.
 
-    If the first alpha char is in the middle of a word (previous char is also a letter),
-    remove the partial word prefix so the chunk starts with a complete word.
-    """
+def _capitalize_chunk(text: str) -> str:
+    """Capitalize first letter of chunk text."""
     if not text:
         return text
-    # Skip leading whitespace
-    i = 0
-    while i < len(text) and text[i].isspace():
-        i += 1
-    if i < len(text) and text[i].islower():
-        # Check if we're in the middle of a word (previous char is a letter)
-        if i > 0 and text[i - 1].isalpha():
-            # Find start of word and cut it off
-            word_start = i
-            while word_start > 0 and text[word_start - 1].isalpha():
-                word_start -= 1
-            if word_start < i:
-                text = text[:word_start] + text[i:]  # remove partial word prefix
-                i = word_start
-        text = text[:i] + text[i].upper() + text[i + 1:]
+    for i, ch in enumerate(text):
+        if ch.isalpha():
+            return text[:i] + ch.upper() + text[i + 1:]
     return text
 
 
