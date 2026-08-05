@@ -1,3 +1,5 @@
+# Git tutoring assistant
+
 
 ## HW4: RAG Answer Generation — Grounded QA Pipeline
 
