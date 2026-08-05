@@ -100,27 +100,45 @@ def resolve_section(section_map: list, char_pos: int, title: str):
 
 
 def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
-    """Fix unclosed inline backticks by expanding chunk end to include closing backtick.
+    """Fix unclosed inline backticks.
 
-    If chunk_text has odd number of backticks (not inside a code block),
-    it means we cut an inline code fence in half. Find the closing backtick
-    and include it.
+    Two cases:
+    1. Chunk starts mid-inline-code (opening backtick is in previous chunk's overlap)
+       → search backward for opening ` and include it
+    2. Chunk ends mid-inline-code (closing backtick is in next chunk)
+       → search forward for closing ` and include it
     """
     code_block_count = chunk_text.count('```')
     inline_count = chunk_text.count('`') - (code_block_count * 3)
 
-    if inline_count % 2 == 1 and start < end < len(full_text):
-        # Odd number of backticks — find the closing one
-        search_start = end
-        search_end = min(end + 200, len(full_text))
-        for pos in range(search_start, search_end):
-            if full_text[pos] == '`':
-                # Include the closing backtick
-                chunk_text = full_text[start:pos + 1].strip()
-                break
-            # Stop at next heading or section break
-            if full_text[pos:pos + 2] == '# ':
-                break
+    if inline_count % 2 == 1:
+        # Odd backticks — overlap may have cut an inline code fence
+        # Search backward for a missing opening backtick (within 200 chars before start)
+        if start > 0:
+            search_back = max(0, start - 200)
+            for pos in range(start - 1, search_back - 1, -1):
+                if full_text[pos] == '`':
+                    # Found opening backtick — include it
+                    chunk_text = full_text[pos:end].strip()
+                    # Re-check
+                    cb = chunk_text.count('```')
+                    ic = chunk_text.count('`') - (cb * 3)
+                    if ic % 2 == 0:
+                        return chunk_text
+                    break
+                # Stop at heading
+                if full_text[pos:pos + 2] == '# ':
+                    break
+
+        # Search forward for closing backtick
+        if start < end < len(full_text):
+            search_end = min(end + 200, len(full_text))
+            for pos in range(end, search_end):
+                if full_text[pos] == '`':
+                    chunk_text = full_text[start:pos + 1].strip()
+                    break
+                if full_text[pos:pos + 2] == '# ':
+                    break
 
     return chunk_text
 
@@ -168,12 +186,6 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
         # Prepend overlap from previous chunk (last `overlap` chars of raw text)
         if prev_end > 0:
             overlap_start = max(0, prev_end - overlap)
-            # Word boundary on overlap_start: if mid-word, move back to word start
-            if overlap_start > 0 and text[overlap_start - 1].isalnum():
-                ws = overlap_start - 1
-                while ws >= 0 and text[ws].isalnum():
-                    ws -= 1
-                overlap_start = ws + 1
             overlap_text = text[overlap_start:prev_end].strip()
 
             if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
@@ -205,21 +217,11 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Advance start: sliding window with overlap
         new_start = end - overlap
-        # If we've reached the end of the text, this was the last chunk — exit
-        if end >= text_len:
-            break
         # Ensure forward progress — never go backward or stay still
         if new_start <= start:
             start = end  # fallback: no overlap if sentence break is too close
         else:
             start = new_start
-            # Word boundary: if start lands mid-word, move forward to next word
-            if start < text_len and text[start].isalnum():
-                # Skip over current word and whitespace to reach next word
-                while start < text_len and text[start].isalnum():
-                    start += 1
-                while start < text_len and text[start] in " \t\n":
-                    start += 1
 
     return chunks
 
