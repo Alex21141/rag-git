@@ -1,7 +1,5 @@
 # 2.2 Git Basics - Recording Changes to the Repository
 
-## Recording Changes to the Repository
-
 At this point, you should have a _bona fide_ Git repository on your local machine, and a checkout or _working copy_ of all of its files in front of you. Typically, you’ll want to start making changes and committing snapshots of those changes into your repository each time the project reaches a state you want to record.
 
 Remember that each file in your working directory can be in one of two states: _tracked_ or _untracked_. Tracked files are files that were in the last snapshot, as well as any newly staged files; they can be unmodified, modified, or staged. In short, tracked files are files that Git knows about.
