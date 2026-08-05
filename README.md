@@ -75,9 +75,7 @@
 `distributed_workflows_chunk_001`:
 ```json
 {
- "text": "# 5.1 Distributed Git - Distributed Workflows
-
-Now that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affor...",
+ "text": "# 5.1 Distributed Git - Distributed Workflows\n\nNow that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affor...",
  "metadata": {
   "document_id": "distributed_workflows",
   "source_file": "data/raw/05_distributed_workflows.md",
