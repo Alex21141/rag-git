@@ -1,8 +1,7 @@
 # Git tutoring assistant
 
 
-## HW4: RAG Answer Generation — Grounded QA Pipeline
-
+Домашнє завдання №4 — RAG-бот з заземленими відповідями
 **Pipeline**: question → retrieval (semantic) → prompt → grounded answer → citation
 **Prompt template**: Grounded answering rule + fallback + citation
 **Language**: Українська
@@ -19,8 +18,6 @@
 5. **Fallback**: Якщо score < 0.50 або контекст недостатній → fallback повідомлення
 
 ### Результати тестування
-
-
 
 ### Prompt Template
 
