@@ -37,15 +37,7 @@
 `branching_basic_branching_merging_chunk_001`:
 ```json
 {
- "text": "# 3.2 Git Branching - Basic Branching and Merging
-
-Let’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:
-
-  1. Do some work on a website.
-
-  2. Create a branch for a new user story you’re working on.
-
-  3. Do some ...",
+ "text": "# 3.2 Git Branching - Basic Branching and Merging\\n\\nLet’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:\\n\\n  1. Do some work on a website.\\n\\n  2. Create a branch for a new user story you’re working on.\\n\\n  3. Do some ...",
  "metadata": {
   "document_id": "branching_basic_branching_merging",
   "source_file": "data/raw/03_branching_basic_branching_merging.md",
@@ -59,11 +51,7 @@ Let’s go through a simple example of branching and merging with a workflow tha
 `branching_branch_management_chunk_001`:
 ```json
 {
- "text": "# 3.3 Git Branching - Branch Management
-
-Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.
-
-The `git branch` command does more than just create and delete branches. If you run it ...",
+ "text": "# 3.3 Git Branching - Branch Management\\n\\nNow that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.\\n\\nThe `git branch` command does more than just create and delete branches. If you run it ...",
  "metadata": {
   "document_id": "branching_branch_management",
   "source_file": "data/raw/04_branching_branch_management.md",
@@ -77,9 +65,7 @@ The `git branch` command does more than just create and delete branches. If you 
 `distributed_workflows_chunk_001`:
 ```json
 {
- "text": "# 5.1 Distributed Git - Distributed Workflows
-
-Now that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affor...",
+ "text": "# 5.1 Distributed Git - Distributed Workflows\\n\\nNow that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affor...",
  "metadata": {
   "document_id": "distributed_workflows",
   "source_file": "data/raw/05_distributed_workflows.md",
