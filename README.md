@@ -1,9 +1,6 @@
 # Git tutoring assistant
 
 Домашнє завдання №3 — Покращення retrieval pipeline
-
-## HW3: Improved Retrieval Pipeline
-
 **Baseline (HW2)**: Semantic-only (FAISS cosine, all-MiniLM-L6-v2)
 **Improved (HW3)**: Hybrid BM25 + Semantic (α=0.5) + Metadata filtering
 
