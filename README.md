@@ -79,3 +79,29 @@ Answer (in Ukrainian):
 
 **Скрипт**: `scripts/rag_answer.py`
 **Повні результати**: `outputs/rag_answers_examples.md`
+
+### Структура проєкту
+
+```
+rag-github/
+├── README.md ← цей файл
+├── data/
+│   ├── raw/ ← початкові документи (3 .md)
+│   │   ├── 03_branching_basic_branching_merging.md
+│   │   ├── 04_branching_branch_management.md
+│   │   └── 05_distributed_workflows.md
+│   └── processed/
+│       └── chunks.jsonl ← 158 чанків
+├── index/
+│   ├── faiss.index ← FAISS IndexFlatIP (dim=384)
+│   └── metadata.pkl ← серіалізовані метадані
+├── outputs/
+│   ├── retrieval_examples.md ← результати retrieval
+│   └── rag_answers_examples.md ← RAG відповіді + цитати
+└── scripts/
+    ├── download_sources.py ← збір даних з веб
+    ├── prepare_knowledge_base.py ← chunking + нормалізація
+    ├── retrieval.py ← semantic retrieval (FAISS)
+    ├── rag_answer.py ← RAG QA pipeline (prompt + LLM + citations)
+    └── validate_chunks.py ← JSONL валідатор
+```
