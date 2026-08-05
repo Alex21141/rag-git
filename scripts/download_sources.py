@@ -255,12 +255,30 @@ def clean_figure_captions(text: str) -> str:
 
 
 def clean_duplicate_headings(text: str) -> str:
-    """Remove unnumbered heading, keep numbered duplicate.
-    
-    Pattern: '# Title — Subtitle\n\n# X.Y Title - Subtitle' → '# X.Y Title - Subtitle'
-    The first heading is a page title artifact; the numbered one is the real section heading."""
-    # Match: # Some Title\n\n# X.Y Some Title\n\n → # X.Y Some Title\n\n
+    """Remove duplicate headings from html2text + title prepend.
+
+    Case 1: '# Title — Subtitle\n\n# X.Y Title - Subtitle\n\n' → '# X.Y Title - Subtitle\n\n'
+            (unnumbered page title before numbered section heading — keep numbered)
+    Case 2: '# X.Y Title - Subtitle\n\n## Subtitle\n\n' → '# X.Y Title - Subtitle\n\n'
+            (numbered H1 followed by unnumbered H2 subheading — keep H1, drop H2)
+    """
+    # Case 1: unnumbered # before numbered # — keep the numbered one
     text = re.sub(r'#[^#][^\n]+\n\n# (\d+\.\d+ [^\n]+)\n\n', r'# \1\n\n', text)
+
+    # Case 2: numbered # (H1) followed by ## (H2) subheading that's a subset of the title
+    # Pattern: '# X.Y Title - Subtitle\n\n## Subtitle\n\n' → '# X.Y Title - Subtitle\n\n'
+    def remove_h2_dup(m):
+        full_heading = m.group(1)  # e.g. "3.2 Git Branching - Basic Branching and Merging"
+        h2_text = m.group(2)      # e.g. "Basic Branching and Merging"
+        # If H2 text appears in the H1 title (after the dash), drop the H2
+        if ' - ' in full_heading:
+            title_part = full_heading.split(' - ', 1)[1]
+            if h2_text.strip() == title_part.strip():
+                return f'# {full_heading}\n\n'
+        return m.group(0)  # no change
+
+    text = re.sub(r'# ((?:\d+\.\s+)?[^\n]+?)\n\n## ([^\n]+)\n\n', remove_h2_dup, text)
+
     return text
 
 
