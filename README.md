@@ -37,15 +37,11 @@
 `branching_basic_branching_merging_chunk_001`:
 ```json
 {
- "text": "- Basic Branching and Merging
-
-## Basic Branching and Merging
-
-Let’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these step...",
+ "text": "## Basic Branching and Merging\n\nLet’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:\n\n  1. Do some work on a website.\n\n  2. Create a branch for a new user story you’re working on.\n\n  3.\n...",
  "metadata": {
   "document_id": "branching_basic_branching_merging",
   "source_file": "data/raw/03_branching_basic_branching_merging.md",
-  "section": "# Git Branching — Basic Branching and Merging",
+  "section": "# 3.2 Git Branching - Basic Branching and Merging",
   "chunk_index": 1,
   "domain": "git",
   "document_type": "workflow"
@@ -55,15 +51,11 @@ Let’s go through a simple example of branching and merging with a workflow tha
 `branching_branch_management_chunk_001`:
 ```json
 {
- "text": "- Branch Management
-
-## Branch Management
-
-Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches ...",
+ "text": "## Branch Management\n\nNow that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.\n\nThe `git branch` command does more than just create and delete branches. If you ru\n...",
  "metadata": {
   "document_id": "branching_branch_management",
   "source_file": "data/raw/04_branching_branch_management.md",
-  "section": "# Git Branching — Branch Management",
+  "section": "# 3.3 Git Branching - Branch Management",
   "chunk_index": 1,
   "domain": "git",
   "document_type": "reference"
@@ -73,15 +65,11 @@ Now that you’ve created, merged, and deleted some branches, let’s look at so
 `distributed_workflows_chunk_001`:
 ```json
 {
- "text": "# Distributed Git — Distributed Workflows
-
-# 5.1 Distributed Git - Distributed Workflows
-
-Now that you have a remote Git repository set up as a focal point for all the developers to share their code, ...",
+ "text": "# 5.1 Distributed Git - Distributed Workflows\n\nNow that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed wo\n...",
  "metadata": {
   "document_id": "distributed_workflows",
   "source_file": "data/raw/05_distributed_workflows.md",
-  "section": "# Distributed Git — Distributed Workflows",
+  "section": "# 5.1 Distributed Git - Distributed Workflows",
   "chunk_index": 1,
   "domain": "git",
   "document_type": "workflow"
@@ -133,9 +121,9 @@ Now that you have a remote Git repository set up as a focal point for all the de
 ## 6. Приклади чанків
 
 
-- `$branching_basic_branching_merging_chunk_001` (654 chars, domain=git, section=# Git Branching — Basic Branching and Merging)
-- `$branching_branch_management_chunk_001` (867 chars, domain=git, section=# Git Branching — Branch Management)
-- `$distributed_workflows_chunk_001` (670 chars, domain=git, section=# Distributed Git — Distributed Workflows)
+- `$branching_basic_branching_merging_chunk_001` (641 chars, domain=git, section=# 3.2 Git Branching - Basic Branching and Merging)
+- `$branching_branch_management_chunk_001` (846 chars, domain=git, section=# 3.3 Git Branching - Branch Management)
+- `$distributed_workflows_chunk_001` (650 chars, domain=git, section=# 5.1 Distributed Git - Distributed Workflows)
 
 ## 7. Виправлення та покращення
 
