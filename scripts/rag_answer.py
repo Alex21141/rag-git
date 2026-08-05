@@ -36,32 +36,33 @@ SCORE_THRESHOLD = 0.30
 
 # ── Prompt Templates ──────────────────────────────────────────────────────
 
-# V1: Простий шаблон (без ролі, без fallback, без цитат)
-PROMPT_V1 = """Вiдповiдь на запитання на основi контексту.
+# V1: Simple template (no role, no fallback, no citations)
+PROMPT_V1 = """Answer the question based on the context.
 
-Контекст:
+Context:
 {context}
 
-Запитання: {question}
+Question: {question}
 
-Вiдповiдь:
+Answer:
 """
 
-# V2: Покращений шаблон (з роллю, fallback, цитатами)
-PROMPT_TEMPLATE = """Ти — Git-преподавач (Git tutor assistant). Твоя задача — відповідати на запитання про Git, GitHub та GitLab.
+# V2: Improved template (with role, fallback, citations)
+PROMPT_TEMPLATE = """You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
-ІНСТРУКЦІЇ:
-1. Відповідай ТІЛЬКИ на основі наведеного контексту. Не використовуй зовнішні знання.
-2. Якщо контекст не містить інформації для відповіді на запитання, скажи: "Не маю достатньої інформації для надання відповіді на це питання."
-3. Обов'язково вкажи джерела: chunk_id або source_file для кожного твердження.
-4. Відповідай українською мовою.
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+4. Always cite the source chunk ID or source file used in your answer.
 
-КОНТЕКСТ:
+Context:
 {context}
 
-ЗАПИТАННЯ: {question}
+Question: {question}
 
-ВІДПОВІДЬ:
+Answer:
 """
 
 # ── Topic Mapping (source_file → topic) ───────────────────────────────────
@@ -69,77 +70,74 @@ PROMPT_TEMPLATE = """Ти — Git-преподавач (Git tutor assistant). Т
 TOPIC_MAP = {
     "01_git_basics_getting_repository": {
         "topic": "clone",
-        "summary_uk": (
-            "Для клонування Git-репозиторію використайте команду `git clone <url>`. "
-            "Вона створює повну локальну копію репозиторію з усією історією комітів. "
-            "Ви також можете клонувати з GitHub (`git clone https://github.com/...`) або "
-            "через SSH (`git clone git@github.com:...`)."
+        "summary_en": (
+            "To clone a Git repository, use `git clone <url>`. "
+            "It creates a full local copy of the repository with the entire commit history. "
+            "You can also clone from GitHub (`git clone https://github.com/...`) or via SSH (`git clone git@github.com:...`)."
         ),
     },
     "03_branching_basic_branching_merging": {
         "topic": "branch_merge",
-        "summary_uk": None,  # depends on sub-question
+        "summary_en": None,  # depends on sub-question
     },
     "04_branching_branch_management": {
         "topic": "branch",
-        "summary_uk": (
-            "Гілка (branch) у Git — це легковага посилання на коміт, що представляє "
-            "незалежну лінію розвитку. Для створення: `git branch <name>`. "
-            "Для перемикання: `git checkout <name>` або `git switch <name>`. "
-            "Для створення та перемикання одночасно: `git checkout -b <name>`."
+        "summary_en": (
+            "A branch in Git is a lightweight reference to a commit, representing an independent line of development. "
+            "To create: `git branch <name>`. To switch: `git checkout <name>` or `git switch <name>`. "
+            "To create and switch at once: `git checkout -b <name>`."
         ),
     },
     "06_git_tools_rebasing": {
         "topic": "rebase",
-        "summary_uk": (
-            "Ребейзинг (rebase) — перенесення комітів з однієї гілки на іншу для "
-            "створення чистішої, лінійної історії. Команда: `git rebase <target-гілка>`. "
-            "Використовуйте для локальних гілок, ще не опублікованих. "
-            "Не використовуйте для спільних (shared) гілок."
+        "summary_en": (
+            "Rebase moves commits from one branch to another to create a cleaner, linear history. "
+            "Command: `git rebase <target-branch>`. Use for local branches that are not yet published. "
+            "Do not use for shared (public) branches."
         ),
     },
     "07_git_tools_stashing_cleaning": {
         "topic": "stash",
-        "summary_uk": (
-            "Git stash дозволяє тимчасово зберегти незафіксовані зміни: `git stash`. "
-            "Для відновлення з стеку: `git stash pop`. Для перегляду: `git stash list`. "
-            "Для відновлення без видалення зі стеку: `git stash apply`. "
-            "Stash корисний для швидкого перемикання між гілками."
+        "summary_en": (
+            "Git stash allows you to temporarily save uncommitted changes: `git stash`. "
+            "To restore from stack: `git stash pop`. To view: `git stash list`. "
+            "To restore without removing from stack: `git stash apply`. "
+            "Stash is useful for quickly switching between branches."
         ),
     },
     "02_git_basics_recording_changes": {
         "topic": "add_commit",
-        "summary_uk": (
-            "`git add` — додає зміни до індексу (staging area), готуючи їх до коміту. "
-            "`git commit` — фіксує зміни з індексу до репозиторію з повідомленням. "
-            "Різниця: `git add` — підготовка змін, `git commit` — фіксація."
+        "summary_en": (
+            "`git add` — adds changes to the index (staging area), preparing them for commit. "
+            "`git commit` — saves changes from the index to the repository with a message. "
+            "Difference: `git add` — staging changes, `git commit` — committing them."
         ),
     },
     "05_distributed_workflows": {
         "topic": "push_remote",
-        "summary_uk": (
-            "Для надсилання змін на віддалений репозиторій: `git push <remote> <branch>`. "
-            "Для впершого створення зв'язку: `git push -u origin <branch>`. "
-            "Force push (обережно!): `git push --force`."
+        "summary_en": (
+            "To push changes to a remote repository: `git push <remote> <branch>`. "
+            "For the first push (to set upstream): `git push -u origin <branch>`. "
+            "Force push (careful!): `git push --force`."
         ),
     },
     "09_gitlab_getting_started": {
         "topic": "gitlab_intro",
-        "summary_uk": None,  # generic intro, not a specific answer
+        "summary_en": None,  # generic intro, not a specific answer
     },
     "10_gitlab_merge_requests": {
         "topic": "gitlab_merge",
-        "summary_uk": (
-            "Для злиття гілки в GitLab створіть Merge Request: "
-            "1) Push'ніть вашу гілку на віддалений репозиторій. "
-            "2) У веб-інтерфейсі GitLab натисніть \"Compare & merge request\". "
-            "3) Вкажіть цільову гілку (зазвичай main/master). "
-            "4) Після рецензування натисніть \"Merge\"."
+        "summary_en": (
+            "To merge a branch in GitLab, create a Merge Request: "
+            "1) Push your branch to the remote repository. "
+            "2) In GitLab web UI, click 'Compare & merge request'. "
+            "3) Specify the target branch (usually main/master). "
+            "4) After review, click 'Merge'."
         ),
     },
     "08_github_about_git": {
         "topic": "github_intro",
-        "summary_uk": None,
+        "summary_en": None,
     },
 }
 
@@ -160,20 +158,20 @@ QUERY_TOPIC_OVERRIDES = {
 # Summary for topics that need special handling
 SPECIAL_TOPICS = {
     "branch_merge_conflict": (
-        "Конфлікти злиття виникають, коли Git не може автоматично поєднати зміни "
-        "з двох гілок. Для вирішення: "
-        "1) Відкрийте файли з маркерами конфлікту (`<<<<<<<`, `=======`, `>>>>>>>`). "
-        "2) Виправте конфлікти вручну — залиште бажаний код. "
-        "3) `git add <файл>` — позначте як вирішене. "
-        "4) `git commit` — зафіксуйте результат злиття."
+        "Merge conflicts occur when Git cannot automatically combine changes from two branches. "
+        "To resolve: "
+        "1) Open files with conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`). "
+        "2) Manually fix conflicts — keep the desired code. "
+        "3) `git add <file>` — mark as resolved. "
+        "4) `git commit` — save the merge result."
     ),
     "gitlab_flow": None,  # Fallback — not in KB
     "ssh_gitlab": (
-        "Для налаштування SSH-ключів для GitLab: "
-        "1) Згенеруйте ключ: `ssh-keygen -t ed25519 -C \"ваша_email\"`. "
-        "2) Скопіюйте публічний ключ: `cat ~/.ssh/id_ed25519.pub`. "
-        "3) Додайте ключ у GitLab: Profile → Settings → SSH Keys. "
-        "4) Перевірте підключення: `ssh -T git@gitlab.com`."
+        "To set up SSH keys for GitLab: "
+        "1) Generate a key: `ssh-keygen -t ed25519 -C 'your_email'`. "
+        "2) Copy the public key: `cat ~/.ssh/id_ed25519.pub`. "
+        "3) Add the key to GitLab: Profile → Settings → SSH Keys. "
+        "4) Verify connection: `ssh -T git@gitlab.com`."
     ),
 }
 
@@ -216,7 +214,7 @@ def detect_topic_from_query(query):
 
 
 def get_topic_summary(topic, results):
-    """Get Ukrainian summary for a topic, or fallback message."""
+    """Get English summary for a topic, or fallback message."""
     # Check special topics first
     if topic in SPECIAL_TOPICS:
         summary = SPECIAL_TOPICS[topic]
@@ -227,7 +225,7 @@ def get_topic_summary(topic, results):
     # Check topic map
     for doc_info in TOPIC_MAP.values():
         if doc_info["topic"] == topic:
-            summary = doc_info["summary_uk"]
+            summary = doc_info.get("summary_en")
             if summary is None:
                 return None, True
             return summary, False
@@ -284,8 +282,8 @@ def generate_answer_template(query, results):
     """Template-based answer generation using retrieval + topic mapping."""
     if not results:
         return (
-            "Не маю достатньої інформації для надання відповіді на це питання. "
-            "Не вдалося знайти релевантні чанки в базі знань."
+            "I do not have enough information in the available documents to answer this question. "
+            "Could not find relevant chunks in the knowledge base."
         ), True
 
     max_score = results[0]["score"]
@@ -300,10 +298,10 @@ def generate_answer_template(query, results):
             # Query matches a known "not in KB" topic (e.g., GitLab Flow)
             chunk_refs = ", ".join([r["chunk_id"] for r in results[:2]])
             return (
-                f"Не маю достатньої інформації для надання відповіді на це питання. "
-                f"Запитання стосується теми, яка не покрита в базі знань. "
-                f"Найкращий знайдений чанк ({chunk_refs}) має бал релевантності "
-                f"{max_score:.2f}, що недостатньо для надання надійної відповіді."
+                f"I do not have enough information in the available documents to answer this question. "
+                f"The question covers a topic not included in the knowledge base. "
+                f"Best matching chunk ({chunk_refs}) has relevance score "
+                f"{max_score:.2f}, which is insufficient for a reliable answer."
             ), True
 
     # Second: detect from retrieval results (source-based)
@@ -317,9 +315,9 @@ def generate_answer_template(query, results):
     if max_score < SCORE_THRESHOLD:
         chunk_refs = ", ".join([r["chunk_id"] for r in results[:2]])
         return (
-            f"Не маю достатньої інформації для надання відповіді на це питання. "
-            f"Знайдено чанки ({chunk_refs}) з низьким балом релевантності ({max_score:.2f}), "
-            f"що не дозволяє надати надійну відповідь на основі контексту."
+            f"I do not have enough information in the available documents to answer this question. "
+            f"Found chunks ({chunk_refs}) with low relevance score ({max_score:.2f}), "
+            f"which does not allow providing a reliable answer based on context."
         ), True
 
     # Generic: construct from top chunk text
@@ -331,13 +329,13 @@ def generate_answer_template(query, results):
 
     if len(cleaned) > 30:
         answer = (
-            f"На основі знайденого контексту: {cleaned}\n\n"
+            f"Based on retrieved context: {cleaned}\n\n"
         )
         return _format_answer_with_sources(answer, results), False
 
     return (
-        f"Не маю достатньої інформації для надання відповіді на це питання. "
-        f"Знайдений контекст недостатньо релевантний для формування відповіді."
+        f"I do not have enough information in the available documents to answer this question. "
+        f"Retrieved context is not relevant enough to form an answer."
     ), True
 
 
@@ -350,7 +348,7 @@ def _format_answer_with_sources(summary, results):
         )
 
     context_str = "\n".join(context_parts)
-    return f"{summary}\n\n**Знайдено в контексті:**\n{context_str}"
+    return f"{summary}\n\n**Found in context:**\n{context_str}"
 
 
 def answer_question(query, index, chunks, model):
@@ -375,15 +373,15 @@ def answer_question(query, index, chunks, model):
     }
 
 
-def comment_uk(result):
-    """Generate Ukrainian comment for a result."""
+def comment(result):
+    """Generate comment for a result."""
     if result["is_fallback"]:
-        return "Fallback — недостатньо релевантного контексту"
+        return "Fallback — insufficient relevant context"
     if result["results"] and result["results"][0]["score"] >= 0.6:
-        return "Grounded — відповідь на основі релевантного чанку"
+        return "Grounded — answer based on relevant chunk"
     if result["results"]:
-        return "Partial — контекст частково релевантний"
-    return "Не знайдено контексту"
+        return "Partial — context partially relevant"
+    return "No context found"
 
 
 def generate_report(all_results):
@@ -396,18 +394,18 @@ def generate_report(all_results):
     chunk_count = sum(1 for _ in open(CHUNKS_FILE, encoding="utf-8"))
 
     lines = []
-    lines.append("# HW4: RAG Answer Generation — Результати тестування\n")
-    lines.append(f"**Модель вбудувань**: `{MODEL_NAME}`\n")
-    lines.append(f"**Індекс**: FAISS IndexFlatIP (dim={EMBEDDING_DIM})\n")
-    lines.append(f"**Чанків у KB**: {chunk_count}\n")
-    lines.append(f"**Генерація**: Шаблонна (LLM недоступний)\n")
-    lines.append(f"**Порог релевантності**: {SCORE_THRESHOLD}\n")
+    lines.append("# HW4: RAG Answer Generation — Test Results\n")
+    lines.append(f"**Embedding model**: `{MODEL_NAME}`\n")
+    lines.append(f"**Index**: FAISS IndexFlatIP (dim={EMBEDDING_DIM})\n")
+    lines.append(f"**Chunks in KB**: {chunk_count}\n")
+    lines.append(f"**Generation**: Template-based (LLM unavailable)\n")
+    lines.append(f"**Relevance threshold**: {SCORE_THRESHOLD}\n")
     lines.append("")
 
     # Summary table
-    lines.append("## Підсумкова таблиця\n")
-    lines.append("| # | Запитання | Top-1 score | Результат |")
-    lines.append("|---|-----------|-------------|-----------|")
+    lines.append("## Summary Table\n")
+    lines.append("| # | Question | Top-1 score | Result |")
+    lines.append("|---|----------|-------------|--------|")
     for i, r in enumerate(all_results, 1):
         top_score = r["results"][0]["score"] if r["results"] else 0.0
         status = "❌ Fallback" if r["is_fallback"] else "✅ Grounded"
@@ -416,90 +414,90 @@ def generate_report(all_results):
 
     # Detailed results
     for i, r in enumerate(all_results, 1):
-        lines.append(f"## Запитання {i}: {r['query']}\n")
+        lines.append(f"## Question {i}: {r['query']}\n")
 
         # Retrieved chunks
         chunk_strs = [
             f"{cr['chunk_id']} (score: {cr['score']:.2f})" for cr in r["results"][:3]
         ]
-        lines.append(f"**Знайдено чанків**: {', '.join(chunk_strs)}\n")
+        lines.append(f"**Retrieved chunks**: {', '.join(chunk_strs)}\n")
 
         # Answer
-        lines.append(f"**Відповідь**: {r['answer']}\n")
+        lines.append(f"**Answer**: {r['answer']}\n")
 
         # Source
         if r["results"]:
-            lines.append(f"**Джерело**: {r['results'][0]['source_file']}\n")
+            lines.append(f"**Source**: {r['results'][0]['source_file']}\n")
         else:
-            lines.append("**Джерело**: не знайдено\n")
+            lines.append("**Source**: not found\n")
 
         # Comment
-        lines.append(f"**Коментар**: {comment_uk(r)}\n")
+        lines.append(f"**Comment**: {comment(r)}\n")
         lines.append("")
 
     # ── Prompt improvement examples ────────────────────────────────────
 
     lines.append("---\n")
-    lines.append("## Покращення prompt-шаблонів\n\n")
+    lines.append("## Prompt Improvements\n\n")
 
     # Example 1
-    lines.append("### Приклад 1: Додавання ролі та інструкцій\n\n")
-    lines.append("#### Оригінальний prompt (v1)\n")
+    lines.append("### Example 1: Adding role and instructions\n\n")
+    lines.append("#### Original prompt (v1)\n")
     lines.append("```\n")
     lines.append(PROMPT_V1.strip())
     lines.append("```\n\n")
-    lines.append("#### Оновлений prompt (v2)\n")
+    lines.append("#### Updated prompt (v2)\n")
     lines.append("```\n")
     lines.append(PROMPT_TEMPLATE.strip())
     lines.append("```\n\n")
     lines.append(
-        "**Проблема**: Без ролі модель давала загальні відповіді, що базувалися на "
-        "власних знаннях, а не на контексті. Наприклад, для запиту про GitLab Flow "
-        "модель генерувала відповідь на основі загальних знань, хоча контекст не "
-        "містив такої інформації.\n\n"
+        "**Problem**: Without a role, the model gave generic answers based on "
+        "its own knowledge, not the context. For example, for a GitLab Flow query, "
+        "the model generated an answer from general knowledge, even though the context "
+        "did not contain such information.\n\n"
     )
     lines.append(
-        "**Аналіз результату**: Додавання чіткої ролі («Ти — Git-преподавач») та "
-        "інструкції «Відповідай ТІЛЬКИ на основі наведеного контексту» значно зменшило "
-        "галюцинації. Модель тепер обмежується лише наведеним контекстом.\n\n"
+        "**Result analysis**: Adding a clear role ('You are a Git tutoring assistant') and "
+        "the instruction 'Answer ONLY based on the provided context' significantly reduced "
+        "hallucinations. The model is now limited to only the provided context.\n\n"
     )
 
     # Example 2
-    lines.append("### Приклад 2: Додавання fallback-правила\n\n")
+    lines.append("### Example 2: Adding fallback rule\n\n")
     lines.append("```python\n")
-    lines.append("# V1: Немає fallback-правила\n")
-    lines.append("# V2: Додано інструкцію:\n")
+    lines.append("# V1: No fallback rule\n")
+    lines.append("# V2: Added instruction:\n")
     lines.append(
-        '#  "2. Якщо контекст не містить інформації, скажи: '
-        '"Не маю достатньої інформації...""\n'
+        '#  "2. If the context does not contain enough information, say:\n'
+        '#   I do not have enough information..."\n'
     )
     lines.append("```\n\n")
     lines.append(
-        "**Проблема**: При запиті «How do I view the commit history?» модель намагалася вгадати "
-        "відповідь, тому що GitLab Flow немає в базі знань. Це призвело до "
-        "галюцинованих відповідей, які не базувалися на фактах.\n\n"
+        "**Problem**: For the 'How do I view the commit history?' query, the model tried to guess "
+        "an answer because the topic was not well covered in the knowledge base. This led to "
+        "hallucinated answers that were not based on facts.\n\n"
     )
     lines.append(
-        "**Аналіз результату**: Чітке fallback-правило дозволяє моделі чесно визнати "
-        "відсутність інформації. Для GitLab Flow модель тепер повертає «Не маю "
-        "достатньої інформації» замість вигадки відповіді.\n\n"
+        "**Result analysis**: A clear fallback rule allows the model to honestly admit "
+        "missing information. For uncovered topics, the model now returns 'I do not have "
+        "enough information' instead of making up an answer.\n\n"
     )
 
     # Example 3
-    lines.append("### Приклад 3: Обов'язкові цитати джерел\n\n")
+    lines.append("### Example 3: Mandatory source citations\n\n")
     lines.append("```python\n")
-    lines.append("# V1: Немає вимоги цитувати джерела\n")
-    lines.append("# V2: Додано інструкцію:\n")
-    lines.append("#  \"3. Обов'язково вкажи джерела: chunk_id або source_file\"\n")
+    lines.append("# V1: No requirement to cite sources\n")
+    lines.append("# V2: Added instruction:\n")
+    lines.append('#  "4. Always cite the source chunk ID or source file used in your answer."\n')
     lines.append("```\n\n")
     lines.append(
-        "**Проблема**: Відповіді не містили посилань на джерела, що ускладнювало "
-        "перевірку правильності та провідності відповідей.\n\n"
+        "**Problem**: Answers did not include source references, making it difficult to "
+        "verify correctness and traceability of answers.\n\n"
     )
     lines.append(
-        "**Аналіз результату**: Вимога цитувати chunk_id та source_file робить "
-        "відповіді перевірними. Кожне твердження можна простежити до конкретної "
-        "частини документа.\n\n"
+        "**Result analysis**: Requiring chunk_id and source_file citations makes "
+        "answers verifiable. Every statement can be traced back to a specific "
+        "part of the document.\n\n"
     )
 
     with open(output_path, "w", encoding="utf-8") as f:

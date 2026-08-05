@@ -1,20 +1,20 @@
-# HW4: RAG Answer Generation — Результати тестування
+# HW4: RAG Answer Generation — Test Results
 
-**Модель вбудувань**: `sentence-transformers/all-MiniLM-L6-v2`
+**Embedding model**: `sentence-transformers/all-MiniLM-L6-v2`
 
-**Індекс**: FAISS IndexFlatIP (dim=384)
+**Index**: FAISS IndexFlatIP (dim=384)
 
-**Чанків у KB**: 157
+**Chunks in KB**: 149
 
-**Генерація**: Шаблонна (LLM недоступний)
+**Generation**: Template-based (LLM unavailable)
 
-**Порог релевантності**: 0.3
+**Relevance threshold**: 0.3
 
 
-## Підсумкова таблиця
+## Summary Table
 
-| # | Запитання | Top-1 score | Результат |
-|---|-----------|-------------|-----------|
+| # | Question | Top-1 score | Result |
+|---|----------|-------------|--------|
 | 1 | How do I clone a Git repository? | 0.68 | ✅ Grounded |
 | 2 | What is a Git branch and how do I create one? | 0.67 | ✅ Grounded |
 | 3 | How to resolve merge conflicts in Git? | 0.74 | ✅ Grounded |
@@ -26,252 +26,254 @@
 | 9 | What is rebasing and when should I use it? | 0.56 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.74 | ✅ Grounded |
 
-## Запитання 1: How do I clone a Git repository?
+## Question 1: How do I clone a Git repository?
 
-**Знайдено чанків**: git_basics_getting_repository_chunk_007 (score: 0.68), git_basics_getting_repository_chunk_006 (score: 0.67), github_about_git_chunk_009 (score: 0.64)
+**Retrieved chunks**: git_basics_getting_repository_chunk_007 (score: 0.68), git_basics_getting_repository_chunk_006 (score: 0.67), github_about_git_chunk_009 (score: 0.64)
 
-**Відповідь**: Для клонування Git-репозиторію використайте команду `git clone <url>`. Вона створює повну локальну копію репозиторію з усією історією комітів. Ви також можете клонувати з GitHub (`git clone https://github.com/...`) або через SSH (`git clone git@github.com:...`).
+**Answer**: To clone a Git repository, use `git clone <url>`. It creates a full local copy of the repository with the entire commit history. You can also clone from GitHub (`git clone https://github.com/...`) or via SSH (`git clone git@github.com:...`).
 
-**Знайдено в контексті:**
+**Found in context:**
   - git_basics_getting_repository_chunk_007 (score: 0.68) [data/raw/01_git_basics_getting_repository.md]
   - git_basics_getting_repository_chunk_006 (score: 0.67) [data/raw/01_git_basics_getting_repository.md]
   - github_about_git_chunk_009 (score: 0.64) [data/raw/08_github_about_git.md]
 
-**Джерело**: data/raw/01_git_basics_getting_repository.md
+**Source**: data/raw/01_git_basics_getting_repository.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 2: What is a Git branch and how do I create one?
+## Question 2: What is a Git branch and how do I create one?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_002 (score: 0.67), gitlab_getting_started_chunk_015 (score: 0.65), gitlab_getting_started_chunk_001 (score: 0.63)
+**Retrieved chunks**: gitlab_getting_started_chunk_002 (score: 0.67), gitlab_getting_started_chunk_015 (score: 0.65), gitlab_getting_started_chunk_001 (score: 0.63)
 
-**Відповідь**: Гілка (branch) у Git — це легковага посилання на коміт, що представляє незалежну лінію розвитку. Для створення: `git branch <name>`. Для перемикання: `git checkout <name>` або `git switch <name>`. Для створення та перемикання одночасно: `git checkout -b <name>`.
+**Answer**: A branch in Git is a lightweight reference to a commit, representing an independent line of development. To create: `git branch <name>`. To switch: `git checkout <name>` or `git switch <name>`. To create and switch at once: `git checkout -b <name>`.
 
-**Знайдено в контексті:**
+**Found in context:**
   - gitlab_getting_started_chunk_002 (score: 0.67) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_015 (score: 0.65) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_001 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/09_gitlab_getting_started.md
+**Source**: data/raw/09_gitlab_getting_started.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 3: How to resolve merge conflicts in Git?
+## Question 3: How to resolve merge conflicts in Git?
 
-**Знайдено чанків**: branching_basic_branching_merging_chunk_014 (score: 0.74), branching_basic_branching_merging_chunk_010 (score: 0.70), branching_basic_branching_merging_chunk_009 (score: 0.69)
+**Retrieved chunks**: branching_basic_branching_merging_chunk_014 (score: 0.74), branching_basic_branching_merging_chunk_010 (score: 0.70), branching_basic_branching_merging_chunk_009 (score: 0.69)
 
-**Відповідь**: Конфлікти злиття виникають, коли Git не може автоматично поєднати зміни з двох гілок. Для вирішення: 1) Відкрийте файли з маркерами конфлікту (`<<<<<<<`, `=======`, `>>>>>>>`). 2) Виправте конфлікти вручну — залиште бажаний код. 3) `git add <файл>` — позначте як вирішене. 4) `git commit` — зафіксуйте результат злиття.
+**Answer**: Merge conflicts occur when Git cannot automatically combine changes from two branches. To resolve: 1) Open files with conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`). 2) Manually fix conflicts — keep the desired code. 3) `git add <file>` — mark as resolved. 4) `git commit` — save the merge result.
 
-**Знайдено в контексті:**
+**Found in context:**
   - branching_basic_branching_merging_chunk_014 (score: 0.74) [data/raw/03_branching_basic_branching_merging.md]
   - branching_basic_branching_merging_chunk_010 (score: 0.70) [data/raw/03_branching_basic_branching_merging.md]
   - branching_basic_branching_merging_chunk_009 (score: 0.69) [data/raw/03_branching_basic_branching_merging.md]
 
-**Джерело**: data/raw/03_branching_basic_branching_merging.md
+**Source**: data/raw/03_branching_basic_branching_merging.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 4: What is the difference between git add and git commit?
+## Question 4: What is the difference between git add and git commit?
 
-**Знайдено чанків**: github_about_git_chunk_010 (score: 0.60), git_basics_recording_changes_chunk_009 (score: 0.60), gitlab_getting_started_chunk_002 (score: 0.59)
+**Retrieved chunks**: github_about_git_chunk_010 (score: 0.60), git_basics_recording_changes_chunk_009 (score: 0.60), gitlab_getting_started_chunk_002 (score: 0.59)
 
-**Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
+**Answer**: `git add` — adds changes to the index (staging area), preparing them for commit. `git commit` — saves changes from the index to the repository with a message. Difference: `git add` — staging changes, `git commit` — committing them.
 
-**Знайдено в контексті:**
+**Found in context:**
   - github_about_git_chunk_010 (score: 0.60) [data/raw/08_github_about_git.md]
   - git_basics_recording_changes_chunk_009 (score: 0.60) [data/raw/02_git_basics_recording_changes.md]
   - gitlab_getting_started_chunk_002 (score: 0.59) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/08_github_about_git.md
+**Source**: data/raw/08_github_about_git.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 5: How do I stash my changes temporarily?
+## Question 5: How do I stash my changes temporarily?
 
-**Знайдено чанків**: git_tools_stashing_cleaning_chunk_001 (score: 0.63), git_tools_stashing_cleaning_chunk_007 (score: 0.58), git_tools_stashing_cleaning_chunk_008 (score: 0.56)
+**Retrieved chunks**: git_tools_stashing_cleaning_chunk_001 (score: 0.63), git_tools_stashing_cleaning_chunk_007 (score: 0.58), git_tools_stashing_cleaning_chunk_008 (score: 0.56)
 
-**Відповідь**: Git stash дозволяє тимчасово зберегти незафіксовані зміни: `git stash`. Для відновлення з стеку: `git stash pop`. Для перегляду: `git stash list`. Для відновлення без видалення зі стеку: `git stash apply`. Stash корисний для швидкого перемикання між гілками.
+**Answer**: Git stash allows you to temporarily save uncommitted changes: `git stash`. To restore from stack: `git stash pop`. To view: `git stash list`. To restore without removing from stack: `git stash apply`. Stash is useful for quickly switching between branches.
 
-**Знайдено в контексті:**
+**Found in context:**
   - git_tools_stashing_cleaning_chunk_001 (score: 0.63) [data/raw/07_git_tools_stashing_cleaning.md]
   - git_tools_stashing_cleaning_chunk_007 (score: 0.58) [data/raw/07_git_tools_stashing_cleaning.md]
   - git_tools_stashing_cleaning_chunk_008 (score: 0.56) [data/raw/07_git_tools_stashing_cleaning.md]
 
-**Джерело**: data/raw/07_git_tools_stashing_cleaning.md
+**Source**: data/raw/07_git_tools_stashing_cleaning.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 6: How do I merge a branch in GitLab?
+## Question 6: How do I merge a branch in GitLab?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_008 (score: 0.75), gitlab_getting_started_chunk_009 (score: 0.74), gitlab_getting_started_chunk_007 (score: 0.71)
+**Retrieved chunks**: gitlab_getting_started_chunk_008 (score: 0.75), gitlab_getting_started_chunk_009 (score: 0.74), gitlab_getting_started_chunk_007 (score: 0.71)
 
-**Відповідь**: Для злиття гілки в GitLab створіть Merge Request: 1) Push'ніть вашу гілку на віддалений репозиторій. 2) У веб-інтерфейсі GitLab натисніть "Compare & merge request". 3) Вкажіть цільову гілку (зазвичай main/master). 4) Після рецензування натисніть "Merge".
+**Answer**: To merge a branch in GitLab, create a Merge Request: 1) Push your branch to the remote repository. 2) In GitLab web UI, click 'Compare & merge request'. 3) Specify the target branch (usually main/master). 4) After review, click 'Merge'.
 
-**Знайдено в контексті:**
+**Found in context:**
   - gitlab_getting_started_chunk_008 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_009 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_007 (score: 0.71) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/09_gitlab_getting_started.md
+**Source**: data/raw/09_gitlab_getting_started.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 7: How do I view the commit history?
+## Question 7: How do I view the commit history?
 
-**Знайдено чанків**: git_tools_rebasing_chunk_016 (score: 0.61), git_basics_getting_repository_chunk_002 (score: 0.61), git_basics_recording_changes_chunk_029 (score: 0.56)
+**Retrieved chunks**: git_tools_rebasing_chunk_016 (score: 0.61), git_basics_getting_repository_chunk_002 (score: 0.61), git_basics_recording_changes_chunk_029 (score: 0.56)
 
-**Відповідь**: `git add` — додає зміни до індексу (staging area), готуючи їх до коміту. `git commit` — фіксує зміни з індексу до репозиторію з повідомленням. Різниця: `git add` — підготовка змін, `git commit` — фіксація.
+**Answer**: `git add` — adds changes to the index (staging area), preparing them for commit. `git commit` — saves changes from the index to the repository with a message. Difference: `git add` — staging changes, `git commit` — committing them.
 
-**Знайдено в контексті:**
+**Found in context:**
   - git_tools_rebasing_chunk_016 (score: 0.61) [data/raw/06_git_tools_rebasing.md]
   - git_basics_getting_repository_chunk_002 (score: 0.61) [data/raw/01_git_basics_getting_repository.md]
   - git_basics_recording_changes_chunk_029 (score: 0.56) [data/raw/02_git_basics_recording_changes.md]
 
-**Джерело**: data/raw/06_git_tools_rebasing.md
+**Source**: data/raw/06_git_tools_rebasing.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 8: How to set up SSH keys for GitLab?
+## Question 8: How to set up SSH keys for GitLab?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_017 (score: 0.74), gitlab_getting_started_chunk_016 (score: 0.63), gitlab_getting_started_chunk_001 (score: 0.53)
+**Retrieved chunks**: gitlab_getting_started_chunk_017 (score: 0.74), gitlab_getting_started_chunk_016 (score: 0.63), gitlab_getting_started_chunk_001 (score: 0.53)
 
-**Відповідь**: Для налаштування SSH-ключів для GitLab: 1) Згенеруйте ключ: `ssh-keygen -t ed25519 -C "ваша_email"`. 2) Скопіюйте публічний ключ: `cat ~/.ssh/id_ed25519.pub`. 3) Додайте ключ у GitLab: Profile → Settings → SSH Keys. 4) Перевірте підключення: `ssh -T git@gitlab.com`.
+**Answer**: To set up SSH keys for GitLab: 1) Generate a key: `ssh-keygen -t ed25519 -C 'your_email'`. 2) Copy the public key: `cat ~/.ssh/id_ed25519.pub`. 3) Add the key to GitLab: Profile → Settings → SSH Keys. 4) Verify connection: `ssh -T git@gitlab.com`.
 
-**Знайдено в контексті:**
+**Found in context:**
   - gitlab_getting_started_chunk_017 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_016 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_001 (score: 0.53) [data/raw/09_gitlab_getting_started.md]
 
-**Джерело**: data/raw/09_gitlab_getting_started.md
+**Source**: data/raw/09_gitlab_getting_started.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
-## Запитання 9: What is rebasing and when should I use it?
+## Question 9: What is rebasing and when should I use it?
 
-**Знайдено чанків**: git_tools_rebasing_chunk_001 (score: 0.56), git_tools_rebasing_chunk_017 (score: 0.54), git_tools_rebasing_chunk_004 (score: 0.48)
+**Retrieved chunks**: git_tools_rebasing_chunk_001 (score: 0.56), git_tools_rebasing_chunk_017 (score: 0.54), git_tools_rebasing_chunk_004 (score: 0.48)
 
-**Відповідь**: Ребейзинг (rebase) — перенесення комітів з однієї гілки на іншу для створення чистішої, лінійної історії. Команда: `git rebase <target-гілка>`. Використовуйте для локальних гілок, ще не опублікованих. Не використовуйте для спільних (shared) гілок.
+**Answer**: Rebase moves commits from one branch to another to create a cleaner, linear history. Command: `git rebase <target-branch>`. Use for local branches that are not yet published. Do not use for shared (public) branches.
 
-**Знайдено в контексті:**
+**Found in context:**
   - git_tools_rebasing_chunk_001 (score: 0.56) [data/raw/06_git_tools_rebasing.md]
   - git_tools_rebasing_chunk_017 (score: 0.54) [data/raw/06_git_tools_rebasing.md]
   - git_tools_rebasing_chunk_004 (score: 0.48) [data/raw/06_git_tools_rebasing.md]
 
-**Джерело**: data/raw/06_git_tools_rebasing.md
+**Source**: data/raw/06_git_tools_rebasing.md
 
-**Коментар**: Partial — контекст частково релевантний
+**Comment**: Partial — context partially relevant
 
 
-## Запитання 10: How do I push changes to a remote repository?
+## Question 10: How do I push changes to a remote repository?
 
-**Знайдено чанків**: gitlab_getting_started_chunk_005 (score: 0.74), github_about_git_chunk_011 (score: 0.73), github_about_git_chunk_013 (score: 0.69)
+**Retrieved chunks**: gitlab_getting_started_chunk_005 (score: 0.74), github_about_git_chunk_011 (score: 0.73), github_about_git_chunk_013 (score: 0.69)
 
-**Відповідь**: Для надсилання змін на віддалений репозиторій: `git push <remote> <branch>`. Для впершого створення зв'язку: `git push -u origin <branch>`. Force push (обережно!): `git push --force`.
+**Answer**: To push changes to a remote repository: `git push <remote> <branch>`. For the first push (to set upstream): `git push -u origin <branch>`. Force push (careful!): `git push --force`.
 
-**Знайдено в контексті:**
+**Found in context:**
   - gitlab_getting_started_chunk_005 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
   - github_about_git_chunk_011 (score: 0.73) [data/raw/08_github_about_git.md]
   - github_about_git_chunk_013 (score: 0.69) [data/raw/08_github_about_git.md]
 
-**Джерело**: data/raw/09_gitlab_getting_started.md
+**Source**: data/raw/09_gitlab_getting_started.md
 
-**Коментар**: Grounded — відповідь на основі релевантного чанку
+**Comment**: Grounded — answer based on relevant chunk
 
 
 ---
 
-## Покращення prompt-шаблонів
+## Prompt Improvements
 
 
-### Приклад 1: Додавання ролі та інструкцій
+### Example 1: Adding role and instructions
 
 
-#### Оригінальний prompt (v1)
+#### Original prompt (v1)
 
 ```
 
-Вiдповiдь на запитання на основi контексту.
+Answer the question based on the context.
 
-Контекст:
+Context:
 {context}
 
-Запитання: {question}
+Question: {question}
 
-Вiдповiдь:
+Answer:
 ```
 
 
-#### Оновлений prompt (v2)
+#### Updated prompt (v2)
 
 ```
 
-Ти — Git-преподавач (Git tutor assistant). Твоя задача — відповідати на запитання про Git, GitHub та GitLab.
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
-ІНСТРУКЦІЇ:
-1. Відповідай ТІЛЬКИ на основі наведеного контексту. Не використовуй зовнішні знання.
-2. Якщо контекст не містить інформації для відповіді на запитання, скажи: "Не маю достатньої інформації для надання відповіді на це питання."
-3. Обов'язково вкажи джерела: chunk_id або source_file для кожного твердження.
-4. Відповідай українською мовою.
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+4. Always cite the source chunk ID or source file used in your answer.
 
-КОНТЕКСТ:
+Context:
 {context}
 
-ЗАПИТАННЯ: {question}
+Question: {question}
 
-ВІДПОВІДЬ:
+Answer:
 ```
 
 
-**Проблема**: Без ролі модель давала загальні відповіді, що базувалися на власних знаннях, а не на контексті. Наприклад, для запиту про GitLab Flow модель генерувала відповідь на основі загальних знань, хоча контекст не містив такої інформації.
+**Problem**: Without a role, the model gave generic answers based on its own knowledge, not the context. For example, for a GitLab Flow query, the model generated an answer from general knowledge, even though the context did not contain such information.
 
 
-**Аналіз результату**: Додавання чіткої ролі («Ти — Git-преподавач») та інструкції «Відповідай ТІЛЬКИ на основі наведеного контексту» значно зменшило галюцинації. Модель тепер обмежується лише наведеним контекстом.
+**Result analysis**: Adding a clear role ('You are a Git tutoring assistant') and the instruction 'Answer ONLY based on the provided context' significantly reduced hallucinations. The model is now limited to only the provided context.
 
 
-### Приклад 2: Додавання fallback-правила
+### Example 2: Adding fallback rule
 
 
 ```python
 
-# V1: Немає fallback-правила
+# V1: No fallback rule
 
-# V2: Додано інструкцію:
+# V2: Added instruction:
 
-#  "2. Якщо контекст не містить інформації, скажи: "Не маю достатньої інформації...""
+#  "2. If the context does not contain enough information, say:
+#   I do not have enough information..."
 
 ```
 
 
-**Проблема**: При запиті «How do I view the commit history?» модель намагалася вгадати відповідь, тому що GitLab Flow немає в базі знань. Це призвело до галюцинованих відповідей, які не базувалися на фактах.
+**Problem**: For the 'How do I view the commit history?' query, the model tried to guess an answer because the topic was not well covered in the knowledge base. This led to hallucinated answers that were not based on facts.
 
 
-**Аналіз результату**: Чітке fallback-правило дозволяє моделі чесно визнати відсутність інформації. Для GitLab Flow модель тепер повертає «Не маю достатньої інформації» замість вигадки відповіді.
+**Result analysis**: A clear fallback rule allows the model to honestly admit missing information. For uncovered topics, the model now returns 'I do not have enough information' instead of making up an answer.
 
 
-### Приклад 3: Обов'язкові цитати джерел
+### Example 3: Mandatory source citations
 
 
 ```python
 
-# V1: Немає вимоги цитувати джерела
+# V1: No requirement to cite sources
 
-# V2: Додано інструкцію:
+# V2: Added instruction:
 
-#  "3. Обов'язково вкажи джерела: chunk_id або source_file"
+#  "4. Always cite the source chunk ID or source file used in your answer."
 
 ```
 
 
-**Проблема**: Відповіді не містили посилань на джерела, що ускладнювало перевірку правильності та провідності відповідей.
+**Problem**: Answers did not include source references, making it difficult to verify correctness and traceability of answers.
 
 
-**Аналіз результату**: Вимога цитувати chunk_id та source_file робить відповіді перевірними. Кожне твердження можна простежити до конкретної частини документа.
+**Result analysis**: Requiring chunk_id and source_file citations makes answers verifiable. Every statement can be traced back to a specific part of the document.
 
