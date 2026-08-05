@@ -100,27 +100,45 @@ def resolve_section(section_map: list, char_pos: int, title: str):
 
 
 def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
-    """Fix unclosed inline backticks by expanding chunk end to include closing backtick.
+    """Fix unclosed inline backticks.
 
-    If chunk_text has odd number of backticks (not inside a code block),
-    it means we cut an inline code fence in half. Find the closing backtick
-    and include it.
+    Two cases:
+    1. Chunk starts mid-inline-code (opening backtick is in previous chunk's overlap)
+       → search backward for opening ` and include it
+    2. Chunk ends mid-inline-code (closing backtick is in next chunk)
+       → search forward for closing ` and include it
     """
     code_block_count = chunk_text.count('```')
     inline_count = chunk_text.count('`') - (code_block_count * 3)
 
-    if inline_count % 2 == 1 and start < end < len(full_text):
-        # Odd number of backticks — find the closing one
-        search_start = end
-        search_end = min(end + 200, len(full_text))
-        for pos in range(search_start, search_end):
-            if full_text[pos] == '`':
-                # Include the closing backtick
-                chunk_text = full_text[start:pos + 1].strip()
-                break
-            # Stop at next heading or section break
-            if full_text[pos:pos + 2] == '# ':
-                break
+    if inline_count % 2 == 1:
+        # Odd backticks — overlap may have cut an inline code fence
+        # Search backward for a missing opening backtick (within 200 chars before start)
+        if start > 0:
+            search_back = max(0, start - 200)
+            for pos in range(start - 1, search_back - 1, -1):
+                if full_text[pos] == '`':
+                    # Found opening backtick — include it
+                    chunk_text = full_text[pos:end].strip()
+                    # Re-check
+                    cb = chunk_text.count('```')
+                    ic = chunk_text.count('`') - (cb * 3)
+                    if ic % 2 == 0:
+                        return chunk_text
+                    break
+                # Stop at heading
+                if full_text[pos:pos + 2] == '# ':
+                    break
+
+        # Search forward for closing backtick
+        if start < end < len(full_text):
+            search_end = min(end + 200, len(full_text))
+            for pos in range(end, search_end):
+                if full_text[pos] == '`':
+                    chunk_text = full_text[start:pos + 1].strip()
+                    break
+                if full_text[pos:pos + 2] == '# ':
+                    break
 
     return chunk_text
 
