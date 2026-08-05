@@ -1,7 +1,5 @@
 # 3.2 Git Branching - Basic Branching and Merging
 
-## Basic Branching and Merging
-
 Let’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:
 
   1. Do some work on a website.
