@@ -1,79 +1,39 @@
 # Git tutoring assistant
 
-
-Домашнє завдання №4 — RAG-бот з заземленими відповідями
-**Pipeline**: question → retrieval (semantic) → prompt → grounded answer → citation
-**Prompt template**: Grounded answering rule + fallback + citation
-**Language**: Українська
-**Retrieval**: FAISS semantic search (top-3 chunks per question)
-
-### Архітектура
-
-Потік: `запит → FAISS retrieval → prompt template → answer generation → source citation`
-
-1. **Retrieval**: Semantic search (sentence-transformers/all-MiniLM-L6-v2) через FAISS
-2. **Context injection**: Top-3 чанки об'єднуються в context блок
-3. **Prompt template**: Grounded answering rules + fallback + citation requirement
-4. **Answer generation**: Відповідь на основі контексту з цитуванням джерел
-5. **Fallback**: Якщо score < 0.50 або контекст недостатній → fallback повідомлення
+Домашнє завдання №2 — Базовий semantic retrieval layer
+**Embedding model**: sentence-transformers/all-MiniLM-L6-v2
+**Vector storage**: FAISS IndexFlatIP (dim=384)
+**Chunks indexed**: 158
+**Test queries**: 10
+**Top-k**: 5
 
 ### Результати тестування
 
-### Prompt Template
+| Запит | Top-1 chunk | Score | Релевантність |
+|-------|-------------|-------|---------------|
+| How do I clone a Git repository? | git_basics_getting_repository_chunk_005 | 0.70 | ✅ Relevant |
+| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_000 | 0.63 | ✅ Relevant |
+| How to resolve merge conflicts in Git? | branching_basic_branching_merging_chunk_013 | 0.78 | ✅ Relevant |
+| What is the difference between git add and git commit? | github_about_git_chunk_007 | 0.62 | ✅ Relevant |
+| How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_000 | 0.62 | ✅ Relevant |
+| How do I merge a branch in GitLab? | gitlab_getting_started_chunk_004 | 0.74 | ✅ Relevant |
+| How do I view the commit history? | github_about_git_chunk_000 | 0.57 | ⚠️ Partially |
+| How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_009 | 0.74 | ✅ Relevant |
+| What is rebasing and when should I use it? | git_tools_rebasing_chunk_009 | 0.50 | ⚠️ Partially |
+| How do I push changes to a remote repository? | distributed_workflows_chunk_005 | 0.72 | ✅ Relevant |
 
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+### Висновок
 
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
+**Де retrieval добре працює:**
+- ✅ **Специфічні команди** (`git clone`, `git stash`, `git merge`, `git push`, `git add`, `git commit`, SSH keys) — score 0.62–0.78. У 8/10 запитів Top-1 релевантний.
+- ✅ **Унікальні терміни** — `conflict`, `stash`, `merge`, `repository`, `clone` — семантичні вектори добре розрізняють ці поняття.
+- ✅ **Домен-специфічні запити** — `gitlab_getting_started` правильно знаходить GitLab SSH та merge workflow.
 
-Context:
-{context}
+**Де retrieval погано працює:**
+- ⚠️ **Загальні терміни** (`branch`, `rebase`, `commit history`) — повертають вступи замість конкретики. Напр. `branch` знаходить `gitlab_getting_started_chunk_000` (вступ про Git) замість розділу про гілки.
+- ⚠️ **Low-score запити** — `rebase` (0.50) і `commit history` (0.57) — семантичний embedding не розрізняє контекст (warning vs реалізацію).
+- ⚠️ **Відсутня лексична точність** — чистий semantic не знаходить точні збіги ключових слів (напр. `git add` vs `add`).
 
-Question:
-{question}
+**Висновок:** Базовий semantic retrieval задовільно працює для конкретних команд, але потребує гібридного підходу для покращення на загальних термінах.
 
-Answer (in Ukrainian):
-```
-
-### Prompt Improvements
-
-**Improvement 1: Grounded answering rule**
-
-*Проблема:* Перший prompt був занадто простий — модель вигадувала відповіді з загальних знань.
-*Before:* `Answer the question using the context.`
-*After:* `Answer ONLY based on the provided context below. Do NOT use any general knowledge outside the provided context.`
-*Результат:* Відповіді стали grounded, модель більше не додає зовнішню інформацію.
-
-**Improvement 2: Citation requirement**
-
-*Проблема:* Без вимоги цитувати джерело неможливо перевірити коректність відповіді.
-*Before:* Жодної вимоги про джерела.
-*After:* `Always cite the source chunk ID or source file used in your answer.`
-*Результат:* Кожна відповідь містить посилання на конкретний chunk та source file.
-
-**Improvement 3: Fallback for insufficient context**
-
-*Проблема:* Для запитів без релевантного контексту модель намагалась відповісти і помилялась.
-*Before:* Фallback відсутній — модель завжди намагалась відповісти.
-*After:* `If the context does not contain enough information to answer the question, say: "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."`
-*Результат:* Модель чесно каже "не знаю" замість вигадування.
-
-**Improvement 4: Ukrainian language output**
-
-*Проблема:* Модель генерувала відповіді англійською (мова контексту).
-*Before:* `Answer:`
-*After:* `Answer (in Ukrainian):`
-*Результат:* Відповіді українською, що відповідає цільовій аудиторії.
-
-### Fallback behavior
-
-Для запитів з низьким score (< 0.50) або недостатнім контекстом модель правильно повертає:
-> "Не маю достатньої інформації в доступних документах, щоб відповісти на це запитання."
-
-**Скрипт**: `scripts/rag_answer.py`
-**Повні результати**: `outputs/rag_answers_examples.md`
+**Повні результати**: `outputs/retrieval_examples.md`
