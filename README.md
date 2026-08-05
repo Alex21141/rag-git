@@ -1,8 +1,18 @@
 # Git tutoring assistant
 
-Домашнє завдання №1 — Підготовка knowledge base
+## Домашнє завдання №1 — Підготовка knowledge base
 
-## 1. Тема проєкту
+| Параметр | Значення |
+|---|---|
+| **Джерела** | 10 документів (Git, GitHub, GitLab) |
+| **Chunking** | Sliding window, chunk_size=850, overlap=150 |
+| **Чанків** | 149 |
+| **Текст всього** | 117,754 chars |
+| **Overlap coverage** | 99.3% (138/139 пар) |
+| **Odd backticks** | 0/149 |
+| **Домен** | git (119), github (18), gitlab (12) |
+
+### 1. Тема проєкту
 
 **Git tutoring assistant** — чат-бот для навчання основам Git. Цільова аудиторія — розробники, які починають працювати з системами керування версіями.
 
@@ -15,7 +25,7 @@
 - GitHub (About Git)
 - GitLab (Getting started with Git)
 
-## 2. Джерела
+### 2. Джерела
 
 | # | Назва | URL | Тип |
 |---|-------|-----|-----|
@@ -30,7 +40,7 @@
 | 8 | GitHub — About Git | https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git | reference |
 | 9 | GitLab — Getting started with Git | https://docs.gitlab.com/topics/git/get_started/index.md | reference |
 
-## 3. Структура метаданих
+### 3. Структура метаданих
 
 Кожен чанк містить:
 
@@ -105,7 +115,7 @@ Now that you have a remote Git repository set up as a focal point for all the de
 | `domain` | Домен (git / github / gitlab) |
 | `document_type` | Тип контенту (concept / commands / workflow / reference / procedure) |
 
-## 4. Стратегія чанкінгу
+### 4. Стратегія чанкінгу
 
 - **chunk_size**: 850 символів
 - **overlap**: 150 символів (99.3% coverage між сусідніми чанками)
@@ -114,7 +124,7 @@ Now that you have a remote Git repository set up as a focal point for all the de
 - **sentence-aware**: пріоритет розриву на кордонах речень (`.` `!` `?`)
 - **backtick fix**: якщо чанк має непарну кількість inline backticks, шукати закриваючий backtick у наступних 200 символах
 
-## 5. Статистика
+### 5. Статистика
 
 | Метрика | Значення |
 |---------|---------|
@@ -133,14 +143,14 @@ Now that you have a remote Git repository set up as a focal point for all the de
 | github | 14 |
 | gitlab | 10 |
 
-## 6. Приклади чанків
+### 6. Приклади чанків
 
 
 - `$branching_basic_branching_merging_chunk_001` (791 chars, domain=git, section=# 3.2 Git Branching - Basic Branching and Merging)
 - `$branching_branch_management_chunk_001` (771 chars, domain=git, section=# 3.3 Git Branching - Branch Management)
 - `$distributed_workflows_chunk_001` (847 chars, domain=git, section=# 5.1 Distributed Git - Distributed Workflows)
 
-## 7. Виправлення та покращення
+### 7. Виправлення та покращення
 
 - ✅ Overlap 100% — переписано chunking на sliding window з гарантованим перекриттям 150 символів між усіма сусідніми чанками
 - ✅ Zero overlap fix — прибрано 3-фазний pipeline, який руйнував overlap на section boundaries
@@ -157,7 +167,7 @@ Now that you have a remote Git repository set up as a focal point for all the de
 - ⚠️ Немає постаналізу — перевірки якості retrieval на реальних запитаннях
 - ⚠️ Metadata `document_type` присвоюється за DOMAIN_MAP — не аналізується реальний контент
 
-## 8. Структура проєкту
+### 8. Структура проєкту
 
 ```
 rag-github/
