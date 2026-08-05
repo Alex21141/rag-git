@@ -47,15 +47,7 @@
 `branching_basic_branching_merging_chunk_001`:
 ```json
 {
- "text": "# 3.2 Git Branching - Basic Branching and Merging
-
-Let’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:
-
-  1. Do some work on a website.
-
-  2. Create a branch for a new user story you’re working on.
-
-  3. Do some ...",
+ "text": "# 3.2 Git Branching - Basic Branching and Merging\n\nLet’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:\n\n  1. Do some work on a website.\n\n  2. Create a branch for a new user story you’re working on.\n\n  3. Do some ...",
  "metadata": {
   "document_id": "branching_basic_branching_merging",
   "source_file": "data/raw/03_branching_basic_branching_merging.md",
@@ -69,11 +61,7 @@ Let’s go through a simple example of branching and merging with a workflow tha
 `branching_branch_management_chunk_001`:
 ```json
 {
- "text": "# 3.3 Git Branching - Branch Management
-
-Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.
-
-The `git branch` command does more than just create and delete branches. If you run it ...",
+ "text": "# 3.3 Git Branching - Branch Management\n\nNow that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.\n\nThe `git branch` command does more than just create and delete branches. If you run it ...",
  "metadata": {
   "document_id": "branching_branch_management",
   "source_file": "data/raw/04_branching_branch_management.md",
@@ -145,10 +133,9 @@ Now that you have a remote Git repository set up as a focal point for all the de
 
 ### 6. Приклади чанків
 
-
-- `$branching_basic_branching_merging_chunk_001` (791 chars, domain=git, section=# 3.2 Git Branching - Basic Branching and Merging)
-- `$branching_branch_management_chunk_001` (771 chars, domain=git, section=# 3.3 Git Branching - Branch Management)
-- `$distributed_workflows_chunk_001` (847 chars, domain=git, section=# 5.1 Distributed Git - Distributed Workflows)
+- `branching_basic_branching_merging_chunk_001` (791 chars, domain=git, section=# 3.2 Git Branching - Basic Branching and Merging)
+- `branching_branch_management_chunk_001` (771 chars, domain=git, section=# 3.3 Git Branching - Branch Management)
+- `distributed_workflows_chunk_001` (847 chars, domain=git, section=# 5.1 Distributed Git - Distributed Workflows)
 
 ### 7. Виправлення та покращення
 
@@ -162,10 +149,10 @@ Now that you have a remote Git repository set up as a focal point for all the de
 - ✅ `---|---` cleanup — видалення артефактів таблиць/блоків
 - ✅ Caution|/Warning| cleanup — видалення маркерів блоків попереджень
 
-**Що треба покращити:**
-- ✅ Backticks 0/149 — backward search для opening backtick + forward search для closing
-- ⚠️ Немає постаналізу — перевірки якості retrieval на реальних запитаннях
-- ⚠️ Metadata `document_type` присвоюється за DOMAIN_MAP — не аналізується реальний контент
+**Відомі обмеження:**
+- ⚠️ Overlap 99.3% — 1 пара чанків без повного перекриття (138/139) — через cross-section transition
+- ⚠️ 6 partial words — overlap розрізає слова на кордонах секцій (напр. `D continue`, `Hat conflict`)
+- ⚠️ `document_type` у метаданих — статичний (DOMAIN_MAP), не аналізується реальний контент
 
 ### 8. Структура проєкту
 
