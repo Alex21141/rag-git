@@ -1,11 +1,14 @@
 # Git tutoring assistant
 
-Домашнє завдання №2 — Базовий semantic retrieval layer
-**Embedding model**: sentence-transformers/all-MiniLM-L6-v2
-**Vector storage**: FAISS IndexFlatIP (dim=384)
-**Chunks indexed**: 158
-**Test queries**: 10
-**Top-k**: 5
+## Домашнє завдання №2 — Базовий semantic retrieval layer
+
+| Параметр | Значення |
+|---|---|
+| **Embedding model** | sentence-transformers/all-MiniLM-L6-v2 |
+| **Vector storage** | FAISS IndexFlatIP (dim=384) |
+| **Chunks indexed** | 158 |
+| **Test queries** | 10 |
+| **Top-k** | 5 |
 
 ### Результати тестування
 
