@@ -112,7 +112,7 @@ def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int
     if inline_count % 2 == 1 and start < end < len(full_text):
         # Odd number of backticks — find the closing one
         search_start = end
-        search_end = min(end + 200, len(full_text))
+        search_end = min(end + 400, len(full_text))
         for pos in range(search_start, search_end):
             if full_text[pos] == '`':
                 # Include the closing backtick
@@ -175,14 +175,33 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
                 while ws >= 0 and text[ws].isalnum():
                     ws -= 1
                 overlap_start = ws + 1
-            overlap_text = text[overlap_start:prev_end].strip()
+            overlap_text = text[overlap_start:prev_end]
 
-            if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
-                # Add space if needed
-                if not overlap_text.endswith((" ", "\n", "\t")) and raw_chunk and not raw_chunk.startswith((" ", "\n", "\t")):
-                    chunk_text = overlap_text + " " + raw_chunk
+            # Check if raw_chunk starts with overlap (i.e. chunk is entirely within overlap)
+            raw_starts_with_overlap = False
+            if raw_chunk.startswith(overlap_text):
+                raw_starts_with_overlap = True
+            # Also check with strip — raw_chunk may have whitespace stripped from start
+            overlap_stripped = overlap_text.strip()
+            if raw_chunk.startswith(overlap_stripped):
+                raw_starts_with_overlap = True
+
+            if overlap_text and not raw_starts_with_overlap:
+                # Merge overlap + raw_chunk, ensuring proper spacing
+                overlap_tail = overlap_text.rstrip()
+                raw_head = raw_chunk.lstrip()
+
+                # If overlap ends with lowercase and raw starts with uppercase (different words),
+                # or if both end/start with non-space, add space separator
+                overlap_ends_lower = overlap_tail[-1].islower() if overlap_tail else False
+                raw_starts_upper = raw_head[0].isupper() if raw_head and raw_head[0].isalpha() else False
+
+                if overlap_ends_lower and raw_starts_upper:
+                    chunk_text = overlap_tail + " " + raw_head
+                elif not overlap_tail.endswith((" ", "\n", "\t")) and raw_head and not raw_head.startswith((" ", "\n", "\t")):
+                    chunk_text = overlap_tail + " " + raw_head
                 else:
-                    chunk_text = overlap_text + raw_chunk
+                    chunk_text = overlap_tail + raw_head
             else:
                 chunk_text = raw_chunk
         else:
