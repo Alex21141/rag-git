@@ -4,7 +4,7 @@ Prepare knowledge base: read raw documents → chunk with overlap → save as JS
 
 Chunking approach:
  1. Sliding window across entire document text
- 2. Break at sentence boundaries for readability
+ 2. Break at sentence boundaries for readability  
  3. Overlap: last N chars of each chunk are prepended to the next chunk
 
 Configuration:
@@ -28,7 +28,7 @@ OUTPUT = Path(__file__).parent.parent / "data" / "processed" / "chunks.jsonl"
 
 CHUNK_SIZE = 850
 OVERLAP = 150
-MIN_CHUNK = 150
+MIN_CHUNK = 300
 
 # Domain metadata
 DOMAIN_MAP = {
@@ -52,31 +52,6 @@ def filename_to_docid(filename: str) -> str:
     """
     stem = Path(filename).stem
     return re.sub(r'^\d+_', '', stem)
-
-
-def find_sentence_break(text: str, pos: int, window: int = 80) -> int:
-    """Find the best sentence break near pos within ±window characters."""
-    best = pos
-    best_dist = window + 1
-    for delta in range(-window, window + 1):
-        candidate = pos + delta
-        if 0 < candidate < len(text) and text[candidate] in '.!?)]\'"':
-            dist = abs(delta)
-            if dist < best_dist:
-                best = candidate + 1
-                best_dist = dist
-    return best
-
-
-def find_chunk_end(text: str, start: int, max_end: int) -> int:
-    """Find best chunk endpoint — sentence or word boundary for readability."""
-    sentence_end = find_sentence_break(text, max_end, 80)
-    if sentence_end > start + MIN_CHUNK:
-        return sentence_end
-    last_space = text.rfind(' ', max(0, max_end - 50), max_end)
-    if last_space > start + MIN_CHUNK:
-        return last_space + 1
-    return max_end
 
 
 def build_section_map(text: str):
@@ -124,85 +99,111 @@ def resolve_section(section_map: list, char_pos: int, title: str):
     return result or section_map[0][0]
 
 
+def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
+    """Fix unclosed inline backticks by expanding chunk end to include closing backtick.
+
+    If chunk_text has odd number of backticks (not inside a code block),
+    it means we cut an inline code fence in half. Find the closing backtick
+    and include it.
+    """
+    code_block_count = chunk_text.count('```')
+    inline_count = chunk_text.count('`') - (code_block_count * 3)
+
+    if inline_count % 2 == 1 and start < end < len(full_text):
+        # Odd number of backticks — find the closing one
+        search_start = end
+        search_end = min(end + 200, len(full_text))
+        for pos in range(search_start, search_end):
+            if full_text[pos] == '`':
+                # Include the closing backtick
+                chunk_text = full_text[start:pos + 1].strip()
+                break
+            # Stop at next heading or section break
+            if full_text[pos:pos + 2] == '# ':
+                break
+
+    return chunk_text
+
+
 def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
                    section_map: list = None):
     """Split text into chunks with overlap between consecutive chunks.
 
-    Semantic approach: first identify section boundaries from headings,
-    then chunk within each section so boundaries stay clean.
-    This prevents chunks from spanning unrelated topics.
-
-    Each chunk i contains text[i_start:i_end].
-    Chunk i+1 prepends the last `overlap` chars of chunk i for continuity.
+    Simplified sliding window approach:
+    1. Walk through text with step = chunk_size - overlap
+    2. Find best sentence break near each window end
+    3. Prepend overlap from previous chunk for continuity
+    4. Fix unclosed backticks
 
     Returns list of (start_pos, end_pos, chunk_text, section) tuples.
     """
-    raw_splits = []
-    start = 0
-    text_len = len(text)
-
-    # Phase 1: Split into contiguous raw chunks with sentence/word boundary awareness
-    while start < text_len:
-        end = min(start + chunk_size, text_len)
-        if end < text_len:
-            end = find_chunk_end(text, start, end)
-        raw_splits.append((start, end))
-        start = end
-
-    # Phase 2: Apply section-aware refinement
-    # If a raw split crosses a section boundary, break at the boundary
-    if section_map:
-        refined = []
-        for s, e in raw_splits:
-            split_points = [s]
-            for heading, boundary_pos in section_map:
-                if s < boundary_pos < e:
-                    split_points.append(boundary_pos)
-            split_points.append(e)
-
-            for i in range(len(split_points) - 1):
-                sub_s = split_points[i]
-                sub_e = split_points[i + 1]
-                if sub_e - sub_s > min_chunk:
-                    refined.append((sub_s, sub_e))
-        raw_splits = refined
-
-    # Phase 3: Apply overlap by prepending previous chunk tail
     chunks = []
-    for i, (s, e) in enumerate(raw_splits):
-        chunk_text = text[s:e].strip()
+    text_len = len(text)
+    prev_end = 0
 
-        if i > 0:
-            prev_s, prev_e = raw_splits[i - 1]
-            overlap_start = max(prev_s, prev_e - overlap)
+    start = 0
+    while start < text_len:
+        # Calculate window end
+        end = min(start + chunk_size, text_len)
 
-            # Trim overlap_start to word boundary (find next whitespace after overlap_start)
-            for k in range(overlap_start, min(prev_e, overlap_start + 200)):
-                if text[k] in ' \t\n':
-                    overlap_start = k + 1
+        # Find best sentence break near end
+        if end < text_len:
+            # Search backwards for sentence end
+            best_end = end
+            for delta in range(0, 80):
+                if end - delta > start + min_chunk and text[end - delta] in '.!?':
+                    best_end = end - delta + 1
                     break
+                # Also try word boundary
+                if end - delta > start + min_chunk and text[end - delta] in ' \t\n':
+                    best_end = end - delta + 1
 
-            # Also trim overlap_end to word boundary
-            overlap_end = prev_e
-            for k in range(prev_e - 1, overlap_start - 1, -1):
-                if text[k] in ' \t\n':
-                    overlap_end = k + 1
-                    break
+            # Ensure forward progress
+            if best_end > start:
+                end = best_end
 
-            overlap_text = text[overlap_start:overlap_end].strip()
+        # Extract chunk text (without overlap yet)
+        raw_chunk = text[start:end].strip()
 
-            if overlap_text and chunk_text:
-                if not overlap_text.endswith((" ", "\n", "\t")) and not chunk_text.startswith((" ", "\n", "\t")):
-                    chunk_text = overlap_text + " " + chunk_text
+        # Prepend overlap from previous chunk (last `overlap` chars of raw text)
+        if prev_end > 0:
+            overlap_start = max(0, prev_end - overlap)
+            overlap_text = text[overlap_start:prev_end].strip()
+
+            if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
+                # Add space if needed
+                if not overlap_text.endswith((" ", "\n", "\t")) and raw_chunk and not raw_chunk.startswith((" ", "\n", "\t")):
+                    chunk_text = overlap_text + " " + raw_chunk
                 else:
-                    chunk_text = overlap_text + chunk_text
+                    chunk_text = overlap_text + raw_chunk
+            else:
+                chunk_text = raw_chunk
+        else:
+            chunk_text = raw_chunk
 
+        # Fix unclosed inline backticks AFTER overlap prepending
+        # (the combined text may have odd backticks from overlap + chunk)
+        chunk_text = fix_unclosed_backticks(chunk_text, text, start, end)
+
+        # Update prev_end BEFORE updating start (for next iteration overlap)
+        prev_end = end
+
+        # Resolve section
         section = None
         if section_map:
-            section = resolve_section(section_map, s, "Unknown")
+            section = resolve_section(section_map, start, "Unknown")
 
+        # Filter by min_chunk
         if len(chunk_text) >= min_chunk:
-            chunks.append((s, e, chunk_text, section))
+            chunks.append((start, end, chunk_text, section))
+
+        # Advance start: sliding window with overlap
+        new_start = end - overlap
+        # Ensure forward progress — never go backward or stay still
+        if new_start <= start:
+            start = end  # fallback: no overlap if sentence break is too close
+        else:
+            start = new_start
 
     return chunks
 
@@ -213,7 +214,7 @@ def _capitalize_chunk(text: str) -> str:
         return text
     for i, ch in enumerate(text):
         if ch.isalpha():
-            return text[:i] + ch.upper() + text[i+1:]
+            return text[:i] + ch.upper() + text[i + 1:]
     return text
 
 
@@ -358,7 +359,18 @@ def prepare_knowledge_base():
 
     if total_pairs:
         print(f"    Overlapping pairs: {overlap_pairs}/{total_pairs} "
-              f"({overlap_pairs/total_pairs*100:.1f}%)")
+              f"({overlap_pairs / total_pairs * 100:.1f}%)")
+
+    # Backtick check
+    print(f"\n  Backtick check:")
+    odd_backticks = 0
+    for c in all_chunks:
+        t = c["text"]
+        code_blocks = t.count('```')
+        inline = t.count('`') - (code_blocks * 3)
+        if inline % 2 == 1:
+            odd_backticks += 1
+    print(f"    Chunks with odd backticks: {odd_backticks}/{len(all_chunks)}")
 
 
 if __name__ == "__main__":

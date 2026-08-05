@@ -37,7 +37,15 @@
 `branching_basic_branching_merging_chunk_001`:
 ```json
 {
- "text": "## Basic Branching and Merging\n\nLet’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:\n\n  1. Do some work on a website.\n\n  2. Create a branch for a new user story you’re working on.\n\n  3.\n...",
+ "text": "# 3.2 Git Branching - Basic Branching and Merging
+
+Let’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:
+
+  1. Do some work on a website.
+
+  2. Create a branch for a new user story you’re working on.
+
+  3. Do some ...",
  "metadata": {
   "document_id": "branching_basic_branching_merging",
   "source_file": "data/raw/03_branching_basic_branching_merging.md",
@@ -51,7 +59,11 @@
 `branching_branch_management_chunk_001`:
 ```json
 {
- "text": "## Branch Management\n\nNow that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.\n\nThe `git branch` command does more than just create and delete branches. If you ru\n...",
+ "text": "# 3.3 Git Branching - Branch Management
+
+Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.
+
+The `git branch` command does more than just create and delete branches. If you run it ...",
  "metadata": {
   "document_id": "branching_branch_management",
   "source_file": "data/raw/04_branching_branch_management.md",
@@ -65,7 +77,9 @@
 `distributed_workflows_chunk_001`:
 ```json
 {
- "text": "# 5.1 Distributed Git - Distributed Workflows\n\nNow that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed wo\n...",
+ "text": "# 5.1 Distributed Git - Distributed Workflows
+
+Now that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affor...",
  "metadata": {
   "document_id": "distributed_workflows",
   "source_file": "data/raw/05_distributed_workflows.md",
@@ -94,48 +108,52 @@
 ## 4. Стратегія чанкінгу
 
 - **chunk_size**: 850 символів
-- **overlap**: 150 символів
-- **метод**: semantic chunking — спочатку розбивається по секціях (заголовки `#`), потім кожну секцію чанкується з overlap
+- **overlap**: 150 символів (100% coverage між сусідніми чанками)
+- **метод**: sliding window — кожне наступне вікно зсувається на `chunk_size - overlap` символів назад. Розриви на кордонах речень/слів.
 - **word-boundary cuts**: розриви на кордонах слів (не посеред слів)
-- **sentence-aware**: пріоритет розриву на кордонах речень
+- **sentence-aware**: пріоритет розриву на кордонах речень (`.` `!` `?`)
+- **backtick fix**: якщо чанк має непарну кількість inline backticks, шукати закриваючий backtick у наступних 200 символах
 
 ## 5. Статистика
 
 | Метрика | Значення |
 |---------|---------|
 | Документів | 10 |
-| Чанків | 157 |
-| Текст всього | 114,980 chars |
-| Середня довжина | 732 chars |
-| Мінімальна довжина | 303 chars |
-| Максимальна довжина | 1076 chars |
+| Чанків | 149 |
+| Текст всього | 117,774 chars |
+| Середня довжина | 790 chars |
+| Мінімальна довжина | 392 chars |
+| Максимальна довжина | 853 chars |
 
 ### За доменом
 
 | Домен | Чанків |
 |-------|--------|
 | git | 125 |
-| github | 16 |
-| gitlab | 17 |
+| github | 14 |
+| gitlab | 10 |
 
 ## 6. Приклади чанків
 
 
-- `$branching_basic_branching_merging_chunk_001` (641 chars, domain=git, section=# 3.2 Git Branching - Basic Branching and Merging)
-- `$branching_branch_management_chunk_001` (846 chars, domain=git, section=# 3.3 Git Branching - Branch Management)
-- `$distributed_workflows_chunk_001` (650 chars, domain=git, section=# 5.1 Distributed Git - Distributed Workflows)
+- `$branching_basic_branching_merging_chunk_001` (791 chars, domain=git, section=# 3.2 Git Branching - Basic Branching and Merging)
+- `$branching_branch_management_chunk_001` (771 chars, domain=git, section=# 3.3 Git Branching - Branch Management)
+- `$distributed_workflows_chunk_001` (847 chars, domain=git, section=# 5.1 Distributed Git - Distributed Workflows)
 
 ## 7. Виправлення та покращення
 
-- ✅ Overlap space fix — автоматичне додавання пробілу між overlap та контентом
+- ✅ Overlap 100% — переписано chunking на sliding window з гарантованим перекриттям 150 символів між усіма сусідніми чанками
+- ✅ Zero overlap fix — прибрано 3-фазний pipeline, який руйнував overlap на section boundaries
+- ✅ Infinite loop fix — guard `new_start <= start` запобігає зворотньому руху вікна
+- ✅ Unclosed backticks — автоматичне розширення чанку для включення закриваючого backtick (3/149 залишились)
 - ✅ Small chunk merge — чанки <300 chars об'єднуються з наступним
 - ✅ Chunk index renumbering — послідовна нумерація після merge
 - ✅ Capitalize first letter — чанки починаються з великої літери
 - ✅ `---|---` cleanup — видалення артефактів таблиць/блоків
 - ✅ Caution|/Warning| cleanup — видалення маркерів блоків попереджень
-- ✅ Sequential chunk_index — ренумерація після об'єднання чанків
 
 **Що треба покращити:**
+- ⚠️ 3 чанки з непарними backticks (<2%) — закриваючий backtick у наступному чанку за межами 200-символьного radius
 - ⚠️ Немає постаналізу — перевірки якості retrieval на реальних запитаннях
 - ⚠️ Metadata `document_type` присвоюється за DOMAIN_MAP — не аналізується реальний контент
 
@@ -157,7 +175,7 @@ rag-github/
 │ │ ├── 08_github_about_git.md
 │ │ └── 09_gitlab_getting_started.md
 │ └── processed/ ← оброблені дані
-│ └── chunks.jsonl ← 157 чанків
+│ └── chunks.jsonl ← 149 чанків
 └── scripts/
  ├── download_sources.py ← збір даних з веб-сторінок + очистка
  ├── prepare_knowledge_base.py ← нормалізація + semantic chunking + merge
