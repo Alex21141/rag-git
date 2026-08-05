@@ -1,11 +1,13 @@
 # Git tutoring assistant
 
+## Домашнє завдання №4 — RAG-бот з заземленими відповідями
 
-Домашнє завдання №4 — RAG-бот з заземленими відповідями
-**Pipeline**: question → retrieval (semantic) → prompt → grounded answer → citation
-**Prompt template**: Grounded answering rule + fallback + citation
-**Language**: Українська
-**Retrieval**: FAISS semantic search (top-3 chunks per question)
+| Параметр | Значення |
+|---|---|
+| **Pipeline** | question → retrieval (semantic) → prompt → grounded answer → citation |
+| **Prompt template** | Grounded answering rule + fallback + citation |
+| **Language** | Українська |
+| **Retrieval** | FAISS semantic search (top-3 chunks per question) |
 
 ### Архітектура
 
