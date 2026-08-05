@@ -168,12 +168,6 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
         # Prepend overlap from previous chunk (last `overlap` chars of raw text)
         if prev_end > 0:
             overlap_start = max(0, prev_end - overlap)
-            # Word boundary on overlap_start: if mid-word, move back to word start
-            if overlap_start > 0 and text[overlap_start - 1].isalnum():
-                ws = overlap_start - 1
-                while ws >= 0 and text[ws].isalnum():
-                    ws -= 1
-                overlap_start = ws + 1
             overlap_text = text[overlap_start:prev_end].strip()
 
             if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
@@ -205,21 +199,11 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Advance start: sliding window with overlap
         new_start = end - overlap
-        # If we've reached the end of the text, this was the last chunk — exit
-        if end >= text_len:
-            break
         # Ensure forward progress — never go backward or stay still
         if new_start <= start:
             start = end  # fallback: no overlap if sentence break is too close
         else:
             start = new_start
-            # Word boundary: if start lands mid-word, move forward to next word
-            if start < text_len and text[start].isalnum():
-                # Skip over current word and whitespace to reach next word
-                while start < text_len and text[start].isalnum():
-                    start += 1
-                while start < text_len and text[start] in " \t\n":
-                    start += 1
 
     return chunks
 
