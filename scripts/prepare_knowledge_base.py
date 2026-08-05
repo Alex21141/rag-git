@@ -209,12 +209,28 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
 
 def _capitalize_chunk(text: str) -> str:
-    """Capitalize first letter of chunk text."""
+    """Capitalize first letter of chunk text.
+
+    If the first alpha char is in the middle of a word (previous char is also a letter),
+    remove the partial word prefix so the chunk starts with a complete word.
+    """
     if not text:
         return text
-    for i, ch in enumerate(text):
-        if ch.isalpha():
-            return text[:i] + ch.upper() + text[i + 1:]
+    # Skip leading whitespace
+    i = 0
+    while i < len(text) and text[i].isspace():
+        i += 1
+    if i < len(text) and text[i].islower():
+        # Check if we're in the middle of a word (previous char is a letter)
+        if i > 0 and text[i - 1].isalpha():
+            # Find start of word and cut it off
+            word_start = i
+            while word_start > 0 and text[word_start - 1].isalpha():
+                word_start -= 1
+            if word_start < i:
+                text = text[:word_start] + text[i:]  # remove partial word prefix
+                i = word_start
+        text = text[:i] + text[i].upper() + text[i + 1:]
     return text
 
 
