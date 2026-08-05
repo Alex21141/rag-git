@@ -44,3 +44,29 @@
 **Висновок**: Покращення retrieval pipeline (hybrid search + metadata filtering) значно підвищило точність. Для найкращих результатів рекомендується поєднання обох технік.
 
 **Повні результати**: `outputs/retrieval_comparison.md`
+
+### Структура проєкту
+
+```
+rag-github/
+├── README.md ← цей файл
+├── data/
+│   ├── raw/ ← початкові документи (3 .md)
+│   │   ├── 03_branching_basic_branching_merging.md
+│   │   ├── 04_branching_branch_management.md
+│   │   └── 05_distributed_workflows.md
+│   └── processed/
+│       └── chunks.jsonl ← 158 чанків
+├── index/
+│   ├── faiss.index ← FAISS IndexFlatIP (dim=384)
+│   └── metadata.pkl ← серіалізовані метадані
+├── outputs/
+│   ├── retrieval_examples.md ← базові результати (HW2)
+│   └── retrieval_comparison.md ← порівняння HW2 vs HW3
+└── scripts/
+    ├── download_sources.py ← збір даних з веб
+    ├── prepare_knowledge_base.py ← chunking + нормалізація
+    ├── retrieval.py ← semantic retrieval (FAISS)
+    ├── retrieval_improved.py ← hybrid BM25 + semantic + metadata
+    └── validate_chunks.py ← JSONL валідатор
+```
