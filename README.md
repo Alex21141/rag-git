@@ -1,8 +1,11 @@
 # Git tutoring assistant
 
-Домашнє завдання №3 — Покращення retrieval pipeline
-**Baseline (HW2)**: Semantic-only (FAISS cosine, all-MiniLM-L6-v2)
-**Improved (HW3)**: Hybrid BM25 + Semantic (α=0.5) + Metadata filtering
+## Домашнє завдання №3 — Покращення retrieval pipeline
+
+| Параметр | Значення |
+|---|---|
+| **Baseline (HW2)** | Semantic-only (FAISS cosine, all-MiniLM-L6-v2) |
+| **Improved (HW3)** | Hybrid BM25 + Semantic (α=0.5) + Metadata filtering |
 
 ### Покращення:
 1. **Metadata filtering** — фільтрація за `domain` (git/github/gitlab) та `document_type`
