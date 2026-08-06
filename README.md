@@ -187,15 +187,15 @@
 | **Test queries** | 10 |
 | **Top-1 accuracy** | 6/10 (60%) |
 
-### 1. Pipeline
+### 1. Пайплайн
 
 ```
-chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine search → top-5 chunks
+chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine search → top-5 чанків
 ```
 
-- `embedding_text` = `overlap_context + text` — семантична continuity між сусідніми чанками
-- FAISS `IndexFlatIP` — inner product (косинусна подібність для normalized vector)
-- Query encode → search → sort by score → return top-k
+- `embedding_text` = `overlap_context + text` — семантична цілісність між сусідніми чанками
+- FAISS `IndexFlatIP` — внутрішнє добуток (косинусна подібність для нормалізованих векторів)
+- Запит → кодування → пошук → сортування за score → повернення top-k
 
 ### 2. Результати запитів
 
