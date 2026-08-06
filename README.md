@@ -20,8 +20,8 @@ chunks.jsonl → embedding_text → FAISS (семантика) + BM25 (ключ�
 - **Семантичний пошук**: FAISS cosine similarity, top-20 кандидатів
 - **BM25 пошук**: matching на токінізованому `text`
 - **Нормалізація**: обидва score → [0, 1]
-- **Гібрид**: `α * norm_semantic + (1-α) * norm_bm25` (α=0.5)
-- **Domain filter**: опціонально `--domain git|github|gitlab`
+- **Гібрид**: `α * нормалізований_семантичний + (1-α) * нормалізований_bm25` (α=0.5)
+- **Фільтр за доменом**: опціонально `--domain git|github|gitlab`
 
 ### 2. Порівняльна таблиця (HW2 vs HW3)
 
@@ -50,18 +50,18 @@ chunks.jsonl → embedding_text → FAISS (семантика) + BM25 (ключ�
 | Середнє покращення | +0.29 |
 
 **Де гібридний пошук працює добре:**
-- Q2 (branch creation) — semantic повернув GitLab intro (0.63), гібридний знайшов `git_basics_getting_repository_chunk_001` (0.95) — BM25 підхопив ключові слова `branch`, `create`
-- Q3 (merge conflicts) — semantic повернув branching chunk_016 (0.74), гібридний знайшов chunk_011 (0.99) — точніше, BM25 підхопив `merge`, `conflict`
-- Q4 (git add vs commit) — semantic повернув GitHub intro (0.63), гібридний знайшов GitLab chunk (0.93) — BM25 підхопив `git add`, `git commit`
-- Q7 (commit history) — semantic повернув GitHub intro (0.58), гібридний знайшов `git_tools_rebasing_chunk_016` (0.88) — BM25 підхопив `commit`, `history`
+- Q2 (створення branch) — семантика повернула GitLab intro (0.63), гібридний знайшов `git_basics_getting_repository_chunk_001` (0.95) — BM25 підхопив ключові слова `branch`, `create`
+- Q3 (merge conflicts) — семантика повернула branching chunk_016 (0.74), гібридний знайшов chunk_011 (0.99) — точніше, BM25 підхопив `merge`, `conflict`
+- Q4 (git add vs commit) — семантика повернула GitHub intro (0.63), гібридний знайшов GitLab chunk (0.93) — BM25 підхопив `git add`, `git commit`
+- Q7 (commit history) — семантика повернула GitHub intro (0.58), гібридний знайшов `git_tools_rebasing_chunk_016` (0.88) — BM25 підхопив `commit`, `history`
 
 **Висновки:**
-- Гібридний пошук стабілізує retrieval — навіть якщо semantic модель «заблуджує» в generic чанках, BM25 повертає релевантні чанки з точним keyword matching
-- BM25 компенсує слабкі сторони all-MiniLM-L6-v2 на generic Git-концепціях
-- Alpha=0.5 — збалансований: semantic зберігає контекст, BM25 дає keyword precision
-- Domain filter (`--domain`) дозволяє ізолювати GitLab-only контент
+- Гібридний пошук стабілізує retrieval — навіть якщо семантична модель «заблуджує» в загальних чанках, BM25 повертає релевантні чанки з точним співпадінням ключових слів
+- BM25 компенсує слабкі сторони all-MiniLM-L6-v2 на загальних Git-концепціях
+- Alpha=0.5 — збалансований: семантика зберігає контекст, BM25 дає точність ключових слів
+- Фільтр за доменом (`--domain`) дозволяє ізолювати GitLab-контент
 
-### 4. Domain filter
+### 4. Фільтр за доменом
 
 `--domain gitlab` ізолює GitLab-контент — повертає тільки чанки з `metadata.domain == "gitlab"`.
 
@@ -75,17 +75,17 @@ chunks.jsonl → embedding_text → FAISS (семантика) + BM25 (ключ�
 | `branching_basic_branching_chunk_001` (0.83) ❌ git | `gitlab_getting_started_chunk_009` (0.57) ✅ gitlab |
 | `gitlab_getting_started_chunk_005` (0.75) ✅ | `gitlab_getting_started_chunk_001` (0.52) ✅ gitlab |
 
-Без фільтру: 3/5 чанків — noise з git-документації (rebasing, branching).
-З фільтром: 5/5 — тільки GitLab контент, 0 noise.
+Без фільтру: 3/5 чанків — шум з git-документації (rebasing, branching).
+З фільтром: 5/5 — тільки GitLab контент, шум відсутній.
 
-**Висновок:** Domain filter критичний для платформ-специфічних запитів — усуває competition від більш масивного git-контенту.
+**Висновок:** Фільтр за доменом критичний для платформ-специфічних запитів — усуває конкуренцію від більш масивного git-контенту.
 
 ### 5. Відомі обмеження
 
-- ⚠️ BM25 працює на `text` (без overlap_context) — втрачає семантичну continuity для keyword matching
-- ⚠️ Alpha=0.5 — фіксований, не адаптується під тип запиту (keyword-heavy vs concept-heavy)
-- ⚠️ BM25 tokenization: простий `.split()` — не обробляє stemming, lemmatization, stop words
-- ⚠️ FAISS search returns top-20 for hybrid re-ranking — може пропустити чанк з високим BM25 але низьким semantic score
+- ⚠️ BM25 працює на `text` (без overlap_context) — втрачає семантичну цілісність для пошуку за ключовими словами
+- ⚠️ Alpha=0.5 — фіксований, не адаптується під тип запиту (багато ключових слів vs загальні концепції)
+- ⚠️ BM25 токенизація: простий `.split()` — не обробляє stemming, lemmatization, stop words
+- ⚠️ FAISS повертає top-20 для гібридного переранжування — може пропустити чанк з високим BM25 але низьким семантичним балом
 
 ### 6. Структура проєкту
 
