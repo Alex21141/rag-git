@@ -51,7 +51,7 @@
 rag-github/
 ├── README.md ← цей файл
 ├── data/
-│   ├── raw/ ← початкові документи (3 .md)
+│   ├── raw/ ← початкові документи (10 .md)
 │   │   ├── 03_branching_basic_branching_merging.md
 │   │   ├── 04_branching_branch_management.md
 │   │   └── 05_distributed_workflows.md
