@@ -337,17 +337,17 @@ rag-github/
 │ │ ├── 08_github_about_git.md
 │ │ └── 09_gitlab_getting_started.md
 │ └── processed/
-│ └── chunks.jsonl ← 145 чанків
-├── index/ ← FAISS index (gitignored)
+│ └── chunks.jsonl ← 145 чанків (text + overlap_context + embedding_text)
+├── index/ ← FAISS index (не трекається git)
 │ ├── faiss.index
 │ └── metadata.pkl
 ├── outputs/
-│ ├── retrieval_examples.md ← HW2 test results
-│ └── retrieval_comparison.md ← HW3 comparison
+│ ├── retrieval_examples.md ← результати HW2 (10 запитів)
+│ └── retrieval_comparison.md ← порівняння HW2 vs HW3
 └── scripts/
- ├── download_sources.py ← download + clean HTML → data/raw/*.md
- ├── prepare_knowledge_base.py ← normalize + chunk + save
- ├── retrieval.py ← HW2: semantic retrieval
- ├── retrieval_improved.py ← HW3: hybrid BM25 + semantic
- └── validate_chunks.py
+ ├── download_sources.py ← завантаження + очищення HTML → data/raw/*.md
+ ├── prepare_knowledge_base.py ← нормалізація + чанкінг + збереження JSONL
+ ├── retrieval.py ← HW2: семантичний пошук
+ ├── retrieval_improved.py ← HW3: гібридний BM25 + семантика
+ └── validate_chunks.py ← валідатор JSONL
 ```
