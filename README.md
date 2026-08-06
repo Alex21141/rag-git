@@ -61,14 +61,33 @@ chunks.jsonl → embedding_text → FAISS (семантика) + BM25 (ключ�
 - Alpha=0.5 — збалансований: semantic зберігає контекст, BM25 дає keyword precision
 - Domain filter (`--domain`) дозволяє ізолювати GitLab-only контент
 
-### 4. Відомі обмеження
+### 4. Domain filter
+
+`--domain gitlab` ізолює GitLab-контент — повертає тільки чанки з `metadata.domain == "gitlab"`.
+
+**Запит:** `How do I merge a branch in GitLab?`
+
+| Без фільтру (гібрид, top-5) | З `--domain gitlab` (top-5) |
+|---|---|
+| `gitlab_getting_started_chunk_004` (0.98) ✅ | `gitlab_getting_started_chunk_004` (0.98) ✅ |
+| `git_tools_rebasing_chunk_001` (0.92) ❌ git | `gitlab_getting_started_chunk_005` (0.75) ✅ gitlab |
+| `branching_basic_branching_chunk_009` (0.84) ❌ git | `gitlab_getting_started_chunk_003` (0.60) ✅ gitlab |
+| `branching_basic_branching_chunk_001` (0.83) ❌ git | `gitlab_getting_started_chunk_009` (0.57) ✅ gitlab |
+| `gitlab_getting_started_chunk_005` (0.75) ✅ | `gitlab_getting_started_chunk_001` (0.52) ✅ gitlab |
+
+Без фільтру: 3/5 чанків — noise з git-документації (rebasing, branching).
+З фільтром: 5/5 — тільки GitLab контент, 0 noise.
+
+**Висновок:** Domain filter критичний для платформ-специфічних запитів — усуває competition від більш масивного git-контенту.
+
+### 5. Відомі обмеження
 
 - ⚠️ BM25 працює на `text` (без overlap_context) — втрачає семантичну continuity для keyword matching
 - ⚠️ Alpha=0.5 — фіксований, не адаптується під тип запиту (keyword-heavy vs concept-heavy)
 - ⚠️ BM25 tokenization: простий `.split()` — не обробляє stemming, lemmatization, stop words
 - ⚠️ FAISS search returns top-20 for hybrid re-ranking — може пропустити чанк з високим BM25 але низьким semantic score
 
-### 5. Структура проєкту
+### 6. Структура проєкту
 
 ```
 rag-github/
