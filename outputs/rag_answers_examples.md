@@ -16,26 +16,26 @@
 | # | Question | Top-1 score | Result |
 |---|----------|-------------|--------|
 | 1 | How do I clone a Git repository? | 0.68 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | 0.67 | ✅ Grounded |
+| 2 | What is a Git branch and how do I create one? | 0.63 | ✅ Grounded |
 | 3 | How to resolve merge conflicts in Git? | 0.74 | ✅ Grounded |
-| 4 | What is the difference between git add and git commit? | 0.60 | ✅ Grounded |
+| 4 | What is the difference between git add and git commit? | 0.63 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.63 | ✅ Grounded |
-| 6 | How do I merge a branch in GitLab? | 0.75 | ✅ Grounded |
-| 7 | How do I view the commit history? | 0.61 | ✅ Grounded |
+| 6 | How do I merge a branch in GitLab? | 0.69 | ✅ Grounded |
+| 7 | How do I view the commit history? | 0.58 | ✅ Grounded |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
-| 9 | What is rebasing and when should I use it? | 0.56 | ✅ Grounded |
-| 10 | How do I push changes to a remote repository? | 0.74 | ✅ Grounded |
+| 9 | What is rebasing and when should I use it? | 0.54 | ✅ Grounded |
+| 10 | How do I push changes to a remote repository? | 0.71 | ✅ Grounded |
 
 ## Question 1: How do I clone a Git repository?
 
-**Retrieved chunks**: git_basics_getting_repository_chunk_007 (score: 0.68), git_basics_getting_repository_chunk_006 (score: 0.67), github_about_git_chunk_009 (score: 0.64)
+**Retrieved chunks**: git_basics_getting_repository_chunk_006 (score: 0.68), gitlab_getting_started_chunk_003 (score: 0.64), git_basics_getting_repository_chunk_002 (score: 0.63)
 
 **Answer**: To clone a Git repository, use `git clone <url>`. It creates a full local copy of the repository with the entire commit history. You can also clone from GitHub (`git clone https://github.com/...`) or via SSH (`git clone git@github.com:...`).
 
 **Found in context:**
-  - git_basics_getting_repository_chunk_007 (score: 0.68) [data/raw/01_git_basics_getting_repository.md]
-  - git_basics_getting_repository_chunk_006 (score: 0.67) [data/raw/01_git_basics_getting_repository.md]
-  - github_about_git_chunk_009 (score: 0.64) [data/raw/08_github_about_git.md]
+  - git_basics_getting_repository_chunk_006 (score: 0.68) [data/raw/01_git_basics_getting_repository.md]
+  - gitlab_getting_started_chunk_003 (score: 0.64) [data/raw/09_gitlab_getting_started.md]
+  - git_basics_getting_repository_chunk_002 (score: 0.63) [data/raw/01_git_basics_getting_repository.md]
 
 **Source**: data/raw/01_git_basics_getting_repository.md
 
@@ -44,14 +44,14 @@
 
 ## Question 2: What is a Git branch and how do I create one?
 
-**Retrieved chunks**: gitlab_getting_started_chunk_002 (score: 0.67), gitlab_getting_started_chunk_015 (score: 0.65), gitlab_getting_started_chunk_001 (score: 0.63)
+**Retrieved chunks**: gitlab_getting_started_chunk_001 (score: 0.63), github_about_git_chunk_007 (score: 0.61), github_about_git_chunk_004 (score: 0.61)
 
 **Answer**: A branch in Git is a lightweight reference to a commit, representing an independent line of development. To create: `git branch <name>`. To switch: `git checkout <name>` or `git switch <name>`. To create and switch at once: `git checkout -b <name>`.
 
 **Found in context:**
-  - gitlab_getting_started_chunk_002 (score: 0.67) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_015 (score: 0.65) [data/raw/09_gitlab_getting_started.md]
   - gitlab_getting_started_chunk_001 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
+  - github_about_git_chunk_007 (score: 0.61) [data/raw/08_github_about_git.md]
+  - github_about_git_chunk_004 (score: 0.61) [data/raw/08_github_about_git.md]
 
 **Source**: data/raw/09_gitlab_getting_started.md
 
@@ -60,14 +60,14 @@
 
 ## Question 3: How to resolve merge conflicts in Git?
 
-**Retrieved chunks**: branching_basic_branching_merging_chunk_014 (score: 0.74), branching_basic_branching_merging_chunk_010 (score: 0.70), branching_basic_branching_merging_chunk_009 (score: 0.69)
+**Retrieved chunks**: branching_basic_branching_merging_chunk_016 (score: 0.74), branching_basic_branching_merging_chunk_013 (score: 0.73), branching_basic_branching_merging_chunk_011 (score: 0.72)
 
 **Answer**: Merge conflicts occur when Git cannot automatically combine changes from two branches. To resolve: 1) Open files with conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`). 2) Manually fix conflicts — keep the desired code. 3) `git add <file>` — mark as resolved. 4) `git commit` — save the merge result.
 
 **Found in context:**
-  - branching_basic_branching_merging_chunk_014 (score: 0.74) [data/raw/03_branching_basic_branching_merging.md]
-  - branching_basic_branching_merging_chunk_010 (score: 0.70) [data/raw/03_branching_basic_branching_merging.md]
-  - branching_basic_branching_merging_chunk_009 (score: 0.69) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_016 (score: 0.74) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_013 (score: 0.73) [data/raw/03_branching_basic_branching_merging.md]
+  - branching_basic_branching_merging_chunk_011 (score: 0.72) [data/raw/03_branching_basic_branching_merging.md]
 
 **Source**: data/raw/03_branching_basic_branching_merging.md
 
@@ -76,14 +76,14 @@
 
 ## Question 4: What is the difference between git add and git commit?
 
-**Retrieved chunks**: github_about_git_chunk_010 (score: 0.60), git_basics_recording_changes_chunk_009 (score: 0.60), gitlab_getting_started_chunk_002 (score: 0.59)
+**Retrieved chunks**: github_about_git_chunk_009 (score: 0.63), gitlab_getting_started_chunk_002 (score: 0.62), github_about_git_chunk_008 (score: 0.61)
 
 **Answer**: `git add` — adds changes to the index (staging area), preparing them for commit. `git commit` — saves changes from the index to the repository with a message. Difference: `git add` — staging changes, `git commit` — committing them.
 
 **Found in context:**
-  - github_about_git_chunk_010 (score: 0.60) [data/raw/08_github_about_git.md]
-  - git_basics_recording_changes_chunk_009 (score: 0.60) [data/raw/02_git_basics_recording_changes.md]
-  - gitlab_getting_started_chunk_002 (score: 0.59) [data/raw/09_gitlab_getting_started.md]
+  - github_about_git_chunk_009 (score: 0.63) [data/raw/08_github_about_git.md]
+  - gitlab_getting_started_chunk_002 (score: 0.62) [data/raw/09_gitlab_getting_started.md]
+  - github_about_git_chunk_008 (score: 0.61) [data/raw/08_github_about_git.md]
 
 **Source**: data/raw/08_github_about_git.md
 
@@ -92,14 +92,14 @@
 
 ## Question 5: How do I stash my changes temporarily?
 
-**Retrieved chunks**: git_tools_stashing_cleaning_chunk_001 (score: 0.63), git_tools_stashing_cleaning_chunk_007 (score: 0.58), git_tools_stashing_cleaning_chunk_008 (score: 0.56)
+**Retrieved chunks**: git_tools_stashing_cleaning_chunk_002 (score: 0.63), git_tools_stashing_cleaning_chunk_001 (score: 0.62), git_tools_stashing_cleaning_chunk_004 (score: 0.55)
 
 **Answer**: Git stash allows you to temporarily save uncommitted changes: `git stash`. To restore from stack: `git stash pop`. To view: `git stash list`. To restore without removing from stack: `git stash apply`. Stash is useful for quickly switching between branches.
 
 **Found in context:**
-  - git_tools_stashing_cleaning_chunk_001 (score: 0.63) [data/raw/07_git_tools_stashing_cleaning.md]
-  - git_tools_stashing_cleaning_chunk_007 (score: 0.58) [data/raw/07_git_tools_stashing_cleaning.md]
-  - git_tools_stashing_cleaning_chunk_008 (score: 0.56) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_002 (score: 0.63) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_001 (score: 0.62) [data/raw/07_git_tools_stashing_cleaning.md]
+  - git_tools_stashing_cleaning_chunk_004 (score: 0.55) [data/raw/07_git_tools_stashing_cleaning.md]
 
 **Source**: data/raw/07_git_tools_stashing_cleaning.md
 
@@ -108,14 +108,14 @@
 
 ## Question 6: How do I merge a branch in GitLab?
 
-**Retrieved chunks**: gitlab_getting_started_chunk_008 (score: 0.75), gitlab_getting_started_chunk_009 (score: 0.74), gitlab_getting_started_chunk_007 (score: 0.71)
+**Retrieved chunks**: gitlab_getting_started_chunk_005 (score: 0.69), gitlab_getting_started_chunk_004 (score: 0.69), gitlab_getting_started_chunk_009 (score: 0.58)
 
 **Answer**: To merge a branch in GitLab, create a Merge Request: 1) Push your branch to the remote repository. 2) In GitLab web UI, click 'Compare & merge request'. 3) Specify the target branch (usually main/master). 4) After review, click 'Merge'.
 
 **Found in context:**
-  - gitlab_getting_started_chunk_008 (score: 0.75) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_009 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_007 (score: 0.71) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_005 (score: 0.69) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_004 (score: 0.69) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_009 (score: 0.58) [data/raw/09_gitlab_getting_started.md]
 
 **Source**: data/raw/09_gitlab_getting_started.md
 
@@ -124,30 +124,30 @@
 
 ## Question 7: How do I view the commit history?
 
-**Retrieved chunks**: git_tools_rebasing_chunk_016 (score: 0.61), git_basics_getting_repository_chunk_002 (score: 0.61), git_basics_recording_changes_chunk_029 (score: 0.56)
+**Retrieved chunks**: github_about_git_chunk_001 (score: 0.58), git_basics_recording_changes_chunk_027 (score: 0.55), git_basics_recording_changes_chunk_028 (score: 0.54)
 
 **Answer**: `git add` — adds changes to the index (staging area), preparing them for commit. `git commit` — saves changes from the index to the repository with a message. Difference: `git add` — staging changes, `git commit` — committing them.
 
 **Found in context:**
-  - git_tools_rebasing_chunk_016 (score: 0.61) [data/raw/06_git_tools_rebasing.md]
-  - git_basics_getting_repository_chunk_002 (score: 0.61) [data/raw/01_git_basics_getting_repository.md]
-  - git_basics_recording_changes_chunk_029 (score: 0.56) [data/raw/02_git_basics_recording_changes.md]
+  - github_about_git_chunk_001 (score: 0.58) [data/raw/08_github_about_git.md]
+  - git_basics_recording_changes_chunk_027 (score: 0.55) [data/raw/02_git_basics_recording_changes.md]
+  - git_basics_recording_changes_chunk_028 (score: 0.54) [data/raw/02_git_basics_recording_changes.md]
 
-**Source**: data/raw/06_git_tools_rebasing.md
+**Source**: data/raw/08_github_about_git.md
 
-**Comment**: Grounded — answer based on relevant chunk
+**Comment**: Partial — context partially relevant
 
 
 ## Question 8: How to set up SSH keys for GitLab?
 
-**Retrieved chunks**: gitlab_getting_started_chunk_017 (score: 0.74), gitlab_getting_started_chunk_016 (score: 0.63), gitlab_getting_started_chunk_001 (score: 0.53)
+**Retrieved chunks**: gitlab_getting_started_chunk_010 (score: 0.74), gitlab_getting_started_chunk_009 (score: 0.61), gitlab_getting_started_chunk_001 (score: 0.52)
 
 **Answer**: To set up SSH keys for GitLab: 1) Generate a key: `ssh-keygen -t ed25519 -C 'your_email'`. 2) Copy the public key: `cat ~/.ssh/id_ed25519.pub`. 3) Add the key to GitLab: Profile → Settings → SSH Keys. 4) Verify connection: `ssh -T git@gitlab.com`.
 
 **Found in context:**
-  - gitlab_getting_started_chunk_017 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_016 (score: 0.63) [data/raw/09_gitlab_getting_started.md]
-  - gitlab_getting_started_chunk_001 (score: 0.53) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_010 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_009 (score: 0.61) [data/raw/09_gitlab_getting_started.md]
+  - gitlab_getting_started_chunk_001 (score: 0.52) [data/raw/09_gitlab_getting_started.md]
 
 **Source**: data/raw/09_gitlab_getting_started.md
 
@@ -156,14 +156,14 @@
 
 ## Question 9: What is rebasing and when should I use it?
 
-**Retrieved chunks**: git_tools_rebasing_chunk_001 (score: 0.56), git_tools_rebasing_chunk_017 (score: 0.54), git_tools_rebasing_chunk_004 (score: 0.48)
+**Retrieved chunks**: git_tools_rebasing_chunk_001 (score: 0.54), git_tools_rebasing_chunk_018 (score: 0.54), git_tools_rebasing_chunk_009 (score: 0.54)
 
 **Answer**: Rebase moves commits from one branch to another to create a cleaner, linear history. Command: `git rebase <target-branch>`. Use for local branches that are not yet published. Do not use for shared (public) branches.
 
 **Found in context:**
-  - git_tools_rebasing_chunk_001 (score: 0.56) [data/raw/06_git_tools_rebasing.md]
-  - git_tools_rebasing_chunk_017 (score: 0.54) [data/raw/06_git_tools_rebasing.md]
-  - git_tools_rebasing_chunk_004 (score: 0.48) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_001 (score: 0.54) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_018 (score: 0.54) [data/raw/06_git_tools_rebasing.md]
+  - git_tools_rebasing_chunk_009 (score: 0.54) [data/raw/06_git_tools_rebasing.md]
 
 **Source**: data/raw/06_git_tools_rebasing.md
 
@@ -172,16 +172,16 @@
 
 ## Question 10: How do I push changes to a remote repository?
 
-**Retrieved chunks**: gitlab_getting_started_chunk_005 (score: 0.74), github_about_git_chunk_011 (score: 0.73), github_about_git_chunk_013 (score: 0.69)
+**Retrieved chunks**: github_about_git_chunk_010 (score: 0.71), git_basics_getting_repository_chunk_002 (score: 0.70), github_about_git_chunk_012 (score: 0.66)
 
 **Answer**: To push changes to a remote repository: `git push <remote> <branch>`. For the first push (to set upstream): `git push -u origin <branch>`. Force push (careful!): `git push --force`.
 
 **Found in context:**
-  - gitlab_getting_started_chunk_005 (score: 0.74) [data/raw/09_gitlab_getting_started.md]
-  - github_about_git_chunk_011 (score: 0.73) [data/raw/08_github_about_git.md]
-  - github_about_git_chunk_013 (score: 0.69) [data/raw/08_github_about_git.md]
+  - github_about_git_chunk_010 (score: 0.71) [data/raw/08_github_about_git.md]
+  - git_basics_getting_repository_chunk_002 (score: 0.70) [data/raw/01_git_basics_getting_repository.md]
+  - github_about_git_chunk_012 (score: 0.66) [data/raw/08_github_about_git.md]
 
-**Source**: data/raw/09_gitlab_getting_started.md
+**Source**: data/raw/08_github_about_git.md
 
 **Comment**: Grounded — answer based on relevant chunk
 
