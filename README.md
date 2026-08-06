@@ -1,170 +1,158 @@
 # Git tutoring assistant
 
-## Домашнє завдання №4 — Генерація відповіді поверх retrieval
+## Домашнє завдання №1 — Підготовка knowledge base
 
 | Параметр | Значення |
 |---|---|
-| **Модель вбудувань** | sentence-transformers/all-MiniLM-L6-v2 |
-| **Індекс** | FAISS IndexFlatIP (dim=384) |
-| **Чанків у KB** | 149 |
-| **Тестових запитів** | 10 |
-| **LLM** | Template-based (LLM unavailable) |
-| **Prompt template** | Grounded answering + fallback + citation |
-| **Мова відповідей** | Англійська |
+| **Джерела** | 10 документів (Git, GitHub, GitLab) |
+| **Chunking** | Two-pass sentence-aware, chunk_size=660, overlap=150 |
+| **Чанків** | 145 |
+| **Текст всього** | 94,122 chars |
+| **Overlap coverage** | 100% (135/135 пар) |
+| **Partial words у text** | 0 |
+| **Домен** | git (121), github (14), gitlab (10) |
 
-### 1. Опис завдання
+### 1. Тема проєкту
 
-Побудувати QA pipeline, у якому модель відповідає на основі знайденого context, а не з загальних знань.
+**Git tutoring assistant** — чат-бот для навчання основам Git. Цільова аудиторія — розробники, які починають працювати з системами керування версіями.
 
-Потік:
-```
-user question
-→ retrieve top-k chunks
-→ build prompt with context
-→ call LLM / template
-→ return grounded answer with source
-```
+Тема охоплює:
+- Концепцію контролю версій (local, centralized, distributed VCS)
+- Базові команди Git (`init`, `clone`, `add`, `commit`, `push`, `pull`)
+- Роботу з гілками (branching, merging, rebasing)
+- Стешинг та очищення (stashing, cleaning)
+- Розподілені workflow (distributed workflows)
+- GitHub (About Git)
+- GitLab (Getting started with Git)
 
-**Мета** — grounded QA: модель відповідає тільки на основі retrieved context і чесно каже "не знаю", якщо context недостатній.
+### 2. Джерела
 
-### 2. Prompt template
+| # | Назва | URL | Тип |
+|---|-------|-----|-----|
+| 0 | Getting Started — About Version Control | https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control | reference |
+| 1 | Git Basics — Getting a Git Repository | https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository | reference |
+| 2 | Git Basics — Recording Changes to the Repository | https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository | reference |
+| 3 | Git Branching — Basic Branching and Merging | https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging | reference |
+| 4 | Git Branching — Branch Management | https://git-scm.com/book/en/v2/Git-Branching-Branch-Management | reference |
+| 5 | Distributed Git — Distributed Workflows | https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows | reference |
+| 6 | Git Tools — Rebasing | https://git-scm.com/book/en/v2/Git-Branching-Rebasing | reference |
+| 7 | Git Tools — Stashing and Cleaning | https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning | reference |
+| 8 | GitHub — About Git | https://docs.github.com/api/article/body?pathname=/en/get-started/using-git/about-git | reference |
+| 9 | GitLab — Getting started with Git | https://docs.gitlab.com/topics/git/get_started/index.md | reference |
 
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+### 3. Структура метаданих
 
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
+Кожен чанк у `chunks.jsonl` має поля:
 
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-```
-
-### 3. QA Pipeline
-
-Реалізовано в `scripts/rag_answer.py`:
-
-1. **Load** — завантаження FAISS індексу + chunks + metadata
-2. **Retrieve** — semantic search (top-k=3) для кожного запиту
-3. **Build prompt** — ін'єкція контексту в prompt template
-4. **Generate** — створення відповіді на основі контексту
-5. **Citation** — додавання source chunk_id + source_file до відповіді
-
-### 4. Результати тестування
-
-**10 тестових запитів** (5 простих + 5 переформульованих + fallback):
-
-| # | Запитання | Top-1 chunk | Score | Результат |
-|---|-----------|-------------|-------|-----------|
-| 1 | How do I clone a Git repository? | git_basics_getting_repository_chunk_007 | 0.68 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | gitlab_getting_started_chunk_002 | 0.67 | ✅ Grounded |
-| 3 | How to resolve merge conflicts in Git? | branching_basic_branching_merging_chunk_013 | 0.74 | ✅ Grounded |
-| 4 | What is the difference between git add and git commit? | github_about_git_chunk_007 | 0.60 | ✅ Grounded |
-| 5 | How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_000 | 0.63 | ✅ Grounded |
-| 6 | How do I merge a branch in GitLab? | gitlab_getting_started_chunk_004 | 0.75 | ✅ Grounded |
-| 7 | How do I view the commit history? | github_about_git_chunk_000 | 0.61 | ✅ Grounded |
-| 8 | How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_009 | 0.74 | ✅ Grounded |
-| 9 | What is rebasing and when should I use it? | git_tools_rebasing_chunk_009 | 0.56 | ✅ Grounded |
-| 10 | How do I push changes to a remote repository? | distributed_workflows_chunk_005 | 0.74 | ✅ Grounded |
-
-### 5. Fallback behavior
-
-Для запитів з низьким score (< 0.50) або недостатнім контекстом модель повертає:
-> "I do not have enough information in the available documents to answer this question."
-
-### 6. Prompt improvements
-
-**Improvement 1: Grounded answering rule**
-
-*Проблема:* Перший prompt був занадто простий — модель вигадувала відповіді з загальних знань.
-
-*Before:*
-```
-Answer the question using the context.
-Context: {retrieved_context}
-Question: {user_question}
+`branching_basic_branching_merging_chunk_001` (658 chars, domain=git):
+```json
+{
+ "chunk_id": "branching_basic_branching_merging_chunk_001",
+ "text": "# 3.2 Git Branching - Basic Branching and Merging\nLet's go through a simple example of branching and merging...",
+ "overlap_context": "",
+ "embedding_text": "# 3.2 Git Branching - Basic Branching and Merging\nLet's go through...",
+ "metadata": {
+  "document_id": "branching_basic_branching_merging",
+  "source_file": "data/raw/03_branching_basic_branching_merging.md",
+  "title": "3.2 Git Branching - Basic Branching and Merging",
+  "section": "3.2 Git Branching - Basic Branching and Merging",
+  "chunk_index": 1,
+  "language": "en",
+  "domain": "git",
+  "document_type": "reference",
+  "overlap_len": 0
+ }
+}
 ```
 
-*After:*
-```
-Answer ONLY based on the provided context below.
-Do NOT use any general knowledge outside the provided context.
-Context: {retrieved_context}
-Question: {user_question}
-```
+| Поле | Опис |
+|------|------|
+| `chunk_id` | Унікальний ідентифікатор чанку |
+| `text` | Чистий текст чанку (без overlap-префікса — повні слова) |
+| `overlap_context` | Текст перекриття з попереднім чанком (для embedding) |
+| `embedding_text` | `overlap_context + text` — повний текст для семантичного вбудовування |
+| `metadata.document_id` | Ідентифікатор документу (без префікса номеру) |
+| `metadata.source_file` | Шлях до raw файлу |
+| `metadata.source_type` | Формат джерела (markdown) |
+| `metadata.title` | Назва документу |
+| `metadata.section` | Заголовок секції |
+| `metadata.chunk_index` | Послідовний номер чанку в документі |
+| `metadata.language` | Мова (en) |
+| `metadata.domain` | Домен (git / github / gitlab) |
+| `metadata.document_type` | Тип контенту (reference) |
+| `metadata.overlap_len` | Довжина overlap_context (150 для чанків з перекриттям) |
 
-*Результат:* Відповіді стали grounded, модель більше не додає зовнішню інформацію.
+### 4. Стратегія чанкінгу
 
----
+- **chunk_size**: 660 символів
+- **overlap**: 150 символів (100% coverage між сусідніми чанками)
+- **метод**: two-pass sentence-aware — спочатку знаходяться точки розриву (кордони речень/слів), потім екстрагуються чанки з overlap
+- **sentence-aware**: пріоритет розриву на `.` `!` `?`
+- **word-boundary**: розриви тільки на кордонах слів (`\s` `\t` `\n`) — ніяких обрізок
+- **partial word protection**: якщо split point призводить до обрізаного слова на початку чанку, split point пропускається
+- **text = raw content only**: чанки зберігаються без overlap-префікса — тільки чистий контент з повними словами
+- **overlap_context**: окреме поле для семантичної continuity при embedding
 
-**Improvement 2: Citation requirement**
+### 5. Статистика
 
-*Проблема:* Без вимоги цитувати джерело неможливо перевірити коректність відповіді.
+| Метрика | Значення |
+|---------|---------|
+| Документів | 10 |
+| Чанків | 145 |
+| Текст всього | 94,122 chars |
+| Середня довжина | 649 chars |
+| Мінімальна довжина | 300 chars |
+| Максимальна довжина | 882 chars |
+| Overlap chain | 135/135 (100%) |
 
-*Before:* Жодної вимоги про джерела.
+### За доменом
 
-*After:*
-```
-Always cite the source chunk ID or source file used in your answer.
-```
+| Домен | Чанків |
+|-------|--------|
+| git | 121 |
+| github | 14 |
+| gitlab | 10 |
 
-*Результат:* Кожна відповідь містить посилання на конкретний chunk та source file.
+### 6. Приклади чанків
 
----
+- `git_about_version_control_chunk_001` (658 chars, domain=git, section=1.1 Getting Started - About Version Control)
+- `branching_basic_branching_merging_chunk_001` (658 chars, domain=git, section=3.2 Git Branching - Basic Branching and Merging)
+- `branching_branch_management_chunk_001` (658 chars, domain=git, section=3.3 Git Branching - Branch Management)
+- `distributed_workflows_chunk_001` (652 chars, domain=git, section=5.1 Distributed Git - Distributed Workflows)
 
-**Improvement 3: Fallback for insufficient context**
+### 7. Виправлення та покращення
 
-*Проблема:* Для запитів без релевантного контексту модель намагалась відповісти і помилялась.
+- ✅ **Clean rewrite** — скрипт переписано з нуля (two-pass sentence-aware chunking)
+- ✅ **0 partial words** — чанки починаються з повних слів (не `ing`, `ogrammers`, `ributed`)
+- ✅ **100% overlap chain** — `prev_chunk.text[-ol:] == curr_chunk.overlap_context` (135/135)
+- ✅ **Separate overlap_context** — `text` містить тільки чистий контент, overlap зберігається окремо
+- ✅ **embedding_text** — `overlap_context + text` для семантичної continuity
+- ✅ **section field** — кожен чанк має `section` у metadata
 
-*Before:* Фallback відсутній — модель завжди намагалась відповісти.
+**Відомі обмеження:**
+- ⚠️ 5 odd backticks у embedding_text (в overlap_context-зонах) — не впливають на retrieval
+- ⚠️ `document_type` у метаданих — статичний (DOMAIN_MAP), не аналізується реальний контент
 
-*After:*
-```
-If the context does not contain enough information to answer the question, say:
-"I do not have enough information in the available documents to answer this question."
-```
-
-*Результат:* Модель чесно каже "не знаю" замість вигадування.
-
-### 7. Структура проєкту
+### 8. Структура проєкту
 
 ```
 rag-github/
 ├── README.md ← цей файл
 ├── data/
-│   ├── raw/ ← початкові документи (10 .md)
-│   │   ├── 00_git_about_version_control.md
-│   │   ├── 01_git_basics_getting_repository.md
-│   │   ├── 02_git_basics_recording_changes.md
-│   │   ├── 03_branching_basic_branching_merging.md
-│   │   ├── 04_branching_branch_management.md
-│   │   ├── 05_distributed_workflows.md
-│   │   ├── 06_git_tools_rebasing.md
-│   │   ├── 07_git_tools_stashing_cleaning.md
-│   │   ├── 08_github_about_git.md
-│   │   └── 09_gitlab_getting_started.md
-│   └── processed/
-│       └── chunks.jsonl ← 149 чанків
-├── index/
-│   ├── faiss.index ← FAISS IndexFlatIP (dim=384)
-│   └── metadata.pkl ← серіалізовані метадані
-├── outputs/
-│   ├── retrieval_examples.md ← результати retrieval
-│   └── rag_answers_examples.md ← RAG відповіді + цитати
+│ ├── raw/ ← початкові документи (10 .md)
+│ │ ├── 00_git_about_version_control.md
+│ │ ├── 01_git_basics_getting_repository.md
+│ │ ├── 02_git_basics_recording_changes.md
+│ │ ├── 03_branching_basic_branching_merging.md
+│ │ ├── 04_branching_branch_management.md
+│ │ ├── 05_distributed_workflows.md
+│ │ ├── 06_git_tools_rebasing.md
+│ │ ├── 07_git_tools_stashing_cleaning.md
+│ │ ├── 08_github_about_git.md
+│ │ └── 09_gitlab_getting_started.md
+│ └── processed/ ← оброблені дані
+│ └── chunks.jsonl ← 145 чанків
 └── scripts/
-    ├── download_sources.py ← збір даних з веб
-    ├── prepare_knowledge_base.py ← chunking + нормалізація
-    ├── retrieval.py ← semantic retrieval (FAISS)
-    ├── rag_answer.py ← RAG QA pipeline (prompt + LLM + citations)
-    └── validate_chunks.py ← JSONL валідатор
+ ├── prepare_knowledge_base.py ← normalize + chunk + save
+ └── validate_chunks.py ← JSONL validator
 ```
-
-**Повні результати**: `outputs/rag_answers_examples.md`
