@@ -105,6 +105,24 @@ def split_with_overlap(text: str, chunk_size: int, overlap: int) -> list[tuple[s
     text_len = len(clean_text)
 
     # Pass 1: find split points (sentence boundaries)
+    # Track fenced code blocks — never split inside them
+    code_blocks: list[tuple[int, int]] = []
+    for m in re.finditer(r'```.*?```', clean_text, re.DOTALL):
+        code_blocks.append((m.start(), m.end()))
+
+    def is_inside_code_block(pos: int) -> bool:
+        for bs, be in code_blocks:
+            if bs < pos < be:
+                return True
+        return False
+
+    def skip_past_code_block(pos: int) -> int:
+        """If pos is inside a code block, return end of that block."""
+        for bs, be in code_blocks:
+            if bs < pos < be:
+                return be
+        return pos
+
     split_points = [0]
     pos = 0
     while pos < text_len:
@@ -113,11 +131,18 @@ def split_with_overlap(text: str, chunk_size: int, overlap: int) -> list[tuple[s
             split_points.append(target)
             break
 
+        # If target is inside a code block, skip past it
+        if is_inside_code_block(target):
+            target = skip_past_code_block(target) + 1
+
         found = False
-        for delta in range(0, 80):
+        for delta in range(0, 120):
             p = target - delta
             if p <= pos + 200:
                 break
+            # Never split inside a code block
+            if is_inside_code_block(p):
+                continue
             if clean_text[p] in ".!?":
                 split_points.append(p + 1)
                 found = True
@@ -179,7 +204,13 @@ def chunk_document(document: dict[str, Any], chunk_size: int, overlap: int) -> l
         chunk_index += 1
         section = document["title"]
         # For embedding: combine overlap_context + text for semantic continuity
-        embedding_text = overlap_ctx + text if overlap_ctx else text
+        # BUT if overlap_context has odd number of ``` (split code block),
+        # don't include it — embedding with broken code block is worse than no overlap
+        oc_fences = overlap_ctx.count("```") if overlap_ctx else 0
+        if oc_fences % 2 == 0:
+            embedding_text = overlap_ctx + text
+        else:
+            embedding_text = text  # skip overlap_context — it cuts a code block
         chunks.append({
             "chunk_id": build_chunk_id(document["document_id"], chunk_index),
             "text": text,
