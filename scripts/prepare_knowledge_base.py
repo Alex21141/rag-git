@@ -341,7 +341,7 @@ def prepare_knowledge_base():
         "the", "but", "for", "not", "all", "can", "had", "how", "new", "now",
         "old", "see", "way", "who", "did", "let", "say", "she", "too", "use",
         "and", "any", "get", "our", "out", "own", "has", "her", "him", "his",
-        "are", "was",
+        "are", "was", "you", "yet",
     }
     for i, c in enumerate(all_chunks):
         text = c["text"]
@@ -358,24 +358,30 @@ def prepare_knowledge_base():
                 print(f"  Fixed (apos) {c['chunk_id']}: '{text[:25]}' -> '{c['text'][:25]}'")
             continue
 
-        # Pattern 2: 1-3 letter token that is NOT a common English word
-        # These are mid-word fragments:
-        #   "Er\nBecause" → "Because" (from "Th**er**")
-        #   "Eir topic" → "Topic" (from "th**eir**")
-        #   "Ing generated" → "Generated" (from "Includ**ing**")
-        #   "Nce it" → "It" (from "si**nce**")
-        #   "D continue" → "Continue" (from "anD")
-        #   "Ed from" → "From" (from "LoaDeD")
-        #   "O an empty" → "An" (from "intO")
-        #   "Y means" → "Means" (from "bY")
-        # Legitimate words (The, And, But, Own, It, etc.) are skipped.
+        # Pattern 2: 1-3 letter token NOT in common words list
+        # Catches mid-word fragments: Er, Eir, Ing, Nce, D, Ed, O, Y, Te, U've
+        # Legitimate words (The, And, But, It, In, You, etc.) are skipped.
         m = re.match(r"^([A-Za-z]{1,3})(\b)", text)
         if m:
             first_word = m.group(1)
             if first_word.lower() not in COMMON_START_WORDS:
                 rest = text[m.end():]
-                # Strip leading non-alpha chars (punctuation, spaces, newlines)
+                # Strip leading non-alpha chars (punctuation, apostrophes, spaces)
                 rest = re.sub(r'^[^a-zA-Z]*', '', rest)
+                # Handle contraction fragments: "U've never" → rest="ve never"
+                # "ve" is itself a fragment → skip past it to find the real word
+                m_rest_frag = re.match(r"^([a-z]{1,3})\b", rest)
+                if m_rest_frag:
+                    rest2 = rest[m_rest_frag.end():]
+                    rest2 = re.sub(r'^[^a-zA-Z]*', '', rest2)
+                    if rest2 and rest2[0].isalpha() and len(rest2) > 3:
+                        old_start = text[:30]
+                        c["text"] = rest2[0].upper() + rest2[1:]
+                        fragment_fixes += 1
+                        if fragment_fixes <= 10:
+                            print(f"  Fixed {c['chunk_id']}: '{old_start}' -> '{c['text'][:30]}'")
+                        continue
+                # No contraction fragment — use rest directly
                 if rest and rest[0].isalpha():
                     old_start = text[:30]
                     c["text"] = rest[0].upper() + rest[1:]
