@@ -29,9 +29,9 @@ from retrieval import (
 )
 
 # ── LLM Configuration ─────────────────────────────────────────────────────
-LLM_BASE_URL = "http://localhost:8080/v1"
+LLM_BASE_URL = "http://10.10.0.86:8000/v1"
 LLM_API_KEY = "hermes"
-LLM_MODEL = "qwen36-27b-awq"
+LLM_MODEL = "qwen36-35b-moe"
 SCORE_THRESHOLD = 0.30
 
 # ── Prompt Templates ──────────────────────────────────────────────────────
@@ -269,10 +269,26 @@ def generate_answer_llm(question, context):
         response = client.chat.completions.create(
             model=LLM_MODEL,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=512,
+            max_tokens=4096,
             temperature=0.1,
         )
-        return response.choices[0].message.content.strip(), False
+        msg = response.choices[0].message
+        # Qwen reasoning model: content after reasoning. Use content if available.
+        # If content is None (truncated reasoning), extract final answer from reasoning.
+        answer = msg.content
+        if not answer and msg.reasoning:
+            # Extract the final answer — everything after "Response:" or last paragraph
+            reasoning_text = str(msg.reasoning)
+            for marker in ["Response:", "Output:", "Final Output"]:
+                if marker in reasoning_text:
+                    answer = reasoning_text.split(marker)[-1].strip()
+                    break
+            if not answer:
+                # Fallback: use last few lines of reasoning
+                lines = reasoning_text.strip().split("\n")
+                answer = "\n".join(lines[-3:]) if len(lines) > 3 else reasoning_text
+
+        return str(answer).strip() if answer else None, False
     except Exception as e:
         print(f"  [LLM недоступний] {e}", file=sys.stderr)
         return None, False
