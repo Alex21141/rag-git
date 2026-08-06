@@ -8,6 +8,7 @@
 | **Індекс** | FAISS IndexFlatIP (dim=384) |
 | **Чанків у KB** | 149 |
 | **Тестових запитів** | 10 |
+| **LLM** | Template-based (LLM unavailable) |
 | **Prompt template** | Grounded answering + fallback + citation |
 | **Мова відповідей** | Англійська |
 
