@@ -115,10 +115,51 @@
 
 ### 6. Приклади чанків
 
-- `git_about_version_control_chunk_001` (658 chars, domain=git, section=1.1 Getting Started - About Version Control)
-- `branching_basic_branching_merging_chunk_001` (658 chars, domain=git, section=3.2 Git Branching - Basic Branching and Merging)
-- `branching_branch_management_chunk_001` (658 chars, domain=git, section=3.3 Git Branching - Branch Management)
-- `distributed_workflows_chunk_001` (652 chars, domain=git, section=5.1 Distributed Git - Distributed Workflows)
+**Перший чанк** (без overlap_context — початок документу):
+`git_about_version_control_chunk_001` — 658 chars, domain=git, section=1.1 Getting Started - About Version Control
+
+```json
+{
+ "chunk_id": "git_about_version_control_chunk_001",
+ "text": "# 1.1 Getting Started - About Version Control\n\nThis chapter will be about getting started with Git...",
+ "overlap_context": "",
+ "embedding_text": "# 1.1 Getting Started - About Version Control\n\nThis chapter will be...",
+ "metadata": {
+  "document_id": "git_about_version_control",
+  "source_file": "data/raw/00_git_about_version_control.md",
+  "section": "1.1 Getting Started - About Version Control",
+  "chunk_index": 1,
+  "domain": "git",
+  "overlap_len": 0
+ }
+}
+```
+
+**Внутрішній чанк** (з overlap_context — 150 chars перекриття з попереднім):
+`distributed_workflows_chunk_007` — 657 chars, domain=git, section=5.1 Distributed Git - Distributed Workflows
+
+```json
+{
+ "chunk_id": "distributed_workflows_chunk_007",
+ "text": "that repository and makes changes.\n3. The contributor pushes to their own public copy.\n4. The contributor sends the maintainer an email asking them to pull changes.\n5. The maintainer adds the contributor's repository as a remote and merges locally.\n6. The maintainer pushes merged changes to the main repository.\nThis is a very common workflow with hub-based tools like GitHub or GitLab...",
+ "overlap_context": "The process works as follows (see Integration-manager workflow):\n1. The project maintainer pushes to their public repository.\n2. A contributor clones ",
+ "embedding_text": "The process works as follows (see Integration-manager workflow):\n1. The project maintainer pushes to their public repository.\n2. A contributor clones that repository and makes changes.\n3. The contributor pushes to their own public copy...\n[657 chars text + 150 chars overlap]",
+ "metadata": {
+  "document_id": "distributed_workflows",
+  "source_file": "data/raw/05_distributed_workflows.md",
+  "section": "5.1 Distributed Git - Distributed Workflows",
+  "chunk_index": 7,
+  "domain": "git",
+  "overlap_len": 150
+ }
+}
+```
+
+| Поле | Опис |
+|------|------|
+| `text` | Чистий контент — повні слова, без overlap-префікса |
+| `overlap_context` | Текст перекриття з попереднім чанком (0 для першого чанка в документі, ~150 для решти) |
+| `embedding_text` | `overlap_context + text` — для semantic continuity (якщо overlap_context розрізає code block, використовується тільки `text`) |
 
 ### 7. Виправлення та покращення
 
