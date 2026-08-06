@@ -99,11 +99,13 @@ rag-github/
 │ └── metadata.pkl
 ├── outputs/
 │ ├── retrieval_examples.md ← результати HW2 (10 запитів)
-│ └── rag_answers_examples.md ← результати HW4 (10 запитів + відповіді)
+│ ├── rag_answers_examples.md ← результати HW4 (10 запитів + відповіді)
+│ └── alpha_sweep.md ← порівняння α (BM25 vs semantic ваги)
 └── scripts/
  ├── download_sources.py ← завантаження + очищення HTML → data/raw/*.md
  ├── prepare_knowledge_base.py ← нормалізація + чанкінг + збереження JSONL
  ├── retrieval.py ← semantic retrieval (FAISS + MiniLM)
  ├── rag_answer.py ← HW4: RAG QA pipeline
+ ├── alpha_sweep.py ← sweep α=0.0..1.0 для гібридного пошуку
  └── validate_chunks.py ← валідатор JSONL
 ```
