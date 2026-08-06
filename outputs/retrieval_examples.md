@@ -11,8 +11,8 @@
 
 Query: How do I clone a Git repository?
 
-Top-1: git_basics_getting_repository_chunk_006 | score: 0.70
-  Text: See Getting Git on a Server for more details).  You clone a repository with `git clone <url>`. For example, if you want to clone the Git linkable library called `libgit2`, you can do so like this:
+Top-1: git_basics_getting_repository_chunk_006 | score: 0.69
+  Text: Getting Git on a Server for more details).  You clone a repository with `git clone <url>`. For example, if you want to clone the Git linkable library called `libgit2`, you can do so like this:      $
   Source: data/raw/01_git_basics_getting_repository.md
 
 Top-2: git_basics_getting_repository_chunk_007 | score: 0.69
@@ -75,8 +75,8 @@ Top-3: branching_basic_branching_merging_chunk_017 | score: 0.70
   Text: To conclude merge)      Changes to be committed:          modified:   index.html  If you’re happy with that, and you verify that everything that had conflicts has been staged, you can type `git commit
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-4: gitlab_getting_started_chunk_005 | score: 0.65
-  Text: The same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you c
+Top-4: gitlab_getting_started_chunk_005 | score: 0.66
+  Text: Same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you can d
   Source: data/raw/09_gitlab_getting_started.md
 
 Top-5: branching_basic_branching_merging_chunk_014 | score: 0.65
@@ -89,8 +89,8 @@ Comment: Relevant — Top-1 correctly returns the merge conflict resolution sect
 
 Query: What is the difference between git add and git commit?
 
-Top-1: github_about_git_chunk_008 | score: 0.61
-  Text: And take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of t
+Top-1: github_about_git_chunk_008 | score: 0.63
+  Text: Take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of the n
   Source: data/raw/08_github_about_git.md
 
 Top-2: git_basics_recording_changes_chunk_007 | score: 0.58
@@ -141,8 +141,8 @@ Comment: Relevant — Top-1 correctly returns the stashing section. Score 0.62 i
 
 Query: How do I merge a branch in GitLab?
 
-Top-1: gitlab_getting_started_chunk_005 | score: 0.74
-  Text: The same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you c
+Top-1: gitlab_getting_started_chunk_005 | score: 0.75
+  Text: Same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you can d
   Source: data/raw/09_gitlab_getting_started.md
 
 Top-2: gitlab_getting_started_chunk_004 | score: 0.71
@@ -171,17 +171,17 @@ Top-1: github_about_git_chunk_001 | score: 0.54
   Text: # About Git  Learn about the version control system, Git, and how it works with GitHub.  ## About version control and Git  A version control system, or VCS, tracks the history of changes as people and
   Source: data/raw/08_github_about_git.md
 
-Top-2: git_basics_recording_changes_chunk_030 | score: 0.53
+Top-2: github_about_git_chunk_008 | score: 0.53
+  Text: Take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of the n
+  Source: data/raw/08_github_about_git.md
+
+Top-3: git_basics_recording_changes_chunk_030 | score: 0.53
   Text: 2 Files changed, 2 insertions(+)      create mode 100644 README  Now you’ve created your first commit! You can see that the commit has given you some output about itself: which branch you committed to
   Source: data/raw/02_git_basics_recording_changes.md
 
-Top-3: git_basics_recording_changes_chunk_029 | score: 0.53
+Top-4: git_basics_recording_changes_chunk_029 | score: 0.53
   Text: Remember what you’re committing.    For an even more explicit reminder of what you’ve modified, you can pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor s
   Source: data/raw/02_git_basics_recording_changes.md
-
-Top-4: github_about_git_chunk_008 | score: 0.52
-  Text: And take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of t
-  Source: data/raw/08_github_about_git.md
 
 Top-5: git_basics_recording_changes_chunk_007 | score: 0.50
   Text: New file:   README  You can tell that it’s staged because it’s under the “Changes to be committed” heading. If you commit at this point, the version of the file at the time you ran `git add` is what w
@@ -209,8 +209,8 @@ Top-4: gitlab_getting_started_chunk_008 | score: 0.47
   Text: Open-source projects, may use different workflows. For example, forks.  A fork is a personal copy of the repository that exists in your own namespace. Use this workflow when contributing to open-sourc
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-5: gitlab_getting_started_chunk_005 | score: 0.45
-  Text: The same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you c
+Top-5: gitlab_getting_started_chunk_005 | score: 0.46
+  Text: Same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you can d
   Source: data/raw/09_gitlab_getting_started.md
 
 Comment: Relevant — Top-1 correctly returns GitLab Getting Started covering SSH key setup. Score 0.74 is strong.
@@ -219,12 +219,12 @@ Comment: Relevant — Top-1 correctly returns GitLab Getting Started covering SS
 
 Query: What is rebasing and when should I use it?
 
-Top-1: git_tools_rebasing_chunk_018 | score: 0.56
-  Text: The question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every team
+Top-1: git_tools_rebasing_chunk_004 | score: 0.56
+  Text: Integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it origina
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-2: git_tools_rebasing_chunk_004 | score: 0.56
-  Text: The integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it ori
+Top-2: git_tools_rebasing_chunk_018 | score: 0.56
+  Text: Question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every team and
   Source: data/raw/06_git_tools_rebasing.md
 
 Top-3: git_tools_rebasing_chunk_010 | score: 0.54
