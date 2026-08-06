@@ -48,7 +48,7 @@ def build_bm25(chunks):
     return BM25Okapi(tokenized)
 
 
-def hybrid_search(query, index, chunks, model, bm25, top_k=5, alpha=0.5):
+def hybrid_search(query, index, chunks, model, bm25, top_k=5, alpha=0.5, bm25_global=None):
     q_emb = model.encode([query], normalize_embeddings=True)
     q_emb = np.array(q_emb, dtype="float32")
     k = min(top_k * 4, index.ntotal)
@@ -58,9 +58,11 @@ def hybrid_search(query, index, chunks, model, bm25, top_k=5, alpha=0.5):
     bm25_scores = np.array([bm25.get_scores(q_tokens)[int(i)] if i >= 0 else 0.0
                             for i in ids[0]])
 
-    max_sem = sem_scores[0].max() if sem_scores[0].max() > 0 else 1.0
-    max_bm25 = bm25_scores.max() if bm25_scores.max() > 0 else 1.0
-    norm_sem = sem_scores[0] / max_sem
+    # Normalize: semantic to [0,1] (cosine), BM25 to [0,1] (global max)
+    norm_sem = sem_scores[0]  # already cosine in [0,1]
+    max_bm25 = bm25_global if bm25_global else bm25_scores.max()
+    if max_bm25 == 0:
+        max_bm25 = 1.0
     norm_bm25 = bm25_scores / max_bm25
 
     hybrid = alpha * norm_sem + (1 - alpha) * norm_bm25
@@ -74,8 +76,8 @@ def hybrid_search(query, index, chunks, model, bm25, top_k=5, alpha=0.5):
         results.append({
             "chunk_id": chunk["chunk_id"],
             "score": round(float(hybrid[i]), 4),
-            "semantic_score": round(float(sem_scores[0][i]), 4),
-            "bm25_score": round(float(bm25_scores[i]), 4),
+            "semantic_score": round(float(norm_sem[i]), 4),
+            "bm25_score": round(float(norm_bm25[i]), 4),
             "text_preview": chunk["text"][:200],
         })
 
@@ -90,7 +92,15 @@ def generate_alpha_sweep():
     index, chunks, model = load_index()
     bm25 = build_bm25(chunks)
 
-    print(f"Loaded {len(chunks)} chunks, testing {len(ALPHA_VALUES)} alpha values\n")
+    # Precompute global BM25 max for consistent normalization across queries
+    all_bm25_max = 0.0
+    for query in TEST_QUERIES:
+        q_tokens = query.lower().split()
+        scores = np.array([bm25.get_scores(q_tokens)[i] for i in range(len(chunks))])
+        all_bm25_max = max(all_bm25_max, scores.max())
+
+    print(f"Loaded {len(chunks)} chunks, testing {len(ALPHA_VALUES)} alpha values")
+    print(f"Global BM25 max: {all_bm25_max:.4f}\n")
 
     # For each query + alpha: get top-1 chunk_id and score
     results = {}  # {query: {alpha: {"chunk_id": ..., "score": ..., "sem": ..., "bm25": ...}}}
@@ -99,7 +109,8 @@ def generate_alpha_sweep():
         print(f"Query {qi}/{len(TEST_QUERIES)}")
         results[query] = {}
         for alpha in ALPHA_VALUES:
-            top5 = hybrid_search(query, index, chunks, model, bm25, top_k=1, alpha=alpha)
+            top5 = hybrid_search(query, index, chunks, model, bm25, top_k=1, alpha=alpha,
+                                 bm25_global=all_bm25_max)
             if top5:
                 r = top5[0]
                 results[query][alpha] = {
