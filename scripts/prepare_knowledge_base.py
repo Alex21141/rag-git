@@ -114,11 +114,10 @@ def _backtick_balanced(text: str) -> bool:
 
 
 def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
-    """Fix unclosed backticks via forward search only.
+    """Fix unclosed backticks via forward search.
 
-    Returns only the fixed text — does NOT modify chunk boundaries.
-    Boundary tracking (prev_end) must stay at original `end` to preserve
-    overlap chain. Step 2.8 handles remaining odd backticks.
+    Returns only the fixed text — does NOT modify boundaries.
+    prev_end must stay at original `end` to preserve overlap chain.
     """
     if _backtick_balanced(chunk_text):
         return chunk_text

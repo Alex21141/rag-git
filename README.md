@@ -7,8 +7,8 @@
 | **Джерела** | 10 документів (Git, GitHub, GitLab) |
 | **Chunking** | Sliding window, chunk_size=850, overlap=150 |
 | **Чанків** | 149 |
-| **Текст всього** | 117,890 chars |
-| **Overlap coverage** | 99.3% (138/139 пар) |
+| **Текст всього** | 119,683 chars |
+| **Overlap coverage** | 100% (134/134 пар) |
 | **Odd backticks** | 0/149 |
 | **Домен** | git (125), github (14), gitlab (10) |
 
