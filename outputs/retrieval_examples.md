@@ -19,8 +19,8 @@ Top-2: git_basics_getting_repository_chunk_007 | score: 0.69
   Text: Additional argument:      $ git clone  mylibgit  That command does the same thing as the previous one, but the target directory is called `mylibgit`.  Git has a number of different transfer protocols
   Source: data/raw/01_git_basics_getting_repository.md
 
-Top-3: git_basics_getting_repository_chunk_002 | score: 0.65
-  Text: Rom remote repositories.  ## Getting a Git Repository  You typically obtain a Git repository in one of two ways:    1. You can take a local directory that is currently not under version control, and t
+Top-3: git_basics_getting_repository_chunk_002 | score: 0.68
+  Text: Remote repositories.  ## Getting a Git Repository  You typically obtain a Git repository in one of two ways:    1. You can take a local directory that is currently not under version control, and turn
   Source: data/raw/01_git_basics_getting_repository.md
 
 Top-4: github_about_git_chunk_007 | score: 0.65
@@ -41,21 +41,21 @@ Top-1: github_about_git_chunk_004 | score: 0.62
   Text: Files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organized into multiple lines of
   Source: data/raw/08_github_about_git.md
 
-Top-2: gitlab_getting_started_chunk_001 | score: 0.61
+Top-2: gitlab_getting_started_chunk_006 | score: 0.62
+  Text: A standard Git workflow includes the following steps:  1. Clone a repository: Create a local copy of the repository by cloning it to your machine.    You can work on the project without affecting the
+  Source: data/raw/09_gitlab_getting_started.md
+
+Top-3: gitlab_getting_started_chunk_001 | score: 0.61
   Text: # Get started with Git  Git is a version control system you use to track changes to your code and collaborate with others. GitLab is a web-based Git repository manager that provides CI/CD and other fe
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-3: branching_branch_management_chunk_001 | score: 0.61
+Top-4: branching_branch_management_chunk_001 | score: 0.61
   Text: # 3.3 Git Branching - Branch Management  Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches al
   Source: data/raw/04_branching_branch_management.md
 
-Top-4: github_about_git_chunk_006 | score: 0.60
+Top-5: github_about_git_chunk_006 | score: 0.60
   Text: Development process. Work is organized into repositories where developers can outline requirements or direction and set expectations for team members. Then, using the GitHub flow, developers simply cr
   Source: data/raw/08_github_about_git.md
-
-Top-5: gitlab_getting_started_chunk_006 | score: 0.60
-  Text: Ow. A standard Git workflow includes the following steps:  1. Clone a repository: Create a local copy of the repository by cloning it to your machine.    You can work on the project without affecting
-  Source: data/raw/09_gitlab_getting_started.md
 
 Comment: Not relevant — Top-1 returns gitlab_getting_started_chunk_002 (general GitLab intro) instead of branch-specific content. Semantic model matches Git broadly but misses branch specificity.
 
@@ -75,13 +75,13 @@ Top-3: branching_basic_branching_merging_chunk_017 | score: 0.70
   Text: To conclude merge)      Changes to be committed:          modified:   index.html  If you’re happy with that, and you verify that everything that had conflicts has been staged, you can type `git commit
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-4: branching_basic_branching_merging_chunk_014 | score: 0.65
+Top-4: gitlab_getting_started_chunk_005 | score: 0.65
+  Text: The same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you c
+  Source: data/raw/09_gitlab_getting_started.md
+
+Top-5: branching_basic_branching_merging_chunk_014 | score: 0.65
   Text: Stance, you might resolve this conflict by replacing the entire block with this:      <div id="footer">     please contact us at email.support@github.com     </div>  This resolution has a little of ea
   Source: data/raw/03_branching_basic_branching_merging.md
-
-Top-5: gitlab_getting_started_chunk_005 | score: 0.65
-  Text: Ify the same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, y
-  Source: data/raw/09_gitlab_getting_started.md
 
 Comment: Relevant — Top-1 correctly returns the merge conflict resolution section. Score 0.74 confirms strong semantic match.
 
@@ -127,8 +127,8 @@ Top-3: git_tools_stashing_cleaning_chunk_006 | score: 0.55
   Text: (Use "git checkout -- <file>..." to discard changes in working directory)      	modified:   index.html     	modified:   lib/simplegit.rb      no changes added to commit (use "git add" and/or "git comm
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
-Top-4: git_tools_stashing_cleaning_chunk_005 | score: 0.54
-  Text: Ter: 21d80a5 Add number to log  In this case, two stashes were saved previously, so you have access to three different stashed works. You can reapply the one you just stashed by using the command show
+Top-4: git_tools_stashing_cleaning_chunk_005 | score: 0.53
+  Text: D80a5 Add number to log  In this case, two stashes were saved previously, so you have access to three different stashed works. You can reapply the one you just stashed by using the command shown in th
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
 Top-5: git_tools_stashing_cleaning_chunk_004 | score: 0.53
@@ -142,7 +142,7 @@ Comment: Relevant — Top-1 correctly returns the stashing section. Score 0.62 i
 Query: How do I merge a branch in GitLab?
 
 Top-1: gitlab_getting_started_chunk_005 | score: 0.74
-  Text: Ify the same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, y
+  Text: The same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you c
   Source: data/raw/09_gitlab_getting_started.md
 
 Top-2: gitlab_getting_started_chunk_004 | score: 0.71
@@ -210,7 +210,7 @@ Top-4: gitlab_getting_started_chunk_008 | score: 0.47
   Source: data/raw/09_gitlab_getting_started.md
 
 Top-5: gitlab_getting_started_chunk_005 | score: 0.45
-  Text: Ify the same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, y
+  Text: The same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, you c
   Source: data/raw/09_gitlab_getting_started.md
 
 Comment: Relevant — Top-1 correctly returns GitLab Getting Started covering SSH key setup. Score 0.74 is strong.
