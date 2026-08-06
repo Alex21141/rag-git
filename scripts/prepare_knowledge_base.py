@@ -416,67 +416,29 @@ def prepare_knowledge_base():
         fence_count = text.count('```')
         inline = text.count('`') - fence_count * 3
         if fence_count % 2 == 1 or inline % 2 == 1:
-            # Unbalanced — find in source
+            # Unbalanced — find in source and extend forward
             did = c["metadata"]["source_file"]
             try:
                 with open(did) as sf:
                     source = sf.read()
-                # Find chunk text in source — try multiple search strings
-                # because the text may have overlap prefix
-                src_pos = -1
-                for test_len in [300, 200, 150, 100, 80]:
-                    if len(text) > test_len:
-                        search_str = text[-test_len + 20:]  # skip overlap prefix
-                        src_pos = source.find(search_str)
-                        if src_pos >= 0:
-                            # The chunk end is at src_pos + test_len - 20 + remaining
-                            # Actually: we know text ends at some position
-                            chunk_end_in_src = src_pos + len(text) - (test_len - 20)
-                            break
-                    if src_pos >= 0:
-                        break
-                # If still not found, try from the end
-                if src_pos < 0 and len(text) > 80:
-                    search_str = text[-80:]
-                    src_pos = source.rfind(search_str)
-                    if src_pos >= 0:
-                        chunk_end_in_src = src_pos + 80
-
+                # Search from END of chunk text (skip overlap prefix)
+                search_str = text[-150:] if len(text) > 150 else text[-80:]
+                src_pos = source.find(search_str)
                 if src_pos >= 0:
-                    # Search forward for closing backtick/fence
-                    # First check for code fence closing
-                    for j in range(chunk_end_in_src, min(chunk_end_in_src + 2000, len(source))):
-                        if source[j:j+3] == '```':
-                            candidate = text + source[chunk_end_in_src:j+3]
-                            candidate = candidate.strip()
-                            fc = candidate.count('```')
-                            if fc % 2 == 0:
-                                ic = candidate.count('`') - fc * 3
-                                if ic % 2 == 0:
-                                    c["text"] = candidate
-                                    backtick_fixes += 1
-                                    print(f"  Fixed (fence+inline) {c['chunk_id']}: added closing fence + content")
-                                    break
-                            # Fence found but not balanced yet — keep searching for inline
-                            if fence_count % 2 == 1:
-                                # Was odd fence, now even — check inline again
-                                if ic % 2 == 0:
-                                    c["text"] = candidate.strip()
-                                    backtick_fixes += 1
-                                    print(f"  Fixed (inline after fence) {c['chunk_id']}")
-                                    break
-                    # If no code fence found, search for single backtick
-                    if not _backtick_balanced(c["text"]):
-                        for pos in range(chunk_end_in_src, min(chunk_end_in_src + 500, len(source))):
-                            if source[pos] == '`':
-                                candidate = text + source[chunk_end_in_src:pos + 1]
-                                if _backtick_balanced(candidate.strip()):
-                                    c["text"] = candidate.strip()
-                                    backtick_fixes += 1
-                                    print(f"  Fixed (inline) {c['chunk_id']}")
-                                    break
-                            if source[pos:pos+2] == '# ':
-                                break
+                    chunk_end_in_src = src_pos + len(search_str)
+                    # Search forward for balanced backticks
+                    for pos in range(chunk_end_in_src, min(chunk_end_in_src + 500, len(source))):
+                        candidate = text + source[chunk_end_in_src:pos + 1]
+                        fc = candidate.count('```')
+                        ic = candidate.count('`') - fc * 3
+                        if fc % 2 == 0 and ic % 2 == 0:
+                            c["text"] = candidate.strip()
+                            backtick_fixes += 1
+                            print(f"  Fixed (inline) {c['chunk_id']}")
+                            break
+                        # Also stop if we hit a heading (outside code fence)
+                        if source[pos:pos + 2] == '# ' and fc % 2 == 0:
+                            break
             except FileNotFoundError:
                 pass
     print(f"  Total backtick fixes: {backtick_fixes}")
