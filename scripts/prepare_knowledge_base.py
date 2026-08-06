@@ -132,30 +132,29 @@ def split_with_overlap(text: str, chunk_size: int, overlap: int) -> list[tuple[s
 
         pos = split_points[-1]
 
-    # Pass 2: extract chunks with overlap
-    # For overlap to work: prev_chunk[-ol:] must equal curr_chunk[:ol:]
-    # Do NOT strip raw_content — that would remove trailing whitespace that
-    # becomes the overlap prefix for the next chunk.
-    chunks: list[tuple[str, int]] = []
+    # Pass 2: extract chunks
+    # text = raw content only (no overlap prefix with partial words)
+    # overlap_context = stored separately for embedding + verification
+    # Embedding uses overlap_context + text for semantic continuity
+    # Display shows only text (clean, no cut words)
+    chunks: list[tuple[str, str, int]] = []  # (text, overlap_context, overlap_len)
     for i in range(1, len(split_points)):
         start = split_points[i - 1]
         end = split_points[i]
 
-        # Raw content: text between split points (no strip — preserves overlap)
+        # Raw content: text between split points
         raw_content = clean_text[start:end]
 
         if i > 1:
-            # Prepend overlap from raw text preceding this chunk
             ol_start = max(0, start - overlap)
             overlap_text = clean_text[ol_start:start]
             ol_len = len(overlap_text)
-            chunk_text = overlap_text + raw_content
         else:
-            chunk_text = raw_content
+            overlap_text = ""
             ol_len = 0
 
-        if chunk_text.strip():  # skip truly empty chunks
-            chunks.append((chunk_text, ol_len))
+        if raw_content.strip():
+            chunks.append((raw_content, overlap_text, ol_len))
 
     return chunks
 
@@ -171,18 +170,21 @@ def chunk_document(document: dict[str, Any], chunk_size: int, overlap: int) -> l
     chunks: list[dict[str, Any]] = []
     chunk_index = 0
 
-    for chunk_text, ol_len in text_chunks:
-        if len(chunk_text) < MIN_CHUNK:
+    for text, overlap_ctx, ol_len in text_chunks:
+        if len(text) < MIN_CHUNK:
             if chunks:
-                chunks[-1]["text"] += " " + chunk_text
+                chunks[-1]["text"] += " " + text
             continue
 
         chunk_index += 1
-        # Resolve section from document title
         section = document["title"]
+        # For embedding: combine overlap_context + text for semantic continuity
+        embedding_text = overlap_ctx + text if overlap_ctx else text
         chunks.append({
             "chunk_id": build_chunk_id(document["document_id"], chunk_index),
-            "text": chunk_text,
+            "text": text,
+            "overlap_context": overlap_ctx,
+            "embedding_text": embedding_text,
             "metadata": {
                 "document_id": document["document_id"],
                 "source_file": document["source_file"],
@@ -227,14 +229,14 @@ def inspect_chunks(chunks: list[dict[str, Any]]) -> None:
     for c in chunks:
         domain_dist[c["metadata"].get("domain", "unknown")] += 1
 
-    # Check overlap integrity using metadata overlap_len
+    # Check overlap integrity: prev_chunk.text[-ol:] == curr_chunk.overlap_context
     overlap_ok = 0
     overlap_total = 0
     for i in range(1, len(chunks)):
         ol = chunks[i]["metadata"].get("overlap_len", 0)
         if ol > 0:
             overlap_total += 1
-            if chunks[i - 1]["text"][-ol:] == chunks[i]["text"][:ol]:
+            if chunks[i - 1]["text"][-ol:] == chunks[i]["overlap_context"]:
                 overlap_ok += 1
 
     print("=" * 80)

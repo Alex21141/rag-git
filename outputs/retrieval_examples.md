@@ -2,7 +2,7 @@
 
 **Model**: sentence-transformers/all-MiniLM-L6-v2
 
-**Chunks**: 147
+**Chunks**: 145
 
 **Index**: FAISS (IndexFlatIP, dim=384)
 
@@ -11,24 +11,24 @@
 
 Query: How do I clone a Git repository?
 
-Top-1: git_basics_getting_repository_chunk_006 | score: 0.68
-  Text: sitory with `git clone <url>`. For example, if you want to clone the Git linkable library called `libgit2`, you can do so like this: $ git clone That creates a directory named `libgit2`, initializes a
+Top-1: git_basics_getting_repository_chunk_002 | score: 0.71
+  Text: Git Repository You typically obtain a Git repository in one of two ways: 1. You can take a local directory that is currently not under version control, and turn it into a Git repository, or 2. You can
   Source: data/raw/01_git_basics_getting_repository.md
 
-Top-2: gitlab_getting_started_chunk_003 | score: 0.64
-  Text: e. For more information, see repositories. ## Working directories Your working directory is where you make changes to your code. When you clone a Git repository, you create a local copy of the reposit
+Top-2: git_basics_getting_repository_chunk_006 | score: 0.71
+  Text: creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new
+  Source: data/raw/01_git_basics_getting_repository.md
+
+Top-3: git_basics_getting_repository_chunk_005 | score: 0.69
+  Text: working copy, Git receives a full copy of nearly all data that the server has. Every version of every file for the history of the project is pulled down by default when you run `git clone`. In fact, i
+  Source: data/raw/01_git_basics_getting_repository.md
+
+Top-4: gitlab_getting_started_chunk_006 | score: 0.63
+  Text: repository: Create a local copy of the repository by cloning it to your machine. You can work on the project without affecting the original repository. 1. Create a new branch: Before you make any chan
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-3: git_basics_getting_repository_chunk_002 | score: 0.63
-  Text: d easily, how to browse the history of your project and view changes between commits, and how to push and pull from remote repositories. ## Getting a Git Repository You typically obtain a Git reposito
-  Source: data/raw/01_git_basics_getting_repository.md
-
-Top-4: github_about_git_chunk_007 | score: 0.62
-  Text: tion on how GitHub Enterprise compares to other options, see Comparing GitHub to other DevOps solutions. ## GitHub and the command line ### Basic Git commands To use Git, developers use specific comma
-  Source: data/raw/08_github_about_git.md
-
-Top-5: github_about_git_chunk_010 | score: 0.61
-  Text: dates from its remote counterpart. Developers use this command if a teammate has made commits to a branch on a remote, and they would like to reflect those changes in their local environment. * `git p
+Top-5: github_about_git_chunk_007 | score: 0.62
+  Text: commands To use Git, developers use specific commands to copy, create, change, and combine code. These commands can be executed directly from the command line or by using an application like GitHub De
   Source: data/raw/08_github_about_git.md
 
 Comment: Relevant — Top-1 and Top-2 correctly point to git clone documentation. All top results from git_basics_getting_repository.
@@ -41,21 +41,21 @@ Top-1: gitlab_getting_started_chunk_001 | score: 0.63
   Text: # Get started with Git Git is a version control system you use to track changes to your code and collaborate with others. GitLab is a web-based Git repository manager that provides CI/CD and other fea
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-2: github_about_git_chunk_007 | score: 0.61
-  Text: tion on how GitHub Enterprise compares to other options, see Comparing GitHub to other DevOps solutions. ## GitHub and the command line ### Basic Git commands To use Git, developers use specific comma
+Top-2: github_about_git_chunk_004 | score: 0.61
+  Text: the entire collection of files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organize
   Source: data/raw/08_github_about_git.md
 
-Top-3: github_about_git_chunk_004 | score: 0.61
-  Text: akes it possible to align experts across a business to collaborate on major projects. ## About repositories A repository, or Git project, encompasses the entire collection of files and folders associa
+Top-3: github_about_git_chunk_007 | score: 0.60
+  Text: commands To use Git, developers use specific commands to copy, create, change, and combine code. These commands can be executed directly from the command line or by using an application like GitHub De
   Source: data/raw/08_github_about_git.md
 
 Top-4: branching_branch_management_chunk_001 | score: 0.59
   Text: # 3.3 Git Branching - Branch Management Now that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all
   Source: data/raw/04_branching_branch_management.md
 
-Top-5: gitlab_getting_started_chunk_002 | score: 0.59
-  Text: ake your first Git commit - Understand Git concepts ## Repositories A Git repository is a directory that contains all the files, folders, and version history of your project. It serves as a central hu
-  Source: data/raw/09_gitlab_getting_started.md
+Top-5: github_about_git_chunk_009 | score: 0.58
+  Text: become a part of the snapshot with `git commit`. * `git status` shows the status of changes as untracked, modified, or staged. * `git branch` shows the branches being worked on locally. * `git merge`
+  Source: data/raw/08_github_about_git.md
 
 Comment: Not relevant — Top-1 returns gitlab_getting_started_chunk_002 (general GitLab intro) instead of branch-specific content. Semantic model matches Git broadly but misses branch specificity.
 
@@ -63,24 +63,24 @@ Comment: Not relevant — Top-1 returns gitlab_getting_started_chunk_002 (genera
 
 Query: How to resolve merge conflicts in Git?
 
-Top-1: branching_basic_branching_merging_chunk_016 | score: 0.74
-  Text: asks you if the merge was successful. If you tell the script that it was, it stages the file to mark it as resolved for you. You can run `git status` again to verify that all conflicts have been resol
+Top-1: gitlab_getting_started_chunk_005 | score: 0.72
+  Text: these as merge conflicts. These must be resolved manually by reviewing and editing the code. ### Delete a branch After a successful merge, you can delete the branch if it is no longer needed. Deleting
+  Source: data/raw/09_gitlab_getting_started.md
+
+Top-2: branching_basic_branching_merging_chunk_016 | score: 0.72
+  Text: again to verify that all conflicts have been resolved: $ git status On branch master All conflicts fixed but you are still merging. (use "git commit" to conclude merge) Changes to be committed: modifi
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-2: branching_basic_branching_merging_chunk_013 | score: 0.73
-  Text: v> >>>>>>> iss53:index.html This means the version in `HEAD` (your `master` branch, because that was what you had checked out when you ran your merge command) is the top part of that block (everything
+Top-3: branching_basic_branching_merging_chunk_010 | score: 0.69
+  Text: pointer forward, Git creates a new snapshot that results from this three-way merge and automatically creates a new commit that points to it. This is referred to as a merge commit, and is special in th
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-3: branching_basic_branching_merging_chunk_011 | score: 0.72
-  Text: ame part of the same file differently in the two branches you’re merging, Git won’t be able to merge them cleanly. If your fix for issue #53 modified the same part of a file as the `hotfix` branch, yo
+Top-4: branching_basic_branching_merging_chunk_011 | score: 0.68
+  Text: the same part of a file as the `hotfix` branch, you’ll get a merge conflict that looks something like this: $ git merge iss53 Auto-merging index.html CONFLICT (content): Merge conflict in index.html A
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-4: branching_basic_branching_merging_chunk_014 | score: 0.72
-  Text: >>>>>>>` lines have been completely removed. After you’ve resolved each of these sections in each conflicted file, run `git add` on each file to mark it as resolved. Staging the file marks it as resol
-  Source: data/raw/03_branching_basic_branching_merging.md
-
-Top-5: branching_basic_branching_merging_chunk_010 | score: 0.68
-  Text: a simple three-way merge, using the two snapshots pointed to by the branch tips and the common ancestor of the two. Instead of just moving the branch pointer forward, Git creates a new snapshot that r
+Top-5: branching_basic_branching_merging_chunk_015 | score: 0.67
+  Text: modified file {remote}: modified file Hit return to start merge resolution tool (opendiff): If you want to use a merge tool other than the default (Git chose `opendiff` in this case because the comman
   Source: data/raw/03_branching_basic_branching_merging.md
 
 Comment: Relevant — Top-1 correctly returns the merge conflict resolution section. Score 0.74 confirms strong semantic match.
@@ -89,25 +89,25 @@ Comment: Relevant — Top-1 correctly returns the merge conflict resolution sect
 
 Query: What is the difference between git add and git commit?
 
-Top-1: github_about_git_chunk_009 | score: 0.63
-  Text: history and completes the change-tracking process. In short, a commit functions like taking a photo. Anything that's been staged with `git add` will become a part of the snapshot with `git commit`. *
+Top-1: github_about_git_chunk_008 | score: 0.66
+  Text: changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-st
   Source: data/raw/08_github_about_git.md
 
-Top-2: gitlab_getting_started_chunk_002 | score: 0.62
-  Text: ake your first Git commit - Understand Git concepts ## Repositories A Git repository is a directory that contains all the files, folders, and version history of your project. It serves as a central hu
-  Source: data/raw/09_gitlab_getting_started.md
-
-Top-3: github_about_git_chunk_008 | score: 0.61
-  Text: of a project that already exists remotely. The clone includes all the project's files, history, and branches. * `git add` stages a change. Git tracks changes to a developer's codebase, but it's necess
-  Source: data/raw/08_github_about_git.md
-
-Top-4: git_basics_recording_changes_chunk_007 | score: 0.57
-  Text: ster'. Changes to be committed: (use "git restore --staged <file>..." to unstage) new file:   README You can tell that it’s staged because it’s under the “Changes to be committed” heading. If you comm
+Top-2: git_basics_recording_changes_chunk_007 | score: 0.62
+  Text: the “Changes to be committed” heading. If you commit at this point, the version of the file at the time you ran `git add` is what will be in the subsequent historical snapshot. You may recall that whe
   Source: data/raw/02_git_basics_recording_changes.md
 
-Top-5: github_about_git_chunk_007 | score: 0.56
-  Text: tion on how GitHub Enterprise compares to other options, see Comparing GitHub to other DevOps solutions. ## GitHub and the command line ### Basic Git commands To use Git, developers use specific comma
+Top-3: github_about_git_chunk_007 | score: 0.56
+  Text: commands To use Git, developers use specific commands to copy, create, change, and combine code. These commands can be executed directly from the command line or by using an application like GitHub De
   Source: data/raw/08_github_about_git.md
+
+Top-4: github_about_git_chunk_004 | score: 0.55
+  Text: the entire collection of files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organize
+  Source: data/raw/08_github_about_git.md
+
+Top-5: git_basics_recording_changes_chunk_030 | score: 0.54
+  Text: a simple shortcut. Adding the `-a` option to the `git commit` command makes Git automatically stage every file that is already tracked before doing the commit, letting you skip the `git add` part: $ g
+  Source: data/raw/02_git_basics_recording_changes.md
 
 Comment: Partially relevant — Top-1 points to GitHub About Git which covers both commands, but not the specific difference. A more targeted chunk would be preferable.
 
@@ -115,24 +115,24 @@ Comment: Partially relevant — Top-1 points to GitHub About Git which covers bo
 
 Query: How do I stash my changes temporarily?
 
-Top-1: git_tools_stashing_cleaning_chunk_002 | score: 0.63
-  Text: finished changes that you can reapply at any time (even on a different branch). Migrating to `git stash push` As of late October 2017, there has been extensive discussion on the Git mailing list, wher
-  Source: data/raw/07_git_tools_stashing_cleaning.md
-
-Top-2: git_tools_stashing_cleaning_chunk_001 | score: 0.62
+Top-1: git_tools_stashing_cleaning_chunk_001 | score: 0.62
   Text: # 7.3 Git Tools - Stashing and Cleaning Often, when you’ve been working on part of your project, things are in a messy state and you want to switch branches for a bit to work on something else. The pr
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
-Top-3: git_tools_stashing_cleaning_chunk_004 | score: 0.55
-  Text: run `git stash` or `git stash push`: $ git stash Saved working directory and index state \ "WIP on master: 049d078 Create index file" HEAD is now at 049d078 Create index file (To restore them type "g
+Top-2: git_tools_stashing_cleaning_chunk_005 | score: 0.57
+  Text: the one you just stashed by using the command shown in the help output of the original stash command: `git stash apply`. If you want to apply one of the older stashes, you can specify it by naming it,
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
-Top-4: git_tools_stashing_cleaning_chunk_013 | score: 0.55
-  Text: set HEAD <file>..." to unstage) modified:   index.html Changes not staged for commit: (use "git add <file>..." to update what will be committed) (use "git checkout -- <file>..." to discard changes in
+Top-3: git_tools_stashing_cleaning_chunk_002 | score: 0.55
+  Text: extensive discussion on the Git mailing list, wherein the command `git stash save` is being deprecated in favour of the existing alternative `git stash push`. The main reason for this is that `git sta
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
-Top-5: git_tools_stashing_cleaning_chunk_005 | score: 0.53
-  Text: ster: 21d80a5 Add number to log In this case, two stashes were saved previously, so you have access to three different stashed works. You can reapply the one you just stashed by using the command show
+Top-4: git_tools_stashing_cleaning_chunk_004 | score: 0.53
+  Text: 049d078 Create index file (To restore them type "git stash apply") You can now see that your working directory is clean: $ git status # On branch master nothing to commit, working directory clean At t
+  Source: data/raw/07_git_tools_stashing_cleaning.md
+
+Top-5: git_tools_stashing_cleaning_chunk_012 | score: 0.52
+  Text: have to try to resolve it. If you want an easier way to test the stashed changes again, you can run `git stash branch <new branchname>`, which creates a new branch for you with your selected branch na
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
 Comment: Relevant — Top-1 correctly returns the stashing section. Score 0.62 is moderate but the result is accurate.
@@ -141,25 +141,25 @@ Comment: Relevant — Top-1 correctly returns the stashing section. Score 0.62 i
 
 Query: How do I merge a branch in GitLab?
 
-Top-1: gitlab_getting_started_chunk_005 | score: 0.69
-  Text: history of the changes. If there are conflicts between the branches, for example, if you modify the same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved m
+Top-1: gitlab_getting_started_chunk_004 | score: 0.71
+  Text: fixes, or experiments simultaneously without interfering with each other's work. Branching enables you to create an isolated environment where you can make and test changes without affecting the defau
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-2: gitlab_getting_started_chunk_004 | score: 0.69
-  Text: d with the latest changes. For more information, see common Git commands. ## Branches In Git, you can use branches to work on different features, bug fixes, or experiments simultaneously without inter
+Top-2: github_about_git_chunk_009 | score: 0.60
+  Text: become a part of the snapshot with `git commit`. * `git status` shows the status of changes as untracked, modified, or staged. * `git branch` shows the branches being worked on locally. * `git merge`
+  Source: data/raw/08_github_about_git.md
+
+Top-3: gitlab_getting_started_chunk_009 | score: 0.59
+  Text: repository. - `git checkout`: Switch between different branches in your local repository. - `git add`: Stage changes for commit. - `git commit`: Commit staged changes to your local repository. - `git
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-3: gitlab_getting_started_chunk_009 | score: 0.58
-  Text: ne, you can use Git commands: - `git clone`: Clone a repository to your local machine. - `git branch`: List, create, or delete branches in your local repository. - `git checkout`: Switch between diffe
-  Source: data/raw/09_gitlab_getting_started.md
-
-Top-4: branching_branch_management_chunk_002 | score: 0.58
-  Text: ave checked out (i.e., the branch that `HEAD` points to). This means that if you commit at this point, the `master` branch will be moved forward with your new work. To see the last commit on each bran
-  Source: data/raw/04_branching_branch_management.md
-
-Top-5: git_tools_rebasing_chunk_001 | score: 0.57
+Top-4: git_tools_rebasing_chunk_001 | score: 0.57
   Text: # 3.6 Git Branching - Rebasing In Git, there are two main ways to integrate changes from one branch into another: the `merge` and the `rebase`. In this section you’ll learn what rebasing is, how to do
   Source: data/raw/06_git_tools_rebasing.md
+
+Top-5: branching_branch_management_chunk_002 | score: 0.57
+  Text: your new work. To see the last commit on each branch, you can run `git branch -v`: $ git branch -v iss53   93b412c Fix javascript issue * master  7a98805 Merge branch 'iss53' testing 782fd34 Add scott
+  Source: data/raw/04_branching_branch_management.md
 
 Comment: Relevant — Top-1 returns GitLab Getting Started content. Score 0.74 is strong. Covers the GitLab merge workflow.
 
@@ -167,25 +167,25 @@ Comment: Relevant — Top-1 returns GitLab Getting Started content. Score 0.74 i
 
 Query: How do I view the commit history?
 
-Top-1: github_about_git_chunk_001 | score: 0.58
+Top-1: github_about_git_chunk_004 | score: 0.59
+  Text: the entire collection of files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organize
+  Source: data/raw/08_github_about_git.md
+
+Top-2: git_basics_recording_changes_chunk_028 | score: 0.59
+  Text: editor so you can see exactly what changes you’re committing. When you exit the editor, Git creates your commit with that commit message (with the comments and diff stripped out). Alternatively, you c
+  Source: data/raw/02_git_basics_recording_changes.md
+
+Top-3: github_about_git_chunk_001 | score: 0.58
   Text: # About Git Learn about the version control system, Git, and how it works with GitHub. ## About version control and Git A version control system, or VCS, tracks the history of changes as people and te
   Source: data/raw/08_github_about_git.md
 
-Top-2: git_basics_recording_changes_chunk_027 | score: 0.55
-  Text: ays the following text (this example is a Vim screen): # Please enter the commit message for your changes. Lines starting # with '#' will be ignored, and an empty message aborts the commit. # On branc
+Top-4: git_basics_recording_changes_chunk_022 | score: 0.55
+  Text: made since your last commit — only changes that are still unstaged. If you’ve staged all of your changes, `git diff` will give you no output. For another example, if you stage the `CONTRIBUTING.md` fi
   Source: data/raw/02_git_basics_recording_changes.md
 
-Top-3: git_basics_recording_changes_chunk_028 | score: 0.54
-  Text: even more explicit reminder of what you’ve modified, you can pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor so you can see exactly what changes you’re
-  Source: data/raw/02_git_basics_recording_changes.md
-
-Top-4: gitlab_getting_started_chunk_002 | score: 0.52
-  Text: ake your first Git commit - Understand Git concepts ## Repositories A Git repository is a directory that contains all the files, folders, and version history of your project. It serves as a central hu
-  Source: data/raw/09_gitlab_getting_started.md
-
-Top-5: git_basics_recording_changes_chunk_029 | score: 0.50
-  Text: mit! You can see that the commit has given you some output about itself: which branch you committed to (`master`), what SHA-1 checksum the commit has (`463dc4f`), how many files were changed, and stat
-  Source: data/raw/02_git_basics_recording_changes.md
+Top-5: git_tools_rebasing_chunk_011 | score: 0.54
+  Text: commit which includes both lines of history, and your repository will look like this: If you run a `git log` when your history looks like this, you’ll see two commits that have the same author, date,
+  Source: data/raw/06_git_tools_rebasing.md
 
 Comment: Partially relevant — Top-1 returns GitHub About Git intro instead of git log specifics. Score 0.57 is low — semantic model does not distinguish view history from general Git concepts.
 
@@ -194,24 +194,24 @@ Comment: Partially relevant — Top-1 returns GitHub About Git intro instead of 
 Query: How to set up SSH keys for GitLab?
 
 Top-1: gitlab_getting_started_chunk_010 | score: 0.74
-  Text: should use SSH for secure communication. GitLab uses the SSH protocol to securely communicate with Git. When you use SSH keys to authenticate to the GitLab remote server, you don't need to supply you
+  Text: GitLab remote server, you don't need to supply your username and password each time. To use SSH with GitLab, you must: 1. Generate an SSH key pair on your local system. 1. Add your SSH key to your Git
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-2: gitlab_getting_started_chunk_009 | score: 0.61
-  Text: ne, you can use Git commands: - `git clone`: Clone a repository to your local machine. - `git branch`: List, create, or delete branches in your local repository. - `git checkout`: Switch between diffe
+Top-2: gitlab_getting_started_chunk_009 | score: 0.68
+  Text: repository. - `git checkout`: Switch between different branches in your local repository. - `git add`: Stage changes for commit. - `git commit`: Commit staged changes to your local repository. - `git
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-3: gitlab_getting_started_chunk_001 | score: 0.52
+Top-3: gitlab_getting_started_chunk_008 | score: 0.52
+  Text: repository that exists in your own namespace. Use this workflow when contributing to open-source projects or when your team uses a centralized repository. ## Install Git To use Git commands and contri
+  Source: data/raw/09_gitlab_getting_started.md
+
+Top-4: gitlab_getting_started_chunk_001 | score: 0.52
   Text: # Get started with Git Git is a version control system you use to track changes to your code and collaborate with others. GitLab is a web-based Git repository manager that provides CI/CD and other fea
   Source: data/raw/09_gitlab_getting_started.md
 
-Top-4: gitlab_getting_started_chunk_003 | score: 0.46
-  Text: e. For more information, see repositories. ## Working directories Your working directory is where you make changes to your code. When you clone a Git repository, you create a local copy of the reposit
+Top-5: gitlab_getting_started_chunk_003 | score: 0.46
+  Text: repository, you create a local copy of the repository in your working directory. You can edit files, add new ones, and test your code. To collaborate, you can: - Commit: After you make changes in your
   Source: data/raw/09_gitlab_getting_started.md
-
-Top-5: git_basics_getting_repository_chunk_007 | score: 0.45
-  Text: the same thing as the previous one, but the target directory is called `mylibgit`. Git has a number of different transfer protocols you can use. The previous example uses the `https://` protocol, but
-  Source: data/raw/01_git_basics_getting_repository.md
 
 Comment: Relevant — Top-1 correctly returns GitLab Getting Started covering SSH key setup. Score 0.74 is strong.
 
@@ -223,20 +223,20 @@ Top-1: git_tools_rebasing_chunk_001 | score: 0.54
   Text: # 3.6 Git Branching - Rebasing In Git, there are two main ways to integrate changes from one branch into another: the `merge` and the `rebase`. In this section you’ll learn what rebasing is, how to do
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-2: git_tools_rebasing_chunk_018 | score: 0.54
-  Text: on of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every team and every
+Top-2: git_tools_rebasing_chunk_005 | score: 0.51
+  Text: with, whether it’s the last of the rebased commits for a rebase or the final merge commit after a merge, is the same snapshot — it’s only the history that is different. Rebasing replays changes from o
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-3: git_tools_rebasing_chunk_009 | score: 0.54
-  Text: server ### The Perils of Rebasing Ahh, but the bliss of rebasing isn’t without its drawbacks, which can be summed up in a single line: Do not rebase commits that exist outside your repository and tha
+Top-3: git_tools_rebasing_chunk_017 | score: 0.50
+  Text: why show your messy work? When you’re working on a project, you may need a record of all your missteps and dead-end paths, but when it’s time to show your work to the world, you may want to tell a mor
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-4: git_tools_rebasing_chunk_004 | score: 0.52
-  Text: inted to by `C5` in the merge example. There is no difference in the end product of the integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like
+Top-4: git_tools_rebasing_chunk_008 | score: 0.49
+  Text: (`master`): $ git rebase master server This replays your `server` work on top of your `master` work, as shown in Rebasing your `server` branch on top of your `master` branch. Then, you can fast-forwar
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-5: git_tools_rebasing_chunk_005 | score: 0.47
-  Text: iner doesn’t have to do any integration work — just a fast-forward or a clean apply. Note that the snapshot pointed to by the final commit you end up with, whether it’s the last of the rebased commits
+Top-5: git_tools_rebasing_chunk_015 | score: 0.48
+  Text: never left your own computer, you’ll be just fine. If you rebase commits that have been pushed, but that no one else has based commits from, you’ll also be fine. If you rebase commits that have alread
   Source: data/raw/06_git_tools_rebasing.md
 
 Comment: Partially relevant — Top-1 returns git_tools_rebasing_chunk_000 but with score 0.50, which is borderline. The chunk is correct but the low score suggests semantic distance from the query phrasing.
@@ -245,25 +245,25 @@ Comment: Partially relevant — Top-1 returns git_tools_rebasing_chunk_000 but w
 
 Query: How do I push changes to a remote repository?
 
-Top-1: github_about_git_chunk_010 | score: 0.72
-  Text: dates from its remote counterpart. Developers use this command if a teammate has made commits to a branch on a remote, and they would like to reflect those changes in their local environment. * `git p
+Top-1: github_about_git_chunk_010 | score: 0.70
+  Text: those changes in their local environment. * `git push` updates the remote repository with any commits made locally to a branch. For more information, see the full reference guide to Git commands. ###
   Source: data/raw/08_github_about_git.md
 
-Top-2: git_basics_getting_repository_chunk_002 | score: 0.70
-  Text: d easily, how to browse the history of your project and view changes between commits, and how to push and pull from remote repositories. ## Getting a Git Repository You typically obtain a Git reposito
-  Source: data/raw/01_git_basics_getting_repository.md
-
-Top-3: github_about_git_chunk_013 | score: 0.62
-  Text: project called `repo` on the machine and that a new branch has been pushed to GitHub since the last time changes were made locally. ```bash # change into the `repo` directory cd repo # update all rem
-  Source: data/raw/08_github_about_git.md
-
-Top-4: distributed_workflows_chunk_006 | score: 0.61
-  Text: -Manager Workflow Because Git allows you to have multiple remote repositories, it’s possible to have a workflow where each developer has write access to their own public repository and read access to
+Top-2: distributed_workflows_chunk_006 | score: 0.66
+  Text: to their own public repository and read access to everyone else’s. This scenario often includes a canonical repository that represents the “official” project. To contribute to that project, you create
   Source: data/raw/05_distributed_workflows.md
 
-Top-5: github_about_git_chunk_012 | score: 0.61
-  Text: your code. ```bash # create a new directory, and initialize it with git-specific functions git init my-repo # change into the `my-repo` directory cd my-repo # create the first file in the project tou
+Top-3: gitlab_getting_started_chunk_006 | score: 0.65
+  Text: repository: Create a local copy of the repository by cloning it to your machine. You can work on the project without affecting the original repository. 1. Create a new branch: Before you make any chan
+  Source: data/raw/09_gitlab_getting_started.md
+
+Top-4: github_about_git_chunk_013 | score: 0.64
+  Text: into the `repo` directory cd repo # update all remote tracking branches, and the currently checked out branch git pull # change into the existing branch called `feature-a` git checkout feature-a # mak
   Source: data/raw/08_github_about_git.md
+
+Top-5: distributed_workflows_chunk_007 | score: 0.62
+  Text: that repository and makes changes. 3. The contributor pushes to their own public copy. 4. The contributor sends the maintainer an email asking them to pull changes. 5. The maintainer adds the contribu
+  Source: data/raw/05_distributed_workflows.md
 
 Comment: Relevant — Top-1 returns distributed_workflows_chunk_005 with score 0.72. Covers git push and remote repository operations correctly.
 
