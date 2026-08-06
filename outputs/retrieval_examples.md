@@ -63,16 +63,16 @@ Comment: Not relevant — Top-1 returns gitlab_getting_started_chunk_002 (genera
 
 Query: How to resolve merge conflicts in Git?
 
-Top-1: branching_basic_branching_merging_chunk_016 | score: 0.71
+Top-1: branching_basic_branching_merging_chunk_011 | score: 0.73
+  Text: Issue-tracking system, and delete the branch:      $ git branch -d iss53  ### Basic Merge Conflicts  Occasionally, this process doesn’t go smoothly. If you changed the same part of the same file diffe
+  Source: data/raw/03_branching_basic_branching_merging.md
+
+Top-2: branching_basic_branching_merging_chunk_016 | score: 0.71
   Text: On macOS), you can see all the supported tools listed at the top after “one of the following tools.” Just type the name of the tool you’d rather use.    If you need more advanced tools for resolving t
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-2: branching_basic_branching_merging_chunk_017 | score: 0.70
+Top-3: branching_basic_branching_merging_chunk_017 | score: 0.70
   Text: To conclude merge)      Changes to be committed:          modified:   index.html  If you’re happy with that, and you verify that everything that had conflicts has been staged, you can type `git commit
-  Source: data/raw/03_branching_basic_branching_merging.md
-
-Top-3: branching_basic_branching_merging_chunk_011 | score: 0.70
-  Text: R issue-tracking system, and delete the branch:      $ git branch -d iss53  ### Basic Merge Conflicts  Occasionally, this process doesn’t go smoothly. If you changed the same part of the same file dif
   Source: data/raw/03_branching_basic_branching_merging.md
 
 Top-4: branching_basic_branching_merging_chunk_010 | score: 0.66
@@ -89,8 +89,8 @@ Comment: Relevant — Top-1 correctly returns the merge conflict resolution sect
 
 Query: What is the difference between git add and git commit?
 
-Top-1: github_about_git_chunk_008 | score: 0.62
-  Text: E and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of
+Top-1: github_about_git_chunk_008 | score: 0.61
+  Text: And take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of t
   Source: data/raw/08_github_about_git.md
 
 Top-2: git_basics_recording_changes_chunk_007 | score: 0.58
@@ -120,7 +120,7 @@ Top-1: git_tools_stashing_cleaning_chunk_001 | score: 0.63
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
 Top-2: git_tools_stashing_cleaning_chunk_002 | score: 0.60
-  Text: E discussion on the Git mailing list, wherein the command `git stash save` is being deprecated in favour of the existing alternative `git stash push`. The main reason for this is that `git stash push`
+  Text: Discussion on the Git mailing list, wherein the command `git stash save` is being deprecated in favour of the existing alternative `git stash push`. The main reason for this is that `git stash push` i
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
 Top-3: git_tools_stashing_cleaning_chunk_006 | score: 0.55
@@ -175,13 +175,13 @@ Top-2: git_basics_recording_changes_chunk_030 | score: 0.53
   Text: 2 Files changed, 2 insertions(+)      create mode 100644 README  Now you’ve created your first commit! You can see that the commit has given you some output about itself: which branch you committed to
   Source: data/raw/02_git_basics_recording_changes.md
 
-Top-3: github_about_git_chunk_008 | score: 0.51
-  Text: E and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of
-  Source: data/raw/08_github_about_git.md
-
-Top-4: git_basics_recording_changes_chunk_029 | score: 0.51
-  Text: U remember what you’re committing.    For an even more explicit reminder of what you’ve modified, you can pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor
+Top-3: git_basics_recording_changes_chunk_029 | score: 0.53
+  Text: Remember what you’re committing.    For an even more explicit reminder of what you’ve modified, you can pass the `-v` option to `git commit`. Doing so also puts the diff of your change in the editor s
   Source: data/raw/02_git_basics_recording_changes.md
+
+Top-4: github_about_git_chunk_008 | score: 0.52
+  Text: And take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of t
+  Source: data/raw/08_github_about_git.md
 
 Top-5: git_basics_recording_changes_chunk_007 | score: 0.50
   Text: New file:   README  You can tell that it’s staged because it’s under the “Changes to be committed” heading. If you commit at this point, the version of the file at the time you ran `git add` is what w
@@ -223,8 +223,8 @@ Top-1: git_tools_rebasing_chunk_004 | score: 0.58
   Text: Of the integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-2: git_tools_rebasing_chunk_018 | score: 0.55
-  Text: O the question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every te
+Top-2: git_tools_rebasing_chunk_018 | score: 0.56
+  Text: The question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every team
   Source: data/raw/06_git_tools_rebasing.md
 
 Top-3: git_tools_rebasing_chunk_010 | score: 0.54
