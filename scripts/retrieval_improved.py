@@ -4,8 +4,8 @@ HW3: Improved Retrieval Pipeline
 
 Enhancements over HW2 baseline:
 1. Metadata filtering — filter by domain (git/github/gitlab) and document_type
-2. Hybrid search — combine semantic (FAISS cosine) + keyword overlap scores
-   Hybrid = SEMANTIC_WEIGHT * semantic_score + KEYWORD_WEIGHT * keyword_score
+2. Hybrid search — combine semantic (FAISS cosine) + keyword (BM25) scores
+   Hybrid = alpha * normalized_semantic + (1-alpha) * normalized_bm25
 
 Usage:
     python3 scripts/retrieval_improved.py --test      # Run all test queries
@@ -21,6 +21,7 @@ import sys
 
 import faiss
 import numpy as np
+from rank_bm25 import BM25Okapi
 from sentence_transformers import SentenceTransformer
 
 CHUNKS_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "processed", "chunks.jsonl")
@@ -28,8 +29,7 @@ INDEX_DIR = os.path.join(os.path.dirname(__file__), "..", "index")
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "..", "outputs")
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 TOP_K = 5
-SEMANTIC_WEIGHT = 0.7
-KEYWORD_WEIGHT = 0.3
+ALPHA = 0.5  # semantic weight
 
 TEST_QUERIES = [
     "How do I clone a Git repository?",
@@ -62,55 +62,49 @@ def load_index():
     return index, meta["chunks"], model
 
 
-def tokenize(text):
-    """Simple tokenizer for overlap-based keyword scoring."""
-    return set(re.findall(r"\b\w+\b", text.lower()))
+def build_bm25(chunks):
+    """Build BM25Okapi index for keyword scoring."""
+    tokenized = [re.findall(r"\b\w+\b", c["text"].lower()) for c in chunks]
+    return BM25Okapi(tokenized)
 
 
-def keyword_overlap_score(query, text):
-    """
-    Keyword overlap score:
-        shared terms / query terms
-    """
-    query_terms = tokenize(query)
-    text_terms = tokenize(text)
-    if not query_terms:
-        return 0.0
-    overlap = query_terms.intersection(text_terms)
-    return len(overlap) / len(query_terms)
-
-
-def hybrid_search(query, index, chunks, model, top_k=TOP_K,
-                  domain_filter=None, semantic_weight=SEMANTIC_WEIGHT,
-                  keyword_weight=KEYWORD_WEIGHT):
-    """Hybrid search: semantic + keyword overlap + optional domain filter."""
-    # Semantic search — retrieve more candidates for hybrid re-ranking
+def hybrid_search(query, index, chunks, model, bm25, top_k=TOP_K,
+                  domain_filter=None, alpha=ALPHA):
+    """Hybrid search: semantic (FAISS cosine) + BM25 + optional domain filter."""
+    # Semantic search — retrieve more for hybrid re-ranking
     q_emb = model.encode([query], normalize_embeddings=True)
     q_emb = np.array(q_emb, dtype="float32")
     candidate_k = min(top_k * 4, index.ntotal)
     sem_scores, ids = index.search(q_emb, candidate_k)
 
-    # Build results with hybrid scoring
+    # BM25 scores for the same candidates
+    q_tokens = re.findall(r"\b\w+\b", query.lower())
+    bm25_scores = np.array([bm25.get_scores(q_tokens)[int(i)] if i >= 0 else 0.0
+                            for i in ids[0]])
+
+    # Normalize both to [0, 1]
+    max_sem = sem_scores[0].max() if sem_scores[0].max() > 0 else 1.0
+    max_bm25 = bm25_scores.max() if bm25_scores.max() > 0 else 1.0
+    norm_sem = sem_scores[0] / max_sem
+    norm_bm25 = bm25_scores / max_bm25
+
+    # Hybrid score
+    hybrid = alpha * norm_sem + (1 - alpha) * norm_bm25
+
+    # Build results with domain filter
     results = []
     for i in range(len(ids[0])):
         idx = int(ids[0][i])
         if idx < 0:
             break
         chunk = chunks[idx]
-
-        # Domain filter
         if domain_filter and chunk["metadata"]["domain"] != domain_filter:
             continue
-
-        semantic_score = float(sem_scores[0][i])
-        keyword_score = keyword_overlap_score(query, chunk["text"])
-        hybrid_score = semantic_weight * semantic_score + keyword_weight * keyword_score
-
         results.append({
             "chunk_id": chunk["chunk_id"],
-            "score": round(hybrid_score, 4),
-            "semantic_score": round(semantic_score, 4),
-            "keyword_score": round(keyword_score, 4),
+            "score": round(float(hybrid[i]), 4),
+            "semantic_score": round(float(sem_scores[0][i]), 4),
+            "bm25_score": round(float(bm25_scores[i]), 4),
             "text_preview": chunk["text"][:200],
             "source_file": chunk["metadata"]["source_file"],
             "domain": chunk["metadata"]["domain"],
@@ -150,11 +144,12 @@ def generate_comparison():
     output_path = os.path.join(OUTPUT_DIR, "retrieval_comparison.md")
 
     index, chunks, model = load_index()
+    bm25 = build_bm25(chunks)
 
     print("Running improved retrieval for all queries...")
     improved = {}
     for query in TEST_QUERIES:
-        results = hybrid_search(query, index, chunks, model)
+        results = hybrid_search(query, index, chunks, model, bm25)
         if results:
             improved[query] = {
                 "chunk_id": results[0]["chunk_id"],
@@ -171,7 +166,7 @@ def generate_comparison():
         "# HW3: Покращення retrieval pipeline — Порівняльний аналіз",
         "",
         "**Baseline (HW2)**: Semantic-only (FAISS cosine similarity, all-MiniLM-L6-v2)",
-        "**Improved (HW3)**: Hybrid semantic + keyword overlap (α=0.7) + Metadata filtering",
+        "**Improved (HW3)**: Hybrid BM25 + Semantic (α=0.5) + Metadata filtering",
         "",
         "## Порівняльна таблиця",
         "",
@@ -187,7 +182,7 @@ def generate_comparison():
         # Analyze change
         if bl["chunk_id"] == imp["chunk_id"] and bl["chunk_id"] != "N/A":
             if imp["score"] > bl["score"]:
-                change = "✅ Top-1 зберігся, гібридний бал вищий"
+                change = "✅ Top-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність"
                 improved_count += 1
             else:
                 change = "↔️ Top-1 зберігся, бали порівнянні"
@@ -211,7 +206,7 @@ def generate_comparison():
         "**Фільтр за доменом**: Дозволяє звужувати пошук до конкретного домену (git/github/gitlab).",
         "Наприклад, `--domain gitlab` повертає тільки GitLab документи.",
         "",
-        "**Гібридний пошук**: Keyword overlap допомагає знайти чанки з точними ключовими словами",
+        "**Гібридний пошук**: BM25 допомагає знайти чанки з точними ключовими словами",
         "(напр. `git add`, `git commit`), а semantic зберігає контекстуальну релевантність.",
         "",
         "## Детальний аналіз",
@@ -254,32 +249,33 @@ def main():
         sys.exit(1)
 
     index, chunks, model = load_index()
+    bm25 = build_bm25(chunks)
 
     if args.query:
-        results = hybrid_search(args.query, index, chunks, model,
+        results = hybrid_search(args.query, index, chunks, model, bm25,
                                 domain_filter=args.domain)
         print(f"Query: {args.query}\n")
         for j, r in enumerate(results, 1):
             print(f"Top-{j}: {r['chunk_id']} | hybrid: {r['score']}")
-            print(f"  (semantic: {r['semantic_score']}, keyword: {r['keyword_score']})")
+            print(f"  (semantic: {r['semantic_score']}, bm25: {r['bm25_score']})")
             print(f"  Text: {r['text_preview']!r}")
             print(f"  Source: {r['source_file']}\n")
 
     if args.test:
         print("=" * 70)
-        print("HW3: Improved Retrieval — Hybrid semantic + keyword overlap")
-        print(f"Semantic weight: {SEMANTIC_WEIGHT}, Keyword weight: {KEYWORD_WEIGHT}")
+        print("HW3: Improved Retrieval — Hybrid BM25+Semantic")
+        print(f"Alpha: {ALPHA}")
         print("=" * 70)
-        print(f"\nLoaded {len(chunks)} chunks\n")
+        print(f"\nLoaded {len(chunks)} chunks, BM25 corpus built\n")
 
         for i, query in enumerate(TEST_QUERIES, 1):
-            results = hybrid_search(query, index, chunks, model,
+            results = hybrid_search(query, index, chunks, model, bm25,
                                     domain_filter=args.domain)
             print(f"--- Query {i}/{len(TEST_QUERIES)} ---")
             print(f"Query: {query}")
             for j, r in enumerate(results, 1):
                 print(f"Top-{j}: {r['chunk_id']} | hybrid: {r['score']}")
-                print(f"  (semantic: {r['semantic_score']}, keyword: {r['keyword_score']})")
+                print(f"  (semantic: {r['semantic_score']}, bm25: {r['bm25_score']})")
                 print(f"  Text: {r['text_preview']!r}")
                 print(f"  Domain: {r['domain']}")
             print()
