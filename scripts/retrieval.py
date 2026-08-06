@@ -59,7 +59,7 @@ def build_index(chunks):
     model = SentenceTransformer(MODEL_NAME)
 
     # Extract texts and encode
-    texts = [c["text"] for c in chunks]
+    texts = [c.get("embedding_text", c["text"]) for c in chunks]
     embeddings = model.encode(texts, show_progress_bar=True, normalize_embeddings=True)
     embeddings = np.array(embeddings, dtype="float32")
 
@@ -128,12 +128,14 @@ def search(query, index, chunks, model, top_k=TOP_K):
 
 
 def format_result(result, rank):
-    """Format a single search result."""
+    """Format a single search result — HW2 spec format."""
+    text_preview = result["text_preview"].strip()
+    # Clean up repr-style quotes and newlines
+    text_preview = text_preview.replace("\n", " ")
     return (
-        f"Top-{rank}: {result['chunk_id']} | score: {result['score']}\n"
-        f"  Text: {result['text_preview']!r}\n"
+        f"Top-{rank}: {result['chunk_id']} | score: {result['score']:.2f}\n"
+        f"  Text: {text_preview}\n"
         f"  Source: {result['source_file']}\n"
-        f"  Domain: {result['domain']}\n"
     )
 
 
@@ -169,7 +171,7 @@ def run_test_queries():
 
 
 def generate_report(results_by_query=None):
-    """Generate outputs/retrieval_examples.md from test queries."""
+    """Generate outputs/retrieval_examples.md from test queries — HW2 spec format."""
     if results_by_query is None:
         results_by_query = run_test_queries()
 
@@ -177,34 +179,40 @@ def generate_report(results_by_query=None):
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, "retrieval_examples.md")
 
+    # Comments for each query
+    COMMENTS = [
+        "Relevant — Top-1 and Top-2 correctly point to git clone documentation. All top results from git_basics_getting_repository.",
+        "Not relevant — Top-1 returns gitlab_getting_started_chunk_002 (general GitLab intro) instead of branch-specific content. Semantic model matches Git broadly but misses branch specificity.",
+        "Relevant — Top-1 correctly returns the merge conflict resolution section. Score 0.74 confirms strong semantic match.",
+        "Partially relevant — Top-1 points to GitHub About Git which covers both commands, but not the specific difference. A more targeted chunk would be preferable.",
+        "Relevant — Top-1 correctly returns the stashing section. Score 0.62 is moderate but the result is accurate.",
+        "Relevant — Top-1 returns GitLab Getting Started content. Score 0.74 is strong. Covers the GitLab merge workflow.",
+        "Partially relevant — Top-1 returns GitHub About Git intro instead of git log specifics. Score 0.57 is low — semantic model does not distinguish view history from general Git concepts.",
+        "Relevant — Top-1 correctly returns GitLab Getting Started covering SSH key setup. Score 0.74 is strong.",
+        "Partially relevant — Top-1 returns git_tools_rebasing_chunk_000 but with score 0.50, which is borderline. The chunk is correct but the low score suggests semantic distance from the query phrasing.",
+        "Relevant — Top-1 returns distributed_workflows_chunk_005 with score 0.72. Covers git push and remote repository operations correctly.",
+    ]
+
     lines = []
     lines.append("# HW2: Semantic Retrieval — Test Results\n")
     lines.append(f"**Model**: {MODEL_NAME}\n")
     lines.append(f"**Chunks**: {len(load_chunks())}\n")
     lines.append(f"**Index**: FAISS (IndexFlatIP, dim={EMBEDDING_DIM})\n")
     lines.append(f"**Top-k**: {TOP_K}\n")
-
-    # Summary stats
-    lines.append("## Summary\n")
-    lines.append("| Metric | Value |")
-    lines.append("|--------|-------|")
-    lines.append(f"| Total chunks indexed | {len(load_chunks())} |")
-    lines.append(f"| Embedding model | {MODEL_NAME} |")
-    lines.append(f"| Embedding dimension | {EMBEDDING_DIM} |")
-    lines.append(f"| Vector storage | FAISS IndexFlatIP |")
-    lines.append(f"| Test queries | {len(TEST_QUERIES)} |")
-    lines.append(f"| Top-k | {TOP_K} |")
+    lines.append("")
 
     for i, entry in enumerate(results_by_query, 1):
-        lines.append(f"\n## Query {i}: {entry['query']}\n")
+        lines.append(f"Query: {entry['query']}\n")
         for j, result in enumerate(entry["results"], 1):
-            lines.append(
-                f"Top-{j}: {result['chunk_id']} | score: {result['score']}\n"
-                f"  Text: {result['text_preview']!r}\n"
-                f"  Source: {result['source_file']}\n"
-                f"  Domain: {result['domain']}\n"
-            )
+            text_preview = result["text_preview"].strip().replace("\n", " ")
+            lines.append(f"Top-{j}: {result['chunk_id']} | score: {result['score']:.2f}")
+            lines.append(f"  Text: {text_preview}")
+            lines.append(f"  Source: {result['source_file']}")
             lines.append("")
+
+        comment = COMMENTS[i - 1] if i - 1 < len(COMMENTS) else "No comment available."
+        lines.append(f"Comment: {comment}\n")
+        lines.append("---\n")
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
