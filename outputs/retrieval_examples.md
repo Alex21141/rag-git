@@ -27,9 +27,9 @@ Top-4: github_about_git_chunk_007 | score: 0.65
   Text: Copy, create, change, and combine code. These commands can be executed directly from the command line or by using an application like GitHub Desktop. Here are some common commands for using Git:  * `g
   Source: data/raw/08_github_about_git.md
 
-Top-5: github_about_git_chunk_010 | score: 0.63
-  Text: `Git push` updates the remote repository with any commits made locally to a branch.  For more information, see the full reference guide to Git commands.  ### Example: Contribute to an existing reposit
-  Source: data/raw/08_github_about_git.md
+Top-5: gitlab_getting_started_chunk_002 | score: 0.62
+  Text: All the files, folders, and version history of your project. It serves as a central hub where Git manages and tracks changes to your code.  When you initialize a Git repository or clone an existing on
+  Source: data/raw/09_gitlab_getting_started.md
 
 Comment: Relevant — Top-1 and Top-2 correctly point to git clone documentation. All top results from git_basics_getting_repository.
 
@@ -246,7 +246,7 @@ Comment: Partially relevant — Top-1 returns git_tools_rebasing_chunk_000 but w
 Query: How do I push changes to a remote repository?
 
 Top-1: github_about_git_chunk_010 | score: 0.73
-  Text: `Git push` updates the remote repository with any commits made locally to a branch.  For more information, see the full reference guide to Git commands.  ### Example: Contribute to an existing reposit
+  Text: Updates the remote repository with any commits made locally to a branch.  For more information, see the full reference guide to Git commands.  ### Example: Contribute to an existing repository  ```bas
   Source: data/raw/08_github_about_git.md
 
 Top-2: github_about_git_chunk_012 | score: 0.69
