@@ -199,6 +199,9 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
         # Extract chunk text (without overlap yet)
         raw_chunk = text[start:end].strip()
 
+        # Track overlap length for post-processing
+        actual_overlap_len = 0
+
         # Prepend overlap from previous chunk (last `overlap` chars of raw text)
         if prev_end > 0:
             overlap_start = max(0, prev_end - overlap)
@@ -208,12 +211,16 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
                 # Add space if needed
                 if not overlap_text.endswith((" ", "\n", "\t")) and raw_chunk and not raw_chunk.startswith((" ", "\n", "\t")):
                     chunk_text = overlap_text + " " + raw_chunk
+                    actual_overlap_len = len(overlap_text) + 1  # +1 for space
                 else:
                     chunk_text = overlap_text + raw_chunk
+                    actual_overlap_len = len(overlap_text)
             else:
                 chunk_text = raw_chunk
+                actual_overlap_len = 0
         else:
             chunk_text = raw_chunk
+            actual_overlap_len = 0
 
         # Fix unclosed inline backticks AFTER overlap prepending
         # (the combined text may have odd backticks from overlap + chunk)
@@ -229,7 +236,7 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Filter by min_chunk
         if len(chunk_text) >= min_chunk:
-            chunks.append((start, end, chunk_text, section))
+            chunks.append((start, end, chunk_text, section, actual_overlap_len))
 
         # Advance start: sliding window with overlap
         new_start = end - overlap
@@ -282,12 +289,13 @@ def prepare_knowledge_base():
         raw_splits = chunk_semantic(text, CHUNK_SIZE, OVERLAP, MIN_CHUNK, section_map)
 
         final_chunks = []
-        for start_pos, end_pos, chunk_text, section in raw_splits:
+        for start_pos, end_pos, chunk_text, section, overlap_len in raw_splits:
             if section is None:
                 section = title
             final_chunks.append({
                 "chunk_id": f"{doc_id}_chunk_{len(final_chunks):03d}",
                 "text": _capitalize_chunk(chunk_text.strip()),
+                "_overlap_len": overlap_len,  # for Step 2.7
                 "metadata": {
                     "document_id": doc_id,
                     "source_file": f"data/raw/{doc_file.name}",
@@ -349,6 +357,7 @@ def prepare_knowledge_base():
     print("Step 2.7: Fixing mid-word fragments")
     print("=" * 60)
     fragment_fixes = 0
+    overlap_skipped = 0
     COMMON_START_WORDS = {
         # 1-2 letter common English words
         "a", "an", "in", "on", "at", "to", "as", "by", "or", "if", "no", "so", "up",
@@ -364,9 +373,16 @@ def prepare_knowledge_base():
         if not text:
             continue
 
+        # Get overlap length — fragments in overlap zone must NOT be modified
+        # (they are legitimate overlap text from the previous chunk)
+        overlap_len = c.get("_overlap_len", 0)
+
         # Pattern 1: apostrophe/quote fragment: ''S history -> History
         m = re.match(r"^[''\u2019\u2018]+[A-Za-z]+([\s\-\—._:;,]+)([a-z])", text)
         if m:
+            if m.end() <= overlap_len:
+                overlap_skipped += 1
+                continue  # fragment is in overlap zone — skip
             rest = text[m.end():]
             c["text"] = m.group(2).upper() + rest
             fragment_fixes += 1
@@ -381,6 +397,10 @@ def prepare_knowledge_base():
         if m:
             first_word = m.group(1)
             if first_word.lower() not in COMMON_START_WORDS:
+                # Skip if the fragment end is within overlap zone
+                if m.end() <= overlap_len:
+                    overlap_skipped += 1
+                    continue
                 rest = text[m.end():]
                 # Strip leading non-alpha chars (punctuation, apostrophes, spaces)
                 rest = re.sub(r'^[^a-zA-Z]*', '', rest)
@@ -405,6 +425,10 @@ def prepare_knowledge_base():
                     if fragment_fixes <= 10:
                         print(f"  Fixed {c['chunk_id']}: '{old_start}' -> '{c['text'][:30]}'")
                     continue
+
+    print(f"  Total fragments fixed: {fragment_fixes}")
+    if overlap_skipped:
+        print(f"  Fragments in overlap zone (skipped): {overlap_skipped}")
 
     # Final pass: fix any remaining odd backticks
     print(f"\n{'=' * 60}")
