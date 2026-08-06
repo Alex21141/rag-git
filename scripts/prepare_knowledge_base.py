@@ -113,25 +113,14 @@ def _backtick_balanced(text: str) -> bool:
     return inline_count % 2 == 0
 
 
-def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int):
-    """Fix unclosed backticks via forward search only.
+def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
+    """No-op: do NOT modify chunk_text here.
 
-    Returns (fixed_text, new_end) — new_end tracks actual boundary
-    so next chunk's overlap comes from the correct position.
+    Extending chunk_text (forward search) breaks the overlap chain because
+    the last `ol` chars of this chunk no longer match the first `ol` chars
+    of the next chunk. Step 2.8 handles remaining odd backticks.
     """
-    if _backtick_balanced(chunk_text):
-        return chunk_text, end
-
-    if end < len(full_text):
-        search_end = min(end + 1000, len(full_text))
-        for pos in range(end, search_end):
-            extended = chunk_text + full_text[end:pos + 1]
-            if full_text[pos:pos + 2] == '# ' and _backtick_balanced(extended):
-                break
-            if _backtick_balanced(extended):
-                return extended.strip(), pos + 1
-
-    return chunk_text, end
+    return chunk_text
 
 
 def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
@@ -182,14 +171,20 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
             overlap_start = max(0, prev_end - overlap)
             overlap_text = text[overlap_start:prev_end].strip()
 
-            if overlap_text and overlap_text != raw_chunk[:len(overlap_text)]:
-                # Add space if needed
-                if not overlap_text.endswith((" ", "\n", "\t")) and raw_chunk and not raw_chunk.startswith((" ", "\n", "\t")):
-                    chunk_text = overlap_text + " " + raw_chunk
-                    actual_overlap_len = len(overlap_text) + 1  # +1 for space
-                else:
-                    chunk_text = overlap_text + raw_chunk
+            if overlap_text:
+                if overlap_text == raw_chunk[:len(overlap_text)]:
+                    # Overlap already in raw_chunk — no duplication needed,
+                    # but track it for verification
+                    chunk_text = raw_chunk
                     actual_overlap_len = len(overlap_text)
+                else:
+                    # Add space if needed
+                    if not overlap_text.endswith((" ", "\n", "\t")) and raw_chunk and not raw_chunk.startswith((" ", "\n", "\t")):
+                        chunk_text = overlap_text + " " + raw_chunk
+                        actual_overlap_len = len(overlap_text) + 1  # +1 for space
+                    else:
+                        chunk_text = overlap_text + raw_chunk
+                        actual_overlap_len = len(overlap_text)
             else:
                 chunk_text = raw_chunk
                 actual_overlap_len = 0
@@ -198,10 +193,10 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
             actual_overlap_len = 0
 
         # Fix unclosed inline backticks AFTER overlap prepending
-        chunk_text, new_end = fix_unclosed_backticks(chunk_text, text, start, end)
+        chunk_text = fix_unclosed_backticks(chunk_text, text, start, end)
 
-        # Update prev_end with actual boundary (may have been extended)
-        prev_end = new_end
+        # Update prev_end to original boundary (NOT extended) to preserve overlap chain
+        prev_end = end
 
         # Resolve section
         section = None
@@ -210,10 +205,10 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Filter by min_chunk
         if len(chunk_text) >= min_chunk:
-            chunks.append((start, new_end, chunk_text, section, actual_overlap_len))
+            chunks.append((start, end, chunk_text, section, actual_overlap_len))
 
         # Advance start: sliding window with overlap
-        new_start = new_end - overlap
+        new_start = end - overlap
         # Ensure forward progress — never go backward or stay still
         if new_start <= start:
             start = end  # fallback: no overlap if sentence break is too close
@@ -421,12 +416,17 @@ def prepare_knowledge_base():
     if overlap_skipped:
         print(f"  Fragments in overlap zone (skipped): {overlap_skipped}")
 
-    # Final pass: fix any remaining odd backticks
+    # Final pass: fix odd backticks ONLY for last chunks in document (overlap_len=0)
+    # Extending a chunk with overlap breaks the chain: prev[-ol:] != next[:ol]
     print(f"\n{'=' * 60}")
-    print("Step 2.8: Final backtick balance check")
+    print("Step 2.8: Final backtick balance check (overlap_len=0 only)")
     print("=" * 60)
     backtick_fixes = 0
     for i, c in enumerate(all_chunks):
+        ol = c["metadata"].get("overlap_len", 0)
+        if ol > 0:
+            # Has a next sibling — extending would break overlap chain
+            continue
         text = c["text"]
         fence_count = text.count('```')
         inline = text.count('`') - fence_count * 3
@@ -436,12 +436,10 @@ def prepare_knowledge_base():
             try:
                 with open(did) as sf:
                     source = sf.read()
-                # Search from END of chunk text (skip overlap prefix)
                 search_str = text[-150:] if len(text) > 150 else text[-80:]
                 src_pos = source.find(search_str)
                 if src_pos >= 0:
                     chunk_end_in_src = src_pos + len(search_str)
-                    # Search forward for balanced backticks
                     for pos in range(chunk_end_in_src, min(chunk_end_in_src + 500, len(source))):
                         candidate = text + source[chunk_end_in_src:pos + 1]
                         fc = candidate.count('```')
@@ -451,7 +449,6 @@ def prepare_knowledge_base():
                             backtick_fixes += 1
                             print(f"  Fixed (inline) {c['chunk_id']}")
                             break
-                        # Also stop if we hit a heading (outside code fence)
                         if source[pos:pos + 2] == '# ' and fc % 2 == 0:
                             break
             except FileNotFoundError:
