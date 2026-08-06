@@ -99,46 +99,62 @@ def resolve_section(section_map: list, char_pos: int, title: str):
     return result or section_map[0][0]
 
 
-def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
-    """Fix unclosed inline backticks.
+def _backtick_balanced(text: str) -> bool:
+    """Check if text has balanced backticks.
 
-    Two cases:
-    1. Chunk starts mid-inline-code (opening backtick is in previous chunk's overlap)
-       → search backward for opening ` and include it
-    2. Chunk ends mid-inline-code (closing backtick is in next chunk)
-       → search forward for closing ` and include it
+    Handles both code fences (```) and inline code (`).
+    Code fences are balanced if count of ``` is even.
+    Inline backticks are balanced after removing code fences.
     """
-    code_block_count = chunk_text.count('```')
-    inline_count = chunk_text.count('`') - (code_block_count * 3)
+    fence_count = text.count('```')
+    if fence_count % 2 == 1:
+        return False  # Unclosed code fence
+    inline_count = text.count('`') - fence_count * 3
+    return inline_count % 2 == 0
 
-    if inline_count % 2 == 1:
-        # Odd backticks — overlap may have cut an inline code fence
-        # Search backward for a missing opening backtick (within 200 chars before start)
-        if start > 0:
-            search_back = max(0, start - 200)
-            for pos in range(start - 1, search_back - 1, -1):
-                if full_text[pos] == '`':
-                    # Found opening backtick — include it
-                    chunk_text = full_text[pos:end].strip()
-                    # Re-check
-                    cb = chunk_text.count('```')
-                    ic = chunk_text.count('`') - (cb * 3)
-                    if ic % 2 == 0:
-                        return chunk_text
-                    break
-                # Stop at heading
-                if full_text[pos:pos + 2] == '# ':
-                    break
 
-        # Search forward for closing backtick
-        if start < end < len(full_text):
-            search_end = min(end + 200, len(full_text))
-            for pos in range(end, search_end):
-                if full_text[pos] == '`':
-                    chunk_text = full_text[start:pos + 1].strip()
-                    break
-                if full_text[pos:pos + 2] == '# ':
-                    break
+def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
+    """Fix unclosed backticks (inline code or code fences).
+
+    If chunk has unbalanced backticks, extend the chunk boundaries
+    to include the missing closing/opening backtick.
+
+    NOTE: chunk_text may include overlap prefix (text before start).
+    Backward search prepends to start; forward search appends after end.
+    """
+    if _backtick_balanced(chunk_text):
+        return chunk_text
+
+    # Are we inside an open code fence?
+    in_code_fence = chunk_text.count('```') % 2 == 1
+
+    # Search backward for missing opening backtick (within 200 chars)
+    if start > 0:
+        search_back = max(0, start - 200)
+        for pos in range(start - 1, search_back - 1, -1):
+            if full_text[pos] == '`':
+                # Prepend missing text to the overlap prefix
+                extended = full_text[pos:start] + chunk_text
+                if _backtick_balanced(extended.strip()):
+                    return extended.strip()
+                break  # Tried adding opening backtick — didn't fix it
+            if full_text[pos:pos + 2] == '# ':
+                break
+
+    # Search forward for closing backtick or code fence end
+    # Append to existing chunk_text (preserving the overlap prefix)
+    if start < end < len(full_text):
+        search_end = min(end + 1000, len(full_text))
+        for pos in range(end, search_end):
+            # Build candidate with text up to this position
+            extended = chunk_text + full_text[end:pos + 1]
+            # If candidate has unbalanced backticks of any kind (code fence
+            # or inline), `# ` is likely a comment inside a code block
+            # — don't stop at `# ` until backticks are fully balanced
+            if full_text[pos:pos + 2] == '# ' and _backtick_balanced(extended):
+                break
+            if _backtick_balanced(extended):
+                return extended.strip()
 
     return chunk_text
 
@@ -390,7 +406,80 @@ def prepare_knowledge_base():
                         print(f"  Fixed {c['chunk_id']}: '{old_start}' -> '{c['text'][:30]}'")
                     continue
 
-    print(f"  Total fragments fixed: {fragment_fixes}")
+    # Final pass: fix any remaining odd backticks
+    print(f"\n{'=' * 60}")
+    print("Step 2.8: Final backtick balance check")
+    print("=" * 60)
+    backtick_fixes = 0
+    for i, c in enumerate(all_chunks):
+        text = c["text"]
+        fence_count = text.count('```')
+        inline = text.count('`') - fence_count * 3
+        if fence_count % 2 == 1 or inline % 2 == 1:
+            # Unbalanced — find in source
+            did = c["metadata"]["source_file"]
+            try:
+                with open(did) as sf:
+                    source = sf.read()
+                # Find chunk text in source — try multiple search strings
+                # because the text may have overlap prefix
+                src_pos = -1
+                for test_len in [300, 200, 150, 100, 80]:
+                    if len(text) > test_len:
+                        search_str = text[-test_len + 20:]  # skip overlap prefix
+                        src_pos = source.find(search_str)
+                        if src_pos >= 0:
+                            # The chunk end is at src_pos + test_len - 20 + remaining
+                            # Actually: we know text ends at some position
+                            chunk_end_in_src = src_pos + len(text) - (test_len - 20)
+                            break
+                    if src_pos >= 0:
+                        break
+                # If still not found, try from the end
+                if src_pos < 0 and len(text) > 80:
+                    search_str = text[-80:]
+                    src_pos = source.rfind(search_str)
+                    if src_pos >= 0:
+                        chunk_end_in_src = src_pos + 80
+
+                if src_pos >= 0:
+                    # Search forward for closing backtick/fence
+                    # First check for code fence closing
+                    for j in range(chunk_end_in_src, min(chunk_end_in_src + 2000, len(source))):
+                        if source[j:j+3] == '```':
+                            candidate = text + source[chunk_end_in_src:j+3]
+                            candidate = candidate.strip()
+                            fc = candidate.count('```')
+                            if fc % 2 == 0:
+                                ic = candidate.count('`') - fc * 3
+                                if ic % 2 == 0:
+                                    c["text"] = candidate
+                                    backtick_fixes += 1
+                                    print(f"  Fixed (fence+inline) {c['chunk_id']}: added closing fence + content")
+                                    break
+                            # Fence found but not balanced yet — keep searching for inline
+                            if fence_count % 2 == 1:
+                                # Was odd fence, now even — check inline again
+                                if ic % 2 == 0:
+                                    c["text"] = candidate.strip()
+                                    backtick_fixes += 1
+                                    print(f"  Fixed (inline after fence) {c['chunk_id']}")
+                                    break
+                    # If no code fence found, search for single backtick
+                    if not _backtick_balanced(c["text"]):
+                        for pos in range(chunk_end_in_src, min(chunk_end_in_src + 500, len(source))):
+                            if source[pos] == '`':
+                                candidate = text + source[chunk_end_in_src:pos + 1]
+                                if _backtick_balanced(candidate.strip()):
+                                    c["text"] = candidate.strip()
+                                    backtick_fixes += 1
+                                    print(f"  Fixed (inline) {c['chunk_id']}")
+                                    break
+                            if source[pos:pos+2] == '# ':
+                                break
+            except FileNotFoundError:
+                pass
+    print(f"  Total backtick fixes: {backtick_fixes}")
 
     # Save to JSONL
     print(f"\n{'=' * 60}")
