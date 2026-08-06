@@ -227,9 +227,18 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
 
 def _capitalize_chunk(text: str) -> str:
-    """Capitalize first letter of chunk text."""
+    """Capitalize first letter of chunk text, fixing mid-word fragments."""
     if not text:
         return text
+    # Fix: single uppercase letter followed by space/punctuation + lowercase
+    # e.g. "D continue working" -> "Continue working" (fragment from "And continue...")
+    # e.g. "O an empty directory" -> "An empty directory" (fragment from "To an empty...")
+    m = re.match(r"^([A-Z])([\s\-\.,:;]+)([a-z])", text)
+    if m:
+        # Skip the fragment letter and leading whitespace
+        rest = text[m.end():]
+        return m.group(3).upper() + rest
+    # Standard: find first alpha and capitalize
     for i, ch in enumerate(text):
         if ch.isalpha():
             return text[:i] + ch.upper() + text[i + 1:]
