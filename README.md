@@ -7,9 +7,9 @@
 | **Джерела** | 10 документів (Git, GitHub, GitLab) |
 | **Chunking** | Sliding window, chunk_size=850, overlap=150 |
 | **Чанків** | 149 |
-| **Текст всього** | 119,683 chars |
-| **Overlap coverage** | 100% (134/134 пар) |
-| **Odd backticks** | 0/149 |
+| **Текст всього** | 117,598 chars |
+| **Overlap coverage** | 100% (139/139 пар) |
+| **Odd backticks** | 6/149 (в overlap-зоні) |
 | **Домен** | git (125), github (14), gitlab (10) |
 
 ### 1. Тема проєкту
