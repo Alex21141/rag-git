@@ -178,6 +178,8 @@ def chunk_document(document: dict[str, Any], chunk_size: int, overlap: int) -> l
             continue
 
         chunk_index += 1
+        # Resolve section from document title
+        section = document["title"]
         chunks.append({
             "chunk_id": build_chunk_id(document["document_id"], chunk_index),
             "text": chunk_text,
@@ -185,7 +187,8 @@ def chunk_document(document: dict[str, Any], chunk_size: int, overlap: int) -> l
                 "document_id": document["document_id"],
                 "source_file": document["source_file"],
                 "source_type": document["source_type"],
-                "title": document["title"],
+                "title": section,
+                "section": section,
                 "chunk_index": chunk_index,
                 "language": document["metadata"].get("language"),
                 "domain": document["metadata"].get("domain"),
