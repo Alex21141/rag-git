@@ -179,7 +179,7 @@
 
 ```
 rag-github/
-├── README.md ← цей файл
+├── README.md ← опис проєкту
 ├── data/
 │ ├── raw/ ← початкові документи (10 .md)
 │ │ ├── 00_git_about_version_control.md
@@ -193,9 +193,9 @@ rag-github/
 │ │ ├── 08_github_about_git.md
 │ │ └── 09_gitlab_getting_started.md
 │ └── processed/ ← оброблені дані
-│ └── chunks.jsonl ← 145 чанків
+│ └── chunks.jsonl ← 145 чанків (text + overlap_context + embedding_text)
 └── scripts/
- ├── download_sources.py ← download + clean HTML → data/raw/*.md
- ├── prepare_knowledge_base.py ← normalize + chunk + save
- └── validate_chunks.py ← JSONL validator
+ ├── download_sources.py ← завантаження + очищення HTML → data/raw/*.md
+ ├── prepare_knowledge_base.py ← нормалізація + чанкінг + збереження JSONL
+ └── validate_chunks.py ← валідатор JSONL
 ```
