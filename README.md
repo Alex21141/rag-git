@@ -253,7 +253,7 @@ chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine 
 
 ```
 rag-github/
-├── README.md ← цей файл
+├── README.md ← опис проєкту
 ├── data/
 │ ├── raw/ ← початкові документи (10 .md)
 │ │ ├── 00_git_about_version_control.md
@@ -267,15 +267,15 @@ rag-github/
 │ │ ├── 08_github_about_git.md
 │ │ └── 09_gitlab_getting_started.md
 │ └── processed/ ← оброблені дані
-│ └── chunks.jsonl ← 145 чанків
-├── index/ ← FAISS index (gitignored, rebuild with --rebuild)
+│ └── chunks.jsonl ← 145 чанків (text + overlap_context + embedding_text)
+├── index/ ← FAISS index (не трекається git, rebuild через --rebuild)
 │ ├── faiss.index
 │ └── metadata.pkl
 ├── outputs/
-│ └── retrieval_examples.md ← HW2 test results
+│ └── retrieval_examples.md ← результати HW2 (10 запитів)
 └── scripts/
- ├── download_sources.py ← download + clean HTML → data/raw/*.md
- ├── prepare_knowledge_base.py ← normalize + chunk + save
- ├── retrieval.py ← HW2: semantic retrieval (FAISS + MiniLM)
- └── validate_chunks.py ← JSONL validator
+ ├── download_sources.py ← завантаження + очищення HTML → data/raw/*.md
+ ├── prepare_knowledge_base.py ← нормалізація + чанкінг + збереження JSONL
+ ├── retrieval.py ← HW2: семантичний пошук (FAISS + MiniLM)
+ └── validate_chunks.py ← валідатор JSONL
 ```
