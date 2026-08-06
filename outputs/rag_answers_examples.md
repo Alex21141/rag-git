@@ -4,7 +4,7 @@
 
 **Index**: FAISS IndexFlatIP (dim=384)
 
-**Chunks in KB**: 147
+**Chunks in KB**: 145
 
 **Generation**: Template-based (LLM unavailable)
 
