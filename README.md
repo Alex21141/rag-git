@@ -195,6 +195,7 @@ rag-github/
 │ └── processed/ ← оброблені дані
 │ └── chunks.jsonl ← 145 чанків
 └── scripts/
+ ├── download_sources.py ← download + clean HTML → data/raw/*.md
  ├── prepare_knowledge_base.py ← normalize + chunk + save
  └── validate_chunks.py ← JSONL validator
 ```
