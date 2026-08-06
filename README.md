@@ -7,10 +7,10 @@
 | **Джерела** | 10 документів (Git, GitHub, GitLab) |
 | **Chunking** | Sliding window, chunk_size=850, overlap=150 |
 | **Чанків** | 149 |
-| **Текст всього** | 117,754 chars |
+| **Текст всього** | 117,732 chars |
 | **Overlap coverage** | 99.3% (138/139 пар) |
 | **Odd backticks** | 0/149 |
-| **Домен** | git (119), github (18), gitlab (12) |
+| **Домен** | git (125), github (14), gitlab (10) |
 
 ### 1. Тема проєкту
 
@@ -47,7 +47,7 @@
 `branching_basic_branching_merging_chunk_001`:
 ```json
 {
- "text": "# 3.2 Git Branching - Basic Branching and Merging\n\nLet’s go through a simple example of branching and merging with a workflow that you might use in the real world. You’ll follow these steps:\n\n  1. Do some work on a website.\n\n  2. Create a branch for a new user story you’re working on.\n\n  3. Do some ...",
+ "text": "# 3.2 Git Branching - Basic Branching and Merging\\n\\nLet's go through a simple example of branching and merging with a workflow that you might use in the real world. You'll follow these steps:\\n\\n  1. Do some work on a website.\\n\\n  2. Create a branch for a new user story you're working on.\\n\\n  3. Do some ...",
  "metadata": {
   "document_id": "branching_basic_branching_merging",
   "source_file": "data/raw/03_branching_basic_branching_merging.md",
@@ -61,7 +61,7 @@
 `branching_branch_management_chunk_001`:
 ```json
 {
- "text": "# 3.3 Git Branching - Branch Management\n\nNow that you’ve created, merged, and deleted some branches, let’s look at some branch-management tools that will come in handy when you begin using branches all the time.\n\nThe `git branch` command does more than just create and delete branches. If you run it ...",
+ "text": "# 3.3 Git Branching - Branch Management\\n\\nNow that you've created, merged, and deleted some branches, let's look at some branch-management tools that will come in handy when you begin using branches all the time.\\n\\nThe `git branch` command does more than just create and delete branches. If you run it ...",
  "metadata": {
   "document_id": "branching_branch_management",
   "source_file": "data/raw/04_branching_branch_management.md",
@@ -75,7 +75,7 @@
 `distributed_workflows_chunk_001`:
 ```json
 {
- "text": "# 5.1 Distributed Git - Distributed Workflows\n\nNow that you have a remote Git repository set up as a focal point for all the developers to share their code, and you’re familiar with basic Git commands in a local workflow, you’ll look at how to utilize some of the distributed workflows that Git affor...",
+ "text": "# 5.1 Distributed Git - Distributed Workflows\\n\\nNow that you have a remote Git repository set up as a focal point for all the developers to share their code, and you're familiar with basic Git commands in a local workflow, you'll look at how to utilize some of the distributed workflows that Git affor...",
  "metadata": {
   "document_id": "distributed_workflows",
   "source_file": "data/raw/05_distributed_workflows.md",
@@ -109,6 +109,7 @@
 - **word-boundary cuts**: розриви на кордонах слів (не посеред слів)
 - **sentence-aware**: пріоритет розриву на кордонах речень (`.` `!` `?`)
 - **backtick fix**: якщо чанк має непарну кількість inline backticks, шукати закриваючий backtick у наступних 200 символах
+- **partial word fix**: якщо чанк починається з фрагмента слова (напр. `D continue`), фрагмент видаляється, перша літера капіталізується
 
 ### 5. Статистика
 
@@ -116,7 +117,7 @@
 |---------|---------|
 | Документів | 10 |
 | Чанків | 149 |
-| Текст всього | 117,754 chars |
+| Текст всього | 117,732 chars |
 | Середня довжина | 790 chars |
 | Мінімальна довжина | 392 chars |
 | Максимальна довжина | 875 chars |
@@ -144,12 +145,12 @@
 - ✅ Small chunk merge — чанки <300 chars об'єднуються з наступним
 - ✅ Chunk index renumbering — послідовна нумерація після merge
 - ✅ Capitalize first letter — чанки починаються з великої літери
+- ✅ Partial words fix — 11 фрагментів слів виправлено (напр. `D continue` → `Continue working`)
 - ✅ `---|---` cleanup — видалення артефактів таблиць/блоків
 - ✅ Caution|/Warning| cleanup — видалення маркерів блоків попереджень
 
 **Відомі обмеження:**
 - ⚠️ Overlap 99.3% — 1 пара чанків без повного перекриття (138/139) — через cross-section transition
-- ⚠️ 32 partial words — overlap розрізає слова на кордонах секцій (напр. `D continue`, `Hat conflict`)
 - ⚠️ `document_type` у метаданих — статичний (DOMAIN_MAP), не аналізується реальний контент
 
 ### 8. Структура проєкту
