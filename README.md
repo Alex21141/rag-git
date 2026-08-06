@@ -140,9 +140,16 @@ rag-github/
 ├── README.md ← цей файл
 ├── data/
 │   ├── raw/ ← початкові документи (10 .md)
+│   │   ├── 00_git_about_version_control.md
+│   │   ├── 01_git_basics_getting_repository.md
+│   │   ├── 02_git_basics_recording_changes.md
 │   │   ├── 03_branching_basic_branching_merging.md
 │   │   ├── 04_branching_branch_management.md
-│   │   └── 05_distributed_workflows.md
+│   │   ├── 05_distributed_workflows.md
+│   │   ├── 06_git_tools_rebasing.md
+│   │   ├── 07_git_tools_stashing_cleaning.md
+│   │   ├── 08_github_about_git.md
+│   │   └── 09_gitlab_getting_started.md
 │   └── processed/
 │       └── chunks.jsonl ← 149 чанків
 ├── index/
