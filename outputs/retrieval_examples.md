@@ -249,17 +249,17 @@ Top-1: github_about_git_chunk_010 | score: 0.70
   Text: those changes in their local environment. * `git push` updates the remote repository with any commits made locally to a branch. For more information, see the full reference guide to Git commands. ###
   Source: data/raw/08_github_about_git.md
 
-Top-2: distributed_workflows_chunk_006 | score: 0.66
+Top-2: github_about_git_chunk_012 | score: 0.66
+  Text: ### Example: contribute to an existing branch on GitHub This example assumes that you already have a project called `repo` on the machine and that a new branch has been pushed to GitHub since the last
+  Source: data/raw/08_github_about_git.md
+
+Top-3: distributed_workflows_chunk_006 | score: 0.66
   Text: to their own public repository and read access to everyone else’s. This scenario often includes a canonical repository that represents the “official” project. To contribute to that project, you create
   Source: data/raw/05_distributed_workflows.md
 
-Top-3: gitlab_getting_started_chunk_006 | score: 0.65
+Top-4: gitlab_getting_started_chunk_006 | score: 0.65
   Text: repository: Create a local copy of the repository by cloning it to your machine. You can work on the project without affecting the original repository. 1. Create a new branch: Before you make any chan
   Source: data/raw/09_gitlab_getting_started.md
-
-Top-4: github_about_git_chunk_013 | score: 0.64
-  Text: into the `repo` directory cd repo # update all remote tracking branches, and the currently checked out branch git pull # change into the existing branch called `feature-a` git checkout feature-a # mak
-  Source: data/raw/08_github_about_git.md
 
 Top-5: distributed_workflows_chunk_007 | score: 0.62
   Text: that repository and makes changes. 3. The contributor pushes to their own public copy. 4. The contributor sends the maintainer an email asking them to pull changes. 5. The maintainer adds the contribu
