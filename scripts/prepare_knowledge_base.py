@@ -113,14 +113,15 @@ def _backtick_balanced(text: str) -> bool:
     return inline_count % 2 == 0
 
 
-def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int):
+def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
     """Fix unclosed backticks via forward search only.
 
-    Returns (fixed_text, new_end) — new_end tracks actual boundary
-    so next chunk's overlap comes from the correct position.
+    Returns only the fixed text — does NOT modify chunk boundaries.
+    Boundary tracking (prev_end) must stay at original `end` to preserve
+    overlap chain. Step 2.8 handles remaining odd backticks.
     """
     if _backtick_balanced(chunk_text):
-        return chunk_text, end
+        return chunk_text
 
     if end < len(full_text):
         search_end = min(end + 1000, len(full_text))
@@ -129,9 +130,9 @@ def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int
             if full_text[pos:pos + 2] == '# ' and _backtick_balanced(extended):
                 break
             if _backtick_balanced(extended):
-                return extended.strip(), pos + 1
+                return extended.strip()
 
-    return chunk_text, end
+    return chunk_text
 
 
 def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
@@ -198,10 +199,10 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
             actual_overlap_len = 0
 
         # Fix unclosed inline backticks AFTER overlap prepending
-        chunk_text, new_end = fix_unclosed_backticks(chunk_text, text, start, end)
+        chunk_text = fix_unclosed_backticks(chunk_text, text, start, end)
 
-        # Update prev_end with actual boundary (may have been extended)
-        prev_end = new_end
+        # Update prev_end to original boundary (NOT extended) to preserve overlap chain
+        prev_end = end
 
         # Resolve section
         section = None
@@ -210,10 +211,10 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Filter by min_chunk
         if len(chunk_text) >= min_chunk:
-            chunks.append((start, new_end, chunk_text, section, actual_overlap_len))
+            chunks.append((start, end, chunk_text, section, actual_overlap_len))
 
         # Advance start: sliding window with overlap
-        new_start = new_end - overlap
+        new_start = end - overlap
         # Ensure forward progress — never go backward or stay still
         if new_start <= start:
             start = end  # fallback: no overlap if sentence break is too close
