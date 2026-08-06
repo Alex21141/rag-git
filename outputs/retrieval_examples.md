@@ -11,8 +11,8 @@
 
 Query: How do I clone a Git repository?
 
-Top-1: git_basics_getting_repository_chunk_006 | score: 0.69
-  Text: E — see Getting Git on a Server for more details).  You clone a repository with `git clone <url>`. For example, if you want to clone the Git linkable library called `libgit2`, you can do so like this:
+Top-1: git_basics_getting_repository_chunk_006 | score: 0.70
+  Text: See Getting Git on a Server for more details).  You clone a repository with `git clone <url>`. For example, if you want to clone the Git linkable library called `libgit2`, you can do so like this:
   Source: data/raw/01_git_basics_getting_repository.md
 
 Top-2: git_basics_getting_repository_chunk_007 | score: 0.69
@@ -38,7 +38,7 @@ Comment: Relevant — Top-1 and Top-2 correctly point to git clone documentation
 Query: What is a Git branch and how do I create one?
 
 Top-1: github_about_git_chunk_004 | score: 0.62
-  Text: Of files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organized into multiple lines
+  Text: Files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organized into multiple lines of
   Source: data/raw/08_github_about_git.md
 
 Top-2: gitlab_getting_started_chunk_001 | score: 0.61
@@ -75,13 +75,13 @@ Top-3: branching_basic_branching_merging_chunk_017 | score: 0.70
   Text: To conclude merge)      Changes to be committed:          modified:   index.html  If you’re happy with that, and you verify that everything that had conflicts has been staged, you can type `git commit
   Source: data/raw/03_branching_basic_branching_merging.md
 
-Top-4: branching_basic_branching_merging_chunk_010 | score: 0.66
-  Text: Ed from some older point. Because the commit on the branch you’re on isn’t a direct ancestor of the branch you’re merging in, Git has to do some work. In this case, Git does a simple three-way merge,
-  Source: data/raw/03_branching_basic_branching_merging.md
-
-Top-5: branching_basic_branching_merging_chunk_014 | score: 0.65
+Top-4: branching_basic_branching_merging_chunk_014 | score: 0.65
   Text: Stance, you might resolve this conflict by replacing the entire block with this:      <div id="footer">     please contact us at email.support@github.com     </div>  This resolution has a little of ea
   Source: data/raw/03_branching_basic_branching_merging.md
+
+Top-5: gitlab_getting_started_chunk_005 | score: 0.65
+  Text: Ify the same lines of code in both branches, GitLab flags these as merge conflicts. These must be resolved manually by reviewing and editing the code.  ### Delete a branch  After a successful merge, y
+  Source: data/raw/09_gitlab_getting_started.md
 
 Comment: Relevant — Top-1 correctly returns the merge conflict resolution section. Score 0.74 confirms strong semantic match.
 
@@ -98,7 +98,7 @@ Top-2: git_basics_recording_changes_chunk_007 | score: 0.58
   Source: data/raw/02_git_basics_recording_changes.md
 
 Top-3: github_about_git_chunk_004 | score: 0.57
-  Text: Of files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organized into multiple lines
+  Text: Files and folders associated with a project, along with each file's revision history. The file history appears as snapshots in time called commits. The commits can be organized into multiple lines of
   Source: data/raw/08_github_about_git.md
 
 Top-4: git_basics_recording_changes_chunk_009 | score: 0.56
@@ -127,12 +127,12 @@ Top-3: git_tools_stashing_cleaning_chunk_006 | score: 0.55
   Text: (Use "git checkout -- <file>..." to discard changes in working directory)      	modified:   index.html     	modified:   lib/simplegit.rb      no changes added to commit (use "git add" and/or "git comm
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
-Top-4: git_tools_stashing_cleaning_chunk_004 | score: 0.54
-  Text: Ex state \       "WIP on master: 049d078 Create index file"     HEAD is now at 049d078 Create index file     (To restore them type "git stash apply")  You can now see that your working directory is cl
+Top-4: git_tools_stashing_cleaning_chunk_005 | score: 0.54
+  Text: Ter: 21d80a5 Add number to log  In this case, two stashes were saved previously, so you have access to three different stashed works. You can reapply the one you just stashed by using the command show
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
-Top-5: git_tools_stashing_cleaning_chunk_005 | score: 0.54
-  Text: Ter: 21d80a5 Add number to log  In this case, two stashes were saved previously, so you have access to three different stashed works. You can reapply the one you just stashed by using the command show
+Top-5: git_tools_stashing_cleaning_chunk_004 | score: 0.53
+  Text: State \       "WIP on master: 049d078 Create index file"     HEAD is now at 049d078 Create index file     (To restore them type "git stash apply")  You can now see that your working directory is clean
   Source: data/raw/07_git_tools_stashing_cleaning.md
 
 Comment: Relevant — Top-1 correctly returns the stashing section. Score 0.62 is moderate but the result is accurate.
@@ -194,7 +194,7 @@ Comment: Partially relevant — Top-1 returns GitHub About Git intro instead of 
 Query: How to set up SSH keys for GitLab?
 
 Top-1: gitlab_getting_started_chunk_010 | score: 0.73
-  Text: Th remote repositories, you should use SSH for secure communication.  GitLab uses the SSH protocol to securely communicate with Git. When you use SSH keys to authenticate to the GitLab remote server,
+  Text: Remote repositories, you should use SSH for secure communication.  GitLab uses the SSH protocol to securely communicate with Git. When you use SSH keys to authenticate to the GitLab remote server, you
   Source: data/raw/09_gitlab_getting_started.md
 
 Top-2: gitlab_getting_started_chunk_009 | score: 0.61
@@ -219,12 +219,12 @@ Comment: Relevant — Top-1 correctly returns GitLab Getting Started covering SS
 
 Query: What is rebasing and when should I use it?
 
-Top-1: git_tools_rebasing_chunk_004 | score: 0.58
-  Text: Of the integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it
+Top-1: git_tools_rebasing_chunk_018 | score: 0.56
+  Text: The question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every team
   Source: data/raw/06_git_tools_rebasing.md
 
-Top-2: git_tools_rebasing_chunk_018 | score: 0.56
-  Text: The question of whether merging or rebasing is better: hopefully you’ll see that it’s not that simple. Git is a powerful tool, and allows you to do many things to and with your history, but every team
+Top-2: git_tools_rebasing_chunk_004 | score: 0.56
+  Text: The integration, but rebasing makes for a cleaner history. If you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it ori
   Source: data/raw/06_git_tools_rebasing.md
 
 Top-3: git_tools_rebasing_chunk_010 | score: 0.54
