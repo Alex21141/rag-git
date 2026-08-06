@@ -333,57 +333,56 @@ def prepare_knowledge_base():
     print("Step 2.7: Fixing mid-word fragments")
     print("=" * 60)
     fragment_fixes = 0
+    COMMON_START_WORDS = {
+        # 1-2 letter common English words
+        "a", "an", "in", "on", "at", "to", "as", "by", "or", "if", "no", "so", "up",
+        "it", "is", "be", "do", "go", "we", "he", "my", "us", "am", "i",
+        # 3 letter common English words
+        "the", "but", "for", "not", "all", "can", "had", "how", "new", "now",
+        "old", "see", "way", "who", "did", "let", "say", "she", "too", "use",
+        "and", "any", "get", "our", "out", "own", "has", "her", "him", "his",
+        "are", "was",
+    }
     for i, c in enumerate(all_chunks):
         text = c["text"]
         if not text:
             continue
 
-        # Detect fragment patterns at chunk start:
-        # 1. Single letter + separator: "D continue" -> "Continue"
-        #    (fragment of "anD continue")
-        # 2. Apostrophe fragment: "'S history" -> "History"
-        #    (fragment of "i'tS" = "its" split at 't)
-        # 3. Short prefix + em-dash: "E — see" -> "See"
-        #    (fragment of "To — see" split at 'T')
-        # 4. Two-letter fragment: "Ed from" -> "From"
-        #    (fragment of "LoaDeD from" split at 'Lo')
-
-        # Check for apostrophe/quote fragment: 'S history -> History
+        # Pattern 1: apostrophe/quote fragment: ''S history -> History
         m = re.match(r"^[''\u2019\u2018]+[A-Za-z]+([\s\-\—._:;,]+)([a-z])", text)
         if m:
             rest = text[m.end():]
-            # Use the matched lowercase letter as the real word start
             c["text"] = m.group(2).upper() + rest
             fragment_fixes += 1
-            if fragment_fixes <= 5:
+            if fragment_fixes <= 3:
                 print(f"  Fixed (apos) {c['chunk_id']}: '{text[:25]}' -> '{c['text'][:25]}'")
             continue
 
-        # Check for single uppercase letter + separator + lowercase
-        # e.g. "D continue", "O an empty", "Y means"
-        m = re.match(r"^([A-Z])([\s\-\—._:;,]+)([a-z])", text)
+        # Pattern 2: 1-3 letter token that is NOT a common English word
+        # These are mid-word fragments:
+        #   "Er\nBecause" → "Because" (from "Th**er**")
+        #   "Eir topic" → "Topic" (from "th**eir**")
+        #   "Ing generated" → "Generated" (from "Includ**ing**")
+        #   "Nce it" → "It" (from "si**nce**")
+        #   "D continue" → "Continue" (from "anD")
+        #   "Ed from" → "From" (from "LoaDeD")
+        #   "O an empty" → "An" (from "intO")
+        #   "Y means" → "Means" (from "bY")
+        # Legitimate words (The, And, But, Own, It, etc.) are skipped.
+        m = re.match(r"^([A-Za-z]{1,3})(\b)", text)
         if m:
-            rest = text[m.end():]
-            c["text"] = m.group(3).upper() + rest
-            fragment_fixes += 1
-            if fragment_fixes <= 5:
-                print(f"  Fixed (single) {c['chunk_id']}: '{text[:25]}' -> '{c['text'][:25]}'")
-            continue
-
-        # Check for two-letter fragment: "Ed from", "It's" (legitimate — skip)
-        # Only fix if first word is 2 letters AND second word starts lowercase
-        # AND it's likely a fragment (not a real 2-letter word like "It", "In", "On")
-        m = re.match(r"^([A-Z][a-z])([\s\-\—._:;,]+)([a-z])", text)
-        if m:
-            first_word = m.group(1)  # e.g. "Ed", "It", "On"
-            # Skip common 2-letter words that are legitimate
-            legit_2letter = {"It", "In", "On", "At", "To", "As", "An", "Be", "Do", "Go", "If", "No", "Or", "So", "Up", "We", "He", "By", "Me", "My", "Us", "Am", "Is", "Are", "Was", "Were", "Has", "Had"}
-            if first_word not in legit_2letter:
+            first_word = m.group(1)
+            if first_word.lower() not in COMMON_START_WORDS:
                 rest = text[m.end():]
-                c["text"] = m.group(3).upper() + rest
-                fragment_fixes += 1
-                if fragment_fixes <= 10:
-                    print(f"  Fixed (2-char) {c['chunk_id']}: '{text[:25]}' -> '{c['text'][:25]}'")
+                # Strip leading non-alpha chars (punctuation, spaces, newlines)
+                rest = re.sub(r'^[^a-zA-Z]*', '', rest)
+                if rest and rest[0].isalpha():
+                    old_start = text[:30]
+                    c["text"] = rest[0].upper() + rest[1:]
+                    fragment_fixes += 1
+                    if fragment_fixes <= 10:
+                        print(f"  Fixed {c['chunk_id']}: '{old_start}' -> '{c['text'][:30]}'")
+                    continue
 
     print(f"  Total fragments fixed: {fragment_fixes}")
 
