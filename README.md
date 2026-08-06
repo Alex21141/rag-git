@@ -240,7 +240,7 @@ chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine 
 - ⚠️ Domain dilution — GitHub/GitLab чанки розмивають семантичний простір Git-only концепцій
 - ⚠️ BM25 не використовується — тільки semantic search. Hybrid (BM25 + semantic) покращує precision на keyword-heavy запити
 
-### 5. Виводи
+### 5. Висновки
 
 Семантичний retrieval працює для специфічних Git-запитів (clone, stash, push, merge conflicts, SSH keys), але має проблеми з:
 1. Generic концепціями (branch, commit history, rebasing) — повертає intro/general чанки
