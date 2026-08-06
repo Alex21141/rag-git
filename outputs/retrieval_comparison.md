@@ -1,4 +1,4 @@
-# HW3: Improved Retrieval — Порівняльний аналіз
+# HW3: Покращення retrieval pipeline — Порівняльний аналіз
 
 **Baseline (HW2)**: Semantic-only (FAISS cosine similarity, all-MiniLM-L6-v2)
 **Improved (HW3)**: Hybrid BM25 + Semantic (α=0.5) + Metadata filtering
