@@ -345,7 +345,8 @@ rag-github/
 │ ├── retrieval_examples.md ← HW2 test results
 │ └── retrieval_comparison.md ← HW3 comparison
 └── scripts/
- ├── prepare_knowledge_base.py
+ ├── download_sources.py ← download + clean HTML → data/raw/*.md
+ ├── prepare_knowledge_base.py ← normalize + chunk + save
  ├── retrieval.py ← HW2: semantic retrieval
  ├── retrieval_improved.py ← HW3: hybrid BM25 + semantic
  └── validate_chunks.py
