@@ -115,22 +115,64 @@
 
 ### 6. Приклади чанків
 
-- `git_about_version_control_chunk_001` (658 chars, domain=git, section=1.1 Getting Started - About Version Control)
-- `branching_basic_branching_merging_chunk_001` (658 chars, domain=git, section=3.2 Git Branching - Basic Branching and Merging)
-- `branching_branch_management_chunk_001` (658 chars, domain=git, section=3.3 Git Branching - Branch Management)
-- `distributed_workflows_chunk_001` (652 chars, domain=git, section=5.1 Distributed Git - Distributed Workflows)
+**Перший чанк** (без overlap_context — початок документу):
+`git_about_version_control_chunk_001` — 658 chars, domain=git, section=1.1 Getting Started - About Version Control
 
-### 7. Виправлення та покращення
+```json
+{
+ "chunk_id": "git_about_version_control_chunk_001",
+ "text": "# 1.1 Getting Started - About Version Control\\n\\nThis chapter will be about getting started with Git...",
+ "overlap_context": "",
+ "embedding_text": "# 1.1 Getting Started - About Version Control\\n\\nThis chapter will be about getting started with Git...",
+ "metadata": {
+  "document_id": "git_about_version_control",
+  "source_file": "data/raw/00_git_about_version_control.md",
+  "section": "1.1 Getting Started - About Version Control",
+  "chunk_index": 1,
+  "domain": "git",
+  "overlap_len": 0
+ }
+}
+```
 
-- ✅ **Clean rewrite** — скрипт переписано з нуля (two-pass sentence-aware chunking)
-- ✅ **0 partial words** — чанки починаються з повних слів (не `ing`, `ogrammers`, `ributed`)
+**Внутрішній чанк** (з overlap_context — 150 chars перекриття з попереднім):
+`distributed_workflows_chunk_007` — 657 chars, domain=git, section=5.1 Distributed Git - Distributed Workflows
+
+```json
+{
+ "chunk_id": "distributed_workflows_chunk_007",
+ "text": "that repository and makes changes.\\n3. The contributor pushes to their own public copy.\\n4. The contributor sends the maintainer an email asking them to pull changes.\\n5. The maintainer adds the contributor's repository as a remote and merges locally.\\n6. The maintainer pushes merged changes to the main repository.\\nThis is a very common workflow with hub-based tools like GitHub or GitLab...",
+ "overlap_context": "The process works as follows (see Integration-manager workflow):\\n1. The project maintainer pushes to their public repository.\\n2. A contributor clones ",
+ "embedding_text": "The process works as follows (see Integration-manager workflow):\\n1. The project maintainer pushes to their public repository.\\n2. A contributor clones that repository and makes changes...\\n[657 chars text + 150 chars overlap]",
+ "metadata": {
+  "document_id": "distributed_workflows",
+  "source_file": "data/raw/05_distributed_workflows.md",
+  "section": "5.1 Distributed Git - Distributed Workflows",
+  "chunk_index": 7,
+  "domain": "git",
+  "overlap_len": 150
+ }
+}
+```
+
+| Поле | Опис |
+|------|------|
+| `text` | Чистий контент — повні слова, без overlap-префікса |
+| `overlap_context` | Текст перекриття з попереднім чанком (0 для першого чанка в документі, ~150 для решти) |
+| `embedding_text` | `overlap_context + text` — для semantic continuity (якщо overlap_context розрізає code block, використовується тільки `text`) |
+
+### 7. Стратегія обробки
+
+- ✅ **Two-pass sentence-aware chunking** — Pass 1 знаходить split points на кордонах речень/слів, Pass 2 екстрагує чанки без overlap-префікса
+- ✅ **Code block guard** — fenced code blocks (`...`) виявляються до split — split points всередині них пропускаються
+- ✅ **0 partial words** — `text` починається з повних слів (не `ing`, `ogrammers`, `ributed`)
 - ✅ **100% overlap chain** — `prev_chunk.text[-ol:] == curr_chunk.overlap_context` (135/135)
-- ✅ **Separate overlap_context** — `text` містить тільки чистий контент, overlap зберігається окремо
-- ✅ **embedding_text** — `overlap_context + text` для семантичної continuity
+- ✅ **3-полю архітектура** — `text` (чистий контент) + `overlap_context` (перекриття) + `embedding_text` (semantic continuity)
+- ✅ **0 split code blocks** — embedding_text не містить розрізаних code blocks (odd fences → overlap_context ігнорується для embedding)
 - ✅ **section field** — кожен чанк має `section` у metadata
 
 **Відомі обмеження:**
-- ⚠️ 5 odd backticks у embedding_text (в overlap_context-зонах) — не впливають на retrieval
+- ⚠️ 3 odd backticks у embedding_text (в overlap_context-зонах) — не впливають на retrieval
 - ⚠️ `document_type` у метаданих — статичний (DOMAIN_MAP), не аналізується реальний контент
 
 ### 8. Структура проєкту
