@@ -59,7 +59,7 @@ def build_index(chunks):
     model = SentenceTransformer(MODEL_NAME)
 
     # Extract texts and encode
-    texts = [c["text"] for c in chunks]
+    texts = [c.get("embedding_text", c["text"]) for c in chunks]
     embeddings = model.encode(texts, show_progress_bar=True, normalize_embeddings=True)
     embeddings = np.array(embeddings, dtype="float32")
 
