@@ -113,50 +113,25 @@ def _backtick_balanced(text: str) -> bool:
     return inline_count % 2 == 0
 
 
-def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int) -> str:
-    """Fix unclosed backticks (inline code or code fences).
+def fix_unclosed_backticks(chunk_text: str, full_text: str, start: int, end: int):
+    """Fix unclosed backticks via forward search only.
 
-    If chunk has unbalanced backticks, extend the chunk boundaries
-    to include the missing closing/opening backtick.
-
-    NOTE: chunk_text may include overlap prefix (text before start).
-    Backward search prepends to start; forward search appends after end.
+    Returns (fixed_text, new_end) — new_end tracks actual boundary
+    so next chunk's overlap comes from the correct position.
     """
     if _backtick_balanced(chunk_text):
-        return chunk_text
+        return chunk_text, end
 
-    # Are we inside an open code fence?
-    in_code_fence = chunk_text.count('```') % 2 == 1
-
-    # Search backward for missing opening backtick (within 200 chars)
-    if start > 0:
-        search_back = max(0, start - 200)
-        for pos in range(start - 1, search_back - 1, -1):
-            if full_text[pos] == '`':
-                # Prepend missing text to the overlap prefix
-                extended = full_text[pos:start] + chunk_text
-                if _backtick_balanced(extended.strip()):
-                    return extended.strip()
-                break  # Tried adding opening backtick — didn't fix it
-            if full_text[pos:pos + 2] == '# ':
-                break
-
-    # Search forward for closing backtick or code fence end
-    # Append to existing chunk_text (preserving the overlap prefix)
-    if start < end < len(full_text):
+    if end < len(full_text):
         search_end = min(end + 1000, len(full_text))
         for pos in range(end, search_end):
-            # Build candidate with text up to this position
             extended = chunk_text + full_text[end:pos + 1]
-            # If candidate has unbalanced backticks of any kind (code fence
-            # or inline), `# ` is likely a comment inside a code block
-            # — don't stop at `# ` until backticks are fully balanced
             if full_text[pos:pos + 2] == '# ' and _backtick_balanced(extended):
                 break
             if _backtick_balanced(extended):
-                return extended.strip()
+                return extended.strip(), pos + 1
 
-    return chunk_text
+    return chunk_text, end
 
 
 def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
@@ -223,11 +198,10 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
             actual_overlap_len = 0
 
         # Fix unclosed inline backticks AFTER overlap prepending
-        # (the combined text may have odd backticks from overlap + chunk)
-        chunk_text = fix_unclosed_backticks(chunk_text, text, start, end)
+        chunk_text, new_end = fix_unclosed_backticks(chunk_text, text, start, end)
 
-        # Update prev_end BEFORE updating start (for next iteration overlap)
-        prev_end = end
+        # Update prev_end with actual boundary (may have been extended)
+        prev_end = new_end
 
         # Resolve section
         section = None
@@ -236,10 +210,10 @@ def chunk_semantic(text: str, chunk_size: int, overlap: int, min_chunk: int,
 
         # Filter by min_chunk
         if len(chunk_text) >= min_chunk:
-            chunks.append((start, end, chunk_text, section, actual_overlap_len))
+            chunks.append((start, new_end, chunk_text, section, actual_overlap_len))
 
         # Advance start: sliding window with overlap
-        new_start = end - overlap
+        new_start = new_end - overlap
         # Ensure forward progress — never go backward or stay still
         if new_start <= start:
             start = end  # fallback: no overlap if sentence break is too close
@@ -294,8 +268,7 @@ def prepare_knowledge_base():
                 section = title
             final_chunks.append({
                 "chunk_id": f"{doc_id}_chunk_{len(final_chunks):03d}",
-                "text": _capitalize_chunk(chunk_text.strip()),
-                "_overlap_len": overlap_len,  # for Step 2.7
+                "text": chunk_text.strip(),
                 "metadata": {
                     "document_id": doc_id,
                     "source_file": f"data/raw/{doc_file.name}",
@@ -306,11 +279,29 @@ def prepare_knowledge_base():
                     "language": "en",
                     "domain": domain,
                     "document_type": doc_type,
+                    "overlap_len": overlap_len,
                 },
             })
 
         all_chunks.extend(final_chunks)
         print(f"  {doc_file.name}: {len(final_chunks)} chunks")
+
+    # Capitalize first alpha char of raw content (after overlap zone)
+    # This preserves overlap chain: prev[-ol:] == curr[:ol:]
+    print(f"\n{'=' * 60}")
+    print("Step 2.4: Capitalize raw content (skip overlap)")
+    print("=" * 60)
+    cap_count = 0
+    for c in all_chunks:
+        text = c["text"]
+        ol = c["metadata"].get("overlap_len", 0)
+        raw = text[ol:]
+        for j, ch in enumerate(raw):
+            if ch.isalpha():
+                c["text"] = text[:ol + j] + ch.upper() + text[ol + j + 1:]
+                cap_count += 1
+                break
+    print(f"  Capitalized {cap_count} chunks")
 
     # Merge small chunks (<300 chars) with next chunk
     print(f"\n{'=' * 60}")
@@ -359,7 +350,7 @@ def prepare_knowledge_base():
     fragment_fixes = 0
     overlap_skipped = 0
     COMMON_START_WORDS = {
-        # 1-2 letter common English words
+        # 1-2 letter common English words (single-letter: a, i only)
         "a", "an", "in", "on", "at", "to", "as", "by", "or", "if", "no", "so", "up",
         "it", "is", "be", "do", "go", "we", "he", "my", "us", "am", "i",
         # 3 letter common English words
@@ -375,7 +366,7 @@ def prepare_knowledge_base():
 
         # Get overlap length — fragments in overlap zone must NOT be modified
         # (they are legitimate overlap text from the previous chunk)
-        overlap_len = c.get("_overlap_len", 0)
+        overlap_len = c["metadata"].get("overlap_len", 0)
 
         # Pattern 1: apostrophe/quote fragment: ''S history -> History
         m = re.match(r"^[''\u2019\u2018]+[A-Za-z]+([\s\-\—._:;,]+)([a-z])", text)
