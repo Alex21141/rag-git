@@ -37,7 +37,26 @@ chunks.jsonl → embedding_text → FAISS (семантика) + keyword overlap
 | 9 | What is rebasing and when should I use it? | 0.54 | 0.58 | +0.04 | ✅ Top-1 зберігся, score ↑ |
 | 10 | How do I push changes to a remote repository? | 0.71 | 0.70 | −0.01 | ↔️ Top-1 зберігся |
 
-### 3. Аналіз
+### 3. Фільтр за доменом
+
+`--domain gitlab` ізолює GitLab-контент — повертає тільки чанки з `metadata.domain == "gitlab"`.
+
+**Запит:** `How do I merge a branch in GitLab?`
+
+| Без фільтру (гібрид, top-5) | З `--domain gitlab` (top-4) |
+|---|---|
+| `gitlab_getting_started_chunk_004` (0.707) ✅ | `gitlab_getting_started_chunk_004` (0.707) ✅ |
+| `git_tools_rebasing_chunk_001` (0.626) ❌ git | `gitlab_getting_started_chunk_005` (0.596) ✅ gitlab |
+| `gitlab_getting_started_chunk_005` (0.596) ✅ | `gitlab_getting_started_chunk_009` (0.557) ✅ gitlab |
+| `branching_branch_management_chunk_004` (0.562) ❌ git | `gitlab_getting_started_chunk_003` (0.473) ✅ gitlab |
+| `branching_basic_branching_chunk_009` (0.562) ❌ git | — |
+
+Без фільтру: 3/5 чанків — шум з git-документації (rebasing, branching).
+З фільтром: 4/4 — тільки GitLab контент, шум відсутній.
+
+**Висновок:** Фільтр за доменом критичний для платформ-специфічних запитів — усуває конкуренцію від більш масивного git-контенту.
+
+### 4. Аналіз
 
 | Метрика | Значення |
 |---------|----------|
@@ -59,25 +78,6 @@ chunks.jsonl → embedding_text → FAISS (семантика) + keyword overlap
 - Keyword overlap компенсує слабкі сторони all-MiniLM-L6-v2 на загальних Git-концепціях
 - SEMANTIC_WEIGHT=0.7, KEYWORD_WEIGHT=0.3 — семантика зберігає контекст, keyword overlap дає точність ключових слів
 - Фільтр за доменом (`--domain`) дозволяє ізолювати GitLab-контент
-
-### 4. Фільтр за доменом
-
-`--domain gitlab` ізолює GitLab-контент — повертає тільки чанки з `metadata.domain == "gitlab"`.
-
-**Запит:** `How do I merge a branch in GitLab?`
-
-| Без фільтру (гібрид, top-5) | З `--domain gitlab` (top-4) |
-|---|---|
-| `gitlab_getting_started_chunk_004` (0.707) ✅ | `gitlab_getting_started_chunk_004` (0.707) ✅ |
-| `git_tools_rebasing_chunk_001` (0.626) ❌ git | `gitlab_getting_started_chunk_005` (0.596) ✅ gitlab |
-| `gitlab_getting_started_chunk_005` (0.596) ✅ | `gitlab_getting_started_chunk_009` (0.557) ✅ gitlab |
-| `branching_branch_management_chunk_004` (0.562) ❌ git | `gitlab_getting_started_chunk_003` (0.473) ✅ gitlab |
-| `branching_basic_branching_chunk_009` (0.562) ❌ git | — |
-
-Без фільтру: 3/5 чанків — шум з git-документації (rebasing, branching).
-З фільтром: 4/4 — тільки GitLab контент, шум відсутній.
-
-**Висновок:** Фільтр за доменом критичний для платформ-специфічних запитів — усуває конкуренцію від більш масивного git-контенту.
 
 ### 5. Відомі обмеження
 
