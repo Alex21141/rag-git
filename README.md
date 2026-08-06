@@ -1,6 +1,6 @@
 # Git tutoring assistant
 
-## Домашнє завдання №4 — RAG Answer Generation
+## Домашнє завдання №4 — Генерація відповіді поверх retrieval
 
 | Параметр | Значення |
 |---|---|
