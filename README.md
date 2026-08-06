@@ -235,19 +235,13 @@ chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine 
 
 ### 4. Відомі обмеження
 
-- ⚠️ `all-MiniLM-L6-v2` — мультимодельний (384d), не specialize для Git/tech content. Larger models (nli-mpnet-base-v2, allroberta-base-v1) дають кращу retrieval quality
-- ⚠️ Неточність на generic запити — "What is a Git branch", "How do I view commit history" повертають intro чанки замість специфічного контенту
-- ⚠️ Domain dilution — GitHub/GitLab чанки розмивають семантичний простір Git-only концепцій
-- ⚠️ BM25 не використовується — тільки semantic search. Hybrid (BM25 + semantic) покращує precision на keyword-heavy запити
+- ⚠️ `all-MiniLM-L6-v2` (384d) — не спеціалізована для tech content
+- ⚠️ BM25 не використовується — тільки semantic search
+- ⚠️ Domain filter відсутній — Git/GitHub/GitLab чанки змішані
 
 ### 5. Висновки
 
-Семантичний retrieval працює для специфічних Git-запитів (clone, stash, push, merge conflicts, SSH keys), але має проблеми з:
-1. Generic концепціями (branch, commit history, rebasing) — повертає intro/general чанки
-2. Низькими scores для partial relevant — модель має труднощі з phrasing mismatch
-3. Domain ambiguity — Git vs GitLab vs GitHub контекст не завжди розрізняється
-
-Для HW3 планується: hybrid retrieval (BM25 + semantic) + re-ranking для покращення precision.
+Семантичний retrieval працює для специфічних Git-запитів (clone, stash, push, merge conflicts, SSH keys), але має проблеми з generic концепціями (branch, commit history, rebasing). Для HW3 планується: hybrid retrieval (BM25 + semantic) + re-ranking.
 
 ### 8. Структура проєкту
 
