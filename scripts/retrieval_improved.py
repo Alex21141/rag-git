@@ -126,7 +126,7 @@ def parse_baseline():
     for query in TEST_QUERIES:
         # Pattern: "## Query N: <query text>" ... "Top-1: chunk_id | score: X.XXXX"
         # Headers use ## (not ###), with blank lines before Top-1
-        pattern = rf"## Query\s+\d+:\s+{re.escape(query)}.*?Top-1:\s+(.+?)\s*\|\s*score:\s+([0-9.]+)"
+        pattern = rf"Query:\s+{re.escape(query)}\n\nTop-1:\s+(.+?)\s*\|\s*score:\s+([0-9.]+)"
         m = re.search(pattern, content, re.DOTALL)
         if m:
             baseline[query] = {

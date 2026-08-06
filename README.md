@@ -278,16 +278,16 @@ chunks.jsonl → embedding_text → FAISS (semantic) + BM25 (keyword) → hybrid
 
 | # | Запит | HW2 Score | HW3 Score | Δ | Статус |
 |---|-------|-----------|-----------|------|--------|
-| 1 | How do I clone a Git repository? | 0.71 | 0.99 | +0.28 | 🔄 Top-1 змінився |
+| 1 | How do I clone a Git repository? | 0.68 | 0.94 | +0.26 | 🔄 Top-1 змінився |
 | 2 | What is a Git branch and how do I create one? | 0.63 | 0.95 | +0.32 | 🔄 Top-1 змінився |
-| 3 | How to resolve merge conflicts in Git? | 0.72 | 0.97 | +0.25 | 🔄 Top-1 змінився |
-| 4 | What is the difference between git add and git commit? | 0.66 | 0.88 | +0.22 | 🔄 Top-1 змінився |
-| 5 | How do I stash my changes temporarily? | 0.62 | 0.93 | +0.31 | 🔄 Top-1 змінився |
-| 6 | How do I merge a branch in GitLab? | 0.71 | 0.98 | +0.26 | ✅ Top-1 зберігся |
-| 7 | How do I view the commit history? | 0.59 | 0.91 | +0.31 | 🔄 Top-1 змінився |
+| 3 | How to resolve merge conflicts in Git? | 0.74 | 0.99 | +0.25 | 🔄 Top-1 змінився |
+| 4 | What is the difference between git add and git commit? | 0.63 | 0.93 | +0.30 | 🔄 Top-1 змінився |
+| 5 | How do I stash my changes temporarily? | 0.63 | 0.97 | +0.34 | ✅ Top-1 зберігся |
+| 6 | How do I merge a branch in GitLab? | 0.69 | 0.98 | +0.29 | 🔄 Top-1 змінився |
+| 7 | How do I view the commit history? | 0.58 | 0.88 | +0.30 | 🔄 Top-1 змінився |
 | 8 | How to set up SSH keys for GitLab? | 0.74 | 1.00 | +0.26 | ✅ Top-1 зберігся |
-| 9 | What is rebasing and when should I use it? | 0.54 | 1.00 | +0.45 | ✅ Top-1 зберігся |
-| 10 | How do I push changes to a remote repository? | 0.70 | 0.87 | +0.17 | 🔄 Top-1 змінився |
+| 9 | What is rebasing and when should I use it? | 0.54 | 1.00 | +0.46 | ✅ Top-1 зберігся |
+| 10 | How do I push changes to a remote repository? | 0.71 | 0.86 | +0.15 | 🔄 Top-1 змінився |
 
 ### 3. Аналіз
 
@@ -302,9 +302,9 @@ chunks.jsonl → embedding_text → FAISS (semantic) + BM25 (keyword) → hybrid
 
 **Де гібридний пошук працює добре:**
 - Q2 (branch creation) — semantic повернув GitLab intro (0.63), гібридний знайшов `git_basics_getting_repository_chunk_001` (0.95) — BM25 підхопив ключові слова `branch`, `create`
-- Q3 (merge conflicts) — semantic повернув GitLab chunk (0.72), гібридний знайшов `branching_basic_branching_merging_chunk_011` (0.97) — точніше, BM25 підхопив `merge`, `conflict`
-- Q4 (git add vs commit) — semantic повернув GitHub intro (0.66), гібридний знайшов `git_basics_recording_changes_chunk_039` (0.88) — BM25 підхопив `git add`, `git commit`
-- Q7 (commit history) — semantic повернув GitHub intro (0.59), гібридний знайшов `git_tools_rebasing_chunk_016` (0.91) — BM25 підхопив `commit`, `history`
+- Q3 (merge conflicts) — semantic повернув branching chunk_016 (0.74), гібридний знайшов chunk_011 (0.99) — точніше, BM25 підхопив `merge`, `conflict`
+- Q4 (git add vs commit) — semantic повернув GitHub intro (0.63), гібридний знайшов GitLab chunk (0.93) — BM25 підхопив `git add`, `git commit`
+- Q7 (commit history) — semantic повернув GitHub intro (0.58), гібридний знайшов `git_tools_rebasing_chunk_016` (0.88) — BM25 підхопив `commit`, `history`
 
 **Висновки:**
 - Гібридний пошук стабілізує retrieval — навіть якщо semantic модель «заблуджує» в generic чанках, BM25 повертає релевантні чанки з точним keyword matching

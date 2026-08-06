@@ -7,16 +7,16 @@
 
 | Query | Baseline top-1 | Improved top-1 | Що змінилось |
 |-------|---------------|----------------|-------------|
-| How do I clone a Git repository? | git_basics_getting_repository_chunk_002 (0.7085) | git_basics_getting_repository_chunk_005 (0.9854) | 🔄 Гібридний пошук обрав інший чанк: git_basics_getting_repository_chunk_002 → git_basics_getting_repository_chunk_005 |
-| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_001 (0.6338) | git_basics_getting_repository_chunk_001 (0.9512) | 🔄 Гібридний пошук обрав інший чанк: gitlab_getting_started_chunk_001 → git_basics_getting_repository_chunk_001 |
-| How to resolve merge conflicts in Git? | gitlab_getting_started_chunk_005 (0.7214) | branching_basic_branching_merging_chunk_011 (0.9741) | 🔄 Гібридний пошук обрав інший чанк: gitlab_getting_started_chunk_005 → branching_basic_branching_merging_chunk_011 |
-| What is the difference between git add and git commit? | github_about_git_chunk_008 (0.6602) | git_basics_getting_repository_chunk_004 (0.8770) | 🔄 Гібридний пошук обрав інший чанк: github_about_git_chunk_008 → git_basics_getting_repository_chunk_004 |
-| How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_001 (0.6201) | git_tools_stashing_cleaning_chunk_004 (0.9280) | 🔄 Гібридний пошук обрав інший чанк: git_tools_stashing_cleaning_chunk_001 → git_tools_stashing_cleaning_chunk_004 |
-| How do I merge a branch in GitLab? | gitlab_getting_started_chunk_004 (0.7146) | gitlab_getting_started_chunk_004 (0.9789) | ✅ Топ-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність |
-| How do I view the commit history? | github_about_git_chunk_004 (0.5934) | git_tools_rebasing_chunk_016 (0.9050) | 🔄 Гібридний пошук обрав інший чанк: github_about_git_chunk_004 → git_tools_rebasing_chunk_016 |
-| How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_010 (0.7434) | gitlab_getting_started_chunk_010 (1.0000) | ✅ Топ-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність |
-| What is rebasing and when should I use it? | git_tools_rebasing_chunk_001 (0.5448) | git_tools_rebasing_chunk_001 (0.9982) | ✅ Топ-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність |
-| How do I push changes to a remote repository? | github_about_git_chunk_010 (0.7015) | git_basics_getting_repository_chunk_001 (0.8669) | 🔄 Гібридний пошук обрав інший чанк: github_about_git_chunk_010 → git_basics_getting_repository_chunk_001 |
+| How do I clone a Git repository? | git_basics_getting_repository_chunk_006 (0.6800) | git_basics_getting_repository_chunk_005 (0.9403) | 🔄 Гібридний пошук обрав інший чанк: git_basics_getting_repository_chunk_006 → git_basics_getting_repository_chunk_005 |
+| What is a Git branch and how do I create one? | gitlab_getting_started_chunk_001 (0.6300) | git_basics_getting_repository_chunk_001 (0.9512) | 🔄 Гібридний пошук обрав інший чанк: gitlab_getting_started_chunk_001 → git_basics_getting_repository_chunk_001 |
+| How to resolve merge conflicts in Git? | branching_basic_branching_merging_chunk_016 (0.7400) | branching_basic_branching_merging_chunk_011 (0.9888) | 🔄 Гібридний пошук обрав інший чанк: branching_basic_branching_merging_chunk_016 → branching_basic_branching_merging_chunk_011 |
+| What is the difference between git add and git commit? | github_about_git_chunk_009 (0.6300) | gitlab_getting_started_chunk_002 (0.9317) | 🔄 Гібридний пошук обрав інший чанк: github_about_git_chunk_009 → gitlab_getting_started_chunk_002 |
+| How do I stash my changes temporarily? | git_tools_stashing_cleaning_chunk_002 (0.6300) | git_tools_stashing_cleaning_chunk_002 (0.9654) | ✅ Топ-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність |
+| How do I merge a branch in GitLab? | gitlab_getting_started_chunk_005 (0.6900) | gitlab_getting_started_chunk_004 (0.9772) | 🔄 Гібридний пошук обрав інший чанк: gitlab_getting_started_chunk_005 → gitlab_getting_started_chunk_004 |
+| How do I view the commit history? | github_about_git_chunk_001 (0.5800) | git_tools_rebasing_chunk_016 (0.8834) | 🔄 Гібридний пошук обрав інший чанк: github_about_git_chunk_001 → git_tools_rebasing_chunk_016 |
+| How to set up SSH keys for GitLab? | gitlab_getting_started_chunk_010 (0.7400) | gitlab_getting_started_chunk_010 (1.0000) | ✅ Топ-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність |
+| What is rebasing and when should I use it? | git_tools_rebasing_chunk_001 (0.5400) | git_tools_rebasing_chunk_001 (0.9982) | ✅ Топ-1 зберігся, гібридний бал вищий — BM25 підтверджує релевантність |
+| How do I push changes to a remote repository? | github_about_git_chunk_010 (0.7100) | git_basics_getting_repository_chunk_001 (0.8623) | 🔄 Гібридний пошук обрав інший чанк: github_about_git_chunk_010 → git_basics_getting_repository_chunk_001 |
 
 ## Висновок
 
@@ -35,53 +35,53 @@
 
 ### Запит 1: How do I clone a Git repository?
 
-**Baseline (HW2):** `git_basics_getting_repository_chunk_002` (0.7085)
-**Improved (HW3):** `git_basics_getting_repository_chunk_005` (0.9854)
+**Baseline (HW2):** `git_basics_getting_repository_chunk_006` (0.6800)
+**Improved (HW3):** `git_basics_getting_repository_chunk_005` (0.9403)
 
 ### Запит 2: What is a Git branch and how do I create one?
 
-**Baseline (HW2):** `gitlab_getting_started_chunk_001` (0.6338)
+**Baseline (HW2):** `gitlab_getting_started_chunk_001` (0.6300)
 **Improved (HW3):** `git_basics_getting_repository_chunk_001` (0.9512)
 
 ### Запит 3: How to resolve merge conflicts in Git?
 
-**Baseline (HW2):** `gitlab_getting_started_chunk_005` (0.7214)
-**Improved (HW3):** `branching_basic_branching_merging_chunk_011` (0.9741)
+**Baseline (HW2):** `branching_basic_branching_merging_chunk_016` (0.7400)
+**Improved (HW3):** `branching_basic_branching_merging_chunk_011` (0.9888)
 
 ### Запит 4: What is the difference between git add and git commit?
 
-**Baseline (HW2):** `github_about_git_chunk_008` (0.6602)
-**Improved (HW3):** `git_basics_getting_repository_chunk_004` (0.8770)
+**Baseline (HW2):** `github_about_git_chunk_009` (0.6300)
+**Improved (HW3):** `gitlab_getting_started_chunk_002` (0.9317)
 
 ### Запит 5: How do I stash my changes temporarily?
 
-**Baseline (HW2):** `git_tools_stashing_cleaning_chunk_001` (0.6201)
-**Improved (HW3):** `git_tools_stashing_cleaning_chunk_004` (0.9280)
+**Baseline (HW2):** `git_tools_stashing_cleaning_chunk_002` (0.6300)
+**Improved (HW3):** `git_tools_stashing_cleaning_chunk_002` (0.9654)
 
 ### Запит 6: How do I merge a branch in GitLab?
 
-**Baseline (HW2):** `gitlab_getting_started_chunk_004` (0.7146)
-**Improved (HW3):** `gitlab_getting_started_chunk_004` (0.9789)
+**Baseline (HW2):** `gitlab_getting_started_chunk_005` (0.6900)
+**Improved (HW3):** `gitlab_getting_started_chunk_004` (0.9772)
 
 ### Запит 7: How do I view the commit history?
 
-**Baseline (HW2):** `github_about_git_chunk_004` (0.5934)
-**Improved (HW3):** `git_tools_rebasing_chunk_016` (0.9050)
+**Baseline (HW2):** `github_about_git_chunk_001` (0.5800)
+**Improved (HW3):** `git_tools_rebasing_chunk_016` (0.8834)
 
 ### Запит 8: How to set up SSH keys for GitLab?
 
-**Baseline (HW2):** `gitlab_getting_started_chunk_010` (0.7434)
+**Baseline (HW2):** `gitlab_getting_started_chunk_010` (0.7400)
 **Improved (HW3):** `gitlab_getting_started_chunk_010` (1.0000)
 
 ### Запит 9: What is rebasing and when should I use it?
 
-**Baseline (HW2):** `git_tools_rebasing_chunk_001` (0.5448)
+**Baseline (HW2):** `git_tools_rebasing_chunk_001` (0.5400)
 **Improved (HW3):** `git_tools_rebasing_chunk_001` (0.9982)
 
 ### Запит 10: How do I push changes to a remote repository?
 
-**Baseline (HW2):** `github_about_git_chunk_010` (0.7015)
-**Improved (HW3):** `git_basics_getting_repository_chunk_001` (0.8669)
+**Baseline (HW2):** `github_about_git_chunk_010` (0.7100)
+**Improved (HW3):** `git_basics_getting_repository_chunk_001` (0.8623)
 
 
 ---
