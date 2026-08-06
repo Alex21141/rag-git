@@ -274,6 +274,7 @@ rag-github/
 ├── outputs/
 │ └── retrieval_examples.md ← HW2 test results
 └── scripts/
+ ├── download_sources.py ← download + clean HTML → data/raw/*.md
  ├── prepare_knowledge_base.py ← normalize + chunk + save
  ├── retrieval.py ← HW2: semantic retrieval (FAISS + MiniLM)
  └── validate_chunks.py ← JSONL validator
