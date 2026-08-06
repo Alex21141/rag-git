@@ -6,7 +6,7 @@
 |---|---|
 | **Embedding model** | sentence-transformers/all-MiniLM-L6-v2 |
 | **Vector storage** | FAISS IndexFlatIP (dim=384) |
-| **Chunks indexed** | 158 |
+| **Chunks indexed** | 149 |
 | **Test queries** | 10 |
 | **Top-k** | 5 |
 
