@@ -12,3 +12,4 @@ venv/
 *.swo
 .DS_Store
 thumbnails/
+index/
