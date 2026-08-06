@@ -7,7 +7,7 @@
 | **Джерела** | 10 документів (Git, GitHub, GitLab) |
 | **Chunking** | Sliding window, chunk_size=850, overlap=150 |
 | **Чанків** | 149 |
-| **Текст всього** | 117,732 chars |
+| **Текст всього** | 117,689 chars |
 | **Overlap coverage** | 99.3% (138/139 пар) |
 | **Odd backticks** | 0/149 |
 | **Домен** | git (125), github (14), gitlab (10) |
@@ -117,7 +117,7 @@
 |---------|---------|
 | Документів | 10 |
 | Чанків | 149 |
-| Текст всього | 117,732 chars |
+| Текст всього | 117,689 chars |
 | Середня довжина | 790 chars |
 | Мінімальна довжина | 392 chars |
 | Максимальна довжина | 875 chars |
@@ -145,7 +145,7 @@
 - ✅ Small chunk merge — чанки <300 chars об'єднуються з наступним
 - ✅ Chunk index renumbering — послідовна нумерація після merge
 - ✅ Capitalize first letter — чанки починаються з великої літери
-- ✅ Partial words fix — 11 фрагментів слів виправлено (напр. `D continue` → `Continue working`)
+- ✅ Partial words fix — 25 фрагментів слів виправлено (напр. `D continue` → `Continue working`, `''S history` → `History`, `Ed from` → `From`)
 - ✅ `---|---` cleanup — видалення артефактів таблиць/блоків
 - ✅ Caution|/Warning| cleanup — видалення маркерів блоків попереджень
 
