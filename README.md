@@ -121,6 +121,24 @@ Answer:
 #### Відповідь v1 (галюцинація!)
 > You can see the full commit history of a Git repository by running the `git log` command. `git log` shows the complete log with full commit hashes, authors, dates, and messages...
 
+#### Оновлений промпт (v2)
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
 #### Відповідь v2 (чесний fallback)
 > I do not have enough information in the available documents to answer this question.
 
@@ -148,6 +166,25 @@ Answer:
 
 #### Відповідь v1 (без цитування)
 > `git add` and `git commit` serve different roles in the Git workflow: `git add` stages the changes you want to include, `git commit` saves the staged changes to the repository...
+
+#### Оновлений промпт (v2)
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+4. Always cite the source chunk ID or source file used in your answer.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
 
 #### Відповідь v2 (з цитуванням)
 > **Difference between `git add` and `git commit`**: `git add` — adds (stages) the changes to the index. `git commit` — saves the staged changes to the repository... _Source: github_about_git_chunk_009, 08_github_about_git.md_
