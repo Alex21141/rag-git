@@ -393,7 +393,10 @@ def answer_question(query, index, chunks, model):
     answer, is_fallback = generate_answer_llm(query, context)
 
     if answer is None:
-        answer, is_fallback = generate_answer_template(query, results)
+        # LLM unavailable (rate limit, etc.) — use template but MARK as fallback
+        # Template responses are NOT grounded (they come from hardcoded TOPIC_MAP)
+        answer, _ = generate_answer_template(query, results)
+        is_fallback = True  # Force fallback when LLM is not used
 
     return {
         "query": query,
