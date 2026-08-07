@@ -407,10 +407,14 @@ def answer_question(query, index, chunks, model):
     answer, is_fallback = generate_answer_llm(query, context)
 
     if answer is None:
-        # LLM unavailable (rate limit, etc.) — use template but MARK as fallback
-        # Template responses are NOT grounded (they come from hardcoded TOPIC_MAP)
-        answer, _ = generate_answer_template(query, results)
-        is_fallback = True  # Force fallback when LLM is not used
+        # LLM unavailable (rate limit, etc.) — return honest fallback, NOT template
+        # Template responses come from hardcoded TOPIC_MAP, not retrieved context
+        # This violates the grounded QA principle: "answer only from retrieved context"
+        answer = (
+            "I do not have enough information in the available documents to answer this question. "
+            "The LLM service was unavailable at the time of this query."
+        )
+        is_fallback = True
 
     return {
         "query": query,
