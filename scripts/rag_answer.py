@@ -623,10 +623,10 @@ def main():
             print(f"  Answer: {preview}...")
             print()
 
-            # Wait 60s between queries to avoid free model rate limit
+            # Wait 4s between queries to stay within free model rate limit (20 RPM)
             if i < len(TEST_QUERIES):
-                print("  ⏳ Waiting 60s before next query (free model rate limit)...")
-                time.sleep(60)
+                print("  ⏳ Waiting 4s before next query...")
+                time.sleep(4)
                 print()
 
     if args.report:
