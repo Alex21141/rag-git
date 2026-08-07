@@ -13,12 +13,14 @@
 ### 1. Пайплайн
 
 ```
-chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine search → top-5 чанків
+chunks.jsonl → embeddings → vector index → top-k semantic search → retrieved chunks
 ```
 
-- `embedding_text` = `overlap_context + text` — семантична цілісність між сусідніми чанками
-- FAISS `IndexFlatIP` — внутрішнє добуток (косинусна подібність для нормалізованих векторів)
-- Запит → кодування → пошук → сортування за score → повернення top-k
+- `chunks.jsonl` — 145 чанків з `embedding_text` (overlap_context + text)
+- `embeddings` — all-MiniLM-L6-v2 (384d), нормалізовані вектори
+- `vector index` — FAISS `IndexFlatIP` (внутрішнє добуток = косинусна подібність)
+- `top-k semantic search` — запит → кодування → пошук → сортування за score → top-5
+- `retrieved chunks` — chunk_id, score, source_file, text
 
 ### 2. Результати запитів
 
