@@ -86,9 +86,6 @@ Question: {question}
 Answer:
 ```
 
-#### Відповідь v1
-> To clone a Git repository you run the `git clone` command, giving it the URL of the remote repository you want to copy. For example: `git clone https://github.com/user/project.git`
-
 #### Оновлений промпт (v2)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
@@ -107,6 +104,9 @@ Question: {question}
 
 Answer:
 ```
+
+#### Відповідь v1
+> To clone a Git repository you run the `git clone` command, giving it the URL of the remote repository you want to copy. For example: `git clone https://github.com/user/project.git`
 
 #### Відповідь v2
 > To clone a repository you run the `git clone` command with the repository's URL. This creates a new directory, initializes a `.git` directory inside it... _Source: git_basics_getting_repository_chunk_006, 01_git_basics_getting_repository.md_
@@ -133,9 +133,6 @@ Question: {question}
 Answer:
 ```
 
-#### Відповідь v1 (галюцинація!)
-> You can see the full commit history of a Git repository by running the `git log` command. `git log` shows the complete log with full commit hashes, authors, dates, and messages...
-
 #### Оновлений промпт (v2)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
@@ -153,6 +150,9 @@ Question: {question}
 
 Answer:
 ```
+
+#### Відповідь v1 (галюцинація!)
+> You can see the full commit history of a Git repository by running the `git log` command. `git log` shows the complete log with full commit hashes, authors, dates, and messages...
 
 #### Відповідь v2 (чесний fallback)
 > I do not have enough information in the available documents to answer this question.
@@ -179,9 +179,6 @@ Question: {question}
 Answer:
 ```
 
-#### Відповідь v1 (без цитування)
-> `git add` and `git commit` serve different roles in the Git workflow: `git add` stages the changes you want to include, `git commit` saves the staged changes to the repository...
-
 #### Оновлений промпт (v2)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
@@ -200,6 +197,9 @@ Question: {question}
 
 Answer:
 ```
+
+#### Відповідь v1 (без цитування)
+> `git add` and `git commit` serve different roles in the Git workflow: `git add` stages the changes you want to include, `git commit` saves the staged changes to the repository...
 
 #### Відповідь v2 (з цитуванням)
 > **Difference between `git add` and `git commit`**: `git add` — adds (stages) the changes to the index. `git commit` — saves the staged changes to the repository... _Source: github_about_git_chunk_009, 08_github_about_git.md_
