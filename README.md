@@ -35,7 +35,7 @@ user question
 
 Шаблон використовується у pipeline — містить роль, правило grounded answering, fallback та вимогу цитувати джерело.
 
-**Початковий промпт (v1)** — простий шаблон без ролі, fallback та цитування:
+**Початковий шаблон (PROMPT_V1):**
 
 ```
 Answer the question based on the context.
@@ -48,7 +48,7 @@ Question: {question}
 Answer:
 ```
 
-**Оновлений промпт (v2 / PROMPT_TEMPLATE)** — з усіма необхідними правилами:
+**Фінальний шаблон (PROMPT_TEMPLATE):**
 
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
@@ -67,6 +67,8 @@ Question: {question}
 
 Answer:
 ```
+
+> **Примітка**: Реальні заповнені промпти з контекстом retrieval показано в секції 3 нижче.
 
 ### 3. Покращення шаблону запиту
 
