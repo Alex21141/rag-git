@@ -5,15 +5,15 @@
 | Параметр | Значення |
 |---|---|
 | **Embedding model** | all-MiniLM-L6-v2 (384d) |
-| **Index** | FAISS IndexFlatIP (dim=384) |
-| **Chunks** | 145 |
-| **Top-k retrieval** | 5 chunks |
-| **Relevance threshold** | 0.3 |
+| **Індекс** | FAISS IndexFlatIP (dim=384) |
+| **Чанків** | 145 |
+| **Top-k retrieval** | 5 чанків |
+| **Поріг релевантності** | 0.3 |
 | **LLM** | OpenRouter — `nvidia/nemotron-3-nano-30b-a3b:free` (reasoning) |
-| **API key** | env var `OPENROUTER_API_KEY` (не в git) |
-| **Test queries** | 10 |
+| **API ключ** | env var `OPENROUTER_API_KEY` (не в git) |
+| **Тестові запити** | 10 |
 
-### 1. QA Pipeline
+### 1. Пайплайн
 
 Реалізовано pipeline:
 
@@ -25,15 +25,15 @@ user question
 → return grounded answer with source
 ```
 
-- **Retrieval**: FAISS cosine similarity, top-5 chunks per query
-- **Prompt building**: context = retrieved chunk texts, joined with separators
-- **Answer generation**: OpenRouter Nemotron 3 Nano 30B (reasoning enabled)
-- **Citations**: each answer cites source chunk_id + source_file
-- **Fallback**: if context lacks info → "I do not have enough information"
+- **Ретривал**: FAISS cosine similarity, top-5 чанків на запит
+- **Побудова промпту**: контекст = текст отриманих чанків, з'єднаний розділювачами
+- **Генерація відповіді**: OpenRouter Nemotron 3 Nano 30B (reasoning enabled)
+- **Цитування**: кожна відповідь цитує chunk_id + source_file
+- **Fallback**: якщо контекст не містить інформації → "I do not have enough information"
 
-### 2. Prompt template
+### 2. Шаблон запиту
 
-Prompt використовується у pipeline — містить роль, правило grounded answering, fallback та вимогу цитувати джерело:
+Шаблон використовується у pipeline — містить роль, правило grounded answering, fallback та вимогу цитувати джерело:
 
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
@@ -53,11 +53,11 @@ Question: {question}
 Answer:
 ```
 
-### 4. Prompt Improvements
+### 3. Покращення шаблону запиту
 
-**Example 1: Adding role and instructions**
+**Приклад 1: Додавання ролі та інструкцій**
 
-#### Original prompt (v1)
+#### Початковий промпт (v1)
 ```
 Answer the question based on the context.
 
@@ -69,7 +69,7 @@ Question: {question}
 Answer:
 ```
 
-#### Updated prompt (v2)
+#### Оновлений промпт (v2)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -88,15 +88,15 @@ Question: {question}
 Answer:
 ```
 
-**Problem**: Без ролі модель давала загальні відповіді з власних знань, а не з контексту.
+**Проблема**: Без ролі модель давала загальні відповіді з власних знань, а не з контексту.
 
-**Result**: Додавання ролі та інструкції значно зменшило галюцинації.
+**Результат**: Додавання ролі та інструкції значно зменшило галюцинації.
 
 ---
 
-**Example 2: Adding fallback rule**
+**Приклад 2: Додавання правила fallback**
 
-#### Original prompt (v1)
+#### Початковий промпт (v1)
 ```
 Answer the question based on the context.
 
@@ -108,7 +108,7 @@ Question: {question}
 Answer:
 ```
 
-#### Updated prompt (v2)
+#### Оновлений промпт (v2)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -126,15 +126,15 @@ Question: {question}
 Answer:
 ```
 
-**Problem**: Для запиту "How do I view the commit history?" модель намагалася вгадати відповідь, бо тема погано покрита в базі. Це призводило до вигаданих відповідей.
+**Проблема**: Для запиту "How do I view the commit history?" модель намагалася вгадати відповідь, бо тема погано покрита в базі. Це призводило до вигаданих відповідей.
 
-**Result**: Чітке правило fallback дозволяє моделі чесно визнати відсутність інформації.
+**Результат**: Чітке правило fallback дозволяє моделі чесно визнати відсутність інформації.
 
 ---
 
-**Example 3: Mandatory source citations**
+**Приклад 3: Обов'язкове цитування джерел**
 
-#### Original prompt (v1)
+#### Початковий промпт (v1)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -152,7 +152,7 @@ Question: {question}
 Answer:
 ```
 
-#### Updated prompt (v2)
+#### Оновлений промпт (v2)
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -171,11 +171,11 @@ Question: {question}
 Answer:
 ```
 
-**Problem**: Відповіді не містили посилань на джерела, що ускладнювало перевірку коректності.
+**Проблема**: Відповіді не містили посилань на джерела, що ускладнювало перевірку коректності.
 
-**Result**: Вимога цитувати chunk_id і source_file робить відповіді перевірними.
+**Результат**: Вимога цитувати chunk_id і source_file робить відповіді перевірними.
 
-### 5. Результати запитів
+### 4. Результати запитів
 
 | # | Запит | Top-1 score | Chunk | Результат |
 |---|-------|-------------|-------|-----------|
@@ -190,7 +190,7 @@ Answer:
 | 9 | What is rebasing and when should I use it? | 0.54 | git_tools_rebasing_chunk_001 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.71 | github_about_git_chunk_010 | ✅ Grounded |
 
-### 4. Аналіз
+### 5. Аналіз
 
 | Метрика | Значення |
 |---------|----------|
@@ -215,14 +215,14 @@ Answer:
 - Q2 (branch creation) — контекст не містить команди `git branch`/`git checkout -b`
 - Q7 (commit history) — низький score (0.58), повернуто fallback
 
-### 5. Відомі обмеження
+### 6. Відомі обмеження
 
-- ⚠️ Semantic retrieval bottleneck — низькі scores (Q7=0.58, Q9=0.54) дають нерелевантні чанки
-- ⚠️ No hybrid search — чистий semantic search (без BM25) гірший на generic запити
-- ⚠️ No query expansion — запитується точний текст, без додавання синонімів
-- ⚠️ Free model limits — `nvidia/nemotron-3-nano-30b-a3b:free` має rate-limit (20 RPM, 1000 RPD). Застосовано cooldown 20s та retry-логіку
+- ⚠️ **Semantic retrieval bottleneck** — низькі scores (Q7=0.58, Q9=0.54) дають нерелевантні чанки
+- ⚠️ **No hybrid search** — чистий semantic search (без BM25) гірший на generic запити
+- ⚠️ **No query expansion** — запитується точний текст, без додавання синонімів
+- ⚠️ **Free model limits** — `nvidia/nemotron-3-nano-30b-a3b:free` має rate-limit (20 RPM, 1000 RPD). Застосовано cooldown 20s та retry-логіку
 
-### 6. Висновки
+### 7. Висновки
 
 RAG pipeline з LLM (Nemotron 3 Nano 30B) успішно працює для 8/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Nano модель стабільніша за Ultra 550B — значно менше rate-limit помилок.
 
@@ -231,7 +231,7 @@ RAG pipeline з LLM (Nemotron 3 Nano 30B) успішно працює для 8/1
 2. **Query expansion** — додавати синоніми та альтернативні формулювання
 3. **Top-k = 10** — більше чанків у контексті може покрити прогалини
 
-### 7. Структура проєкту
+### 8. Структура проєкту
 
 ```
 rag-github/
