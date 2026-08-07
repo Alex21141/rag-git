@@ -299,7 +299,10 @@ def generate_answer_llm(question, context):
                     lines = reasoning_text.strip().split("\n")
                     answer = "\n".join(lines[-3:]) if len(lines) > 3 else reasoning_text
 
-        return str(answer).strip() if answer else None, False
+        answer_text = str(answer).strip() if answer else None
+        # Detect if LLM itself returned a fallback answer
+        is_fallback = bool(answer_text and "I do not have enough information" in answer_text)
+        return answer_text, is_fallback
     except Exception as e:
         print(f"  [LLM недоступний] {e}", file=sys.stderr)
         return None, False
@@ -491,12 +494,26 @@ def generate_report(all_results):
 
     # Example 2
     lines.append("### Example 2: Adding fallback rule\n\n")
-    lines.append("```python\n")
-    lines.append("# V1: No fallback rule\n")
-    lines.append("# V2: Added instruction:\n")
+    lines.append("#### Original prompt (v1)\n")
+    lines.append("```\n")
+    lines.append(PROMPT_V1.strip())
+    lines.append("```\n\n")
+    lines.append("#### Updated prompt (v2)\n")
+    lines.append("```\n")
     lines.append(
-        '#  "2. If the context does not contain enough information, say:\n'
-        '#   I do not have enough information..."\n'
+        "You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.\n\n"
+        "IMPORTANT RULES:\n"
+        "1. Answer ONLY based on the provided context below.\n"
+        "2. If the context does not contain enough information to answer the question, say:\n"
+        '   "I do not have enough information in the available documents to answer this question."\n'
+        "3. Do NOT use any general knowledge outside the provided context.\n"
+        "\n"
+        "Context:\n"
+        "{context}\n"
+        "\n"
+        "Question: {question}\n"
+        "\n"
+        "Answer:"
     )
     lines.append("```\n\n")
     lines.append(
@@ -512,10 +529,27 @@ def generate_report(all_results):
 
     # Example 3
     lines.append("### Example 3: Mandatory source citations\n\n")
-    lines.append("```python\n")
-    lines.append("# V1: No requirement to cite sources\n")
-    lines.append("# V2: Added instruction:\n")
-    lines.append('#  "4. Always cite the source chunk ID or source file used in your answer."\n')
+    lines.append("#### Original prompt (v1)\n")
+    lines.append("```\n")
+    lines.append(
+        "You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.\n\n"
+        "IMPORTANT RULES:\n"
+        "1. Answer ONLY based on the provided context below.\n"
+        "2. If the context does not contain enough information to answer the question, say:\n"
+        '   "I do not have enough information in the available documents to answer this question."\n'
+        "3. Do NOT use any general knowledge outside the provided context.\n"
+        "\n"
+        "Context:\n"
+        "{context}\n"
+        "\n"
+        "Question: {question}\n"
+        "\n"
+        "Answer:"
+    )
+    lines.append("```\n\n")
+    lines.append("#### Updated prompt (v2)\n")
+    lines.append("```\n")
+    lines.append(PROMPT_TEMPLATE.strip())
     lines.append("```\n\n")
     lines.append(
         "**Problem**: Answers did not include source references, making it difficult to "
