@@ -57,6 +57,8 @@ Answer:
 
 **Приклад 1: Додавання ролі та інструкцій**
 
+*Запит*: `How do I clone a Git repository?`
+
 #### Початковий промпт (v1)
 ```
 Answer the question based on the context.
@@ -68,6 +70,9 @@ Question: {question}
 
 Answer:
 ```
+
+#### Відповідь v1
+> To clone a Git repository you run the `git clone` command, giving it the URL of the remote repository you want to copy. For example: `git clone https://github.com/user/project.git`
 
 #### Оновлений промпт (v2)
 ```
@@ -88,14 +93,19 @@ Question: {question}
 Answer:
 ```
 
-**Проблема**: Без ролі модель давала загальні відповіді з власних знань, а не з контексту.
+#### Відповідь v2
+> To clone a repository you run the `git clone` command with the repository's URL. This creates a new directory, initializes a `.git` directory inside it... _Source: git_basics_getting_repository_chunk_006, 01_git_basics_getting_repository.md_
 
-**Результат**: Додавання ролі та інструкції значно зменшило галюцинації.
+**Проблема**: V1 давав правильну відповідь, але без цитування джерела і без обмеження на власні знання. Модель могла генерувати відповідь без перевірки фактів.
+
+**Результат**: V2 додає цитування джерела (`chunk_id + file`) і чітко обмежує модель контекстом.
 
 ---
 
 **Приклад 2: Додавання правила fallback**
 
+*Запит*: `How do I view the commit history?`
+
 #### Початковий промпт (v1)
 ```
 Answer the question based on the context.
@@ -108,41 +118,25 @@ Question: {question}
 Answer:
 ```
 
-#### Оновлений промпт (v2)
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+#### Відповідь v1 (галюцинація!)
+> You can see the full commit history of a Git repository by running the `git log` command. `git log` shows the complete log with full commit hashes, authors, dates, and messages...
 
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
+#### Відповідь v2 (чесний fallback)
+> I do not have enough information in the available documents to answer this question.
 
-Context:
-{context}
+**Проблема**: V1 вигадав відповідь (`git log`), хоча контекст не містив інформації про історію комітів. Це галюцинація — модель використала власні знання замість контексту.
 
-Question: {question}
-
-Answer:
-```
-
-**Проблема**: Для запиту "How do I view the commit history?" модель намагалася вгадати відповідь, бо тема погано покрита в базі. Це призводило до вигаданих відповідей.
-
-**Результат**: Чітке правило fallback дозволяє моделі чесно визнати відсутність інформації.
+**Результат**: V2 з чітким fallback-правилом чесно визнає відсутність інформації замість того, щоб вгадувати.
 
 ---
 
 **Приклад 3: Обов'язкове цитування джерел**
 
+*Запит*: `What is the difference between git add and git commit?`
+
 #### Початковий промпт (v1)
 ```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
+Answer the question based on the context.
 
 Context:
 {context}
@@ -152,28 +146,15 @@ Question: {question}
 Answer:
 ```
 
-#### Оновлений промпт (v2)
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+#### Відповідь v1 (без цитування)
+> `git add` and `git commit` serve different roles in the Git workflow: `git add` stages the changes you want to include, `git commit` saves the staged changes to the repository...
 
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
+#### Відповідь v2 (з цитуванням)
+> **Difference between `git add` and `git commit`**: `git add` — adds (stages) the changes to the index. `git commit` — saves the staged changes to the repository... _Source: github_about_git_chunk_009, 08_github_about_git.md_
 
-Context:
-{context}
+**Проблема**: V1 давав правильну відповідь, але без посилань на джерело — неможливо перевірити, звідки взята інформація.
 
-Question: {question}
-
-Answer:
-```
-
-**Проблема**: Відповіді не містили посилань на джерела, що ускладнювало перевірку коректності.
-
-**Результат**: Вимога цитувати chunk_id і source_file робить відповіді перевірними.
+**Результат**: V2 вимагає цитувати `chunk_id` і `source_file`, що робить кожну відповідь перевірною.
 
 ### 3.5. Тестові запити
 
