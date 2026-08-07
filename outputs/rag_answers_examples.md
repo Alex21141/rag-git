@@ -30,7 +30,7 @@
 
 **Retrieved chunks**: git_basics_getting_repository_chunk_006 (score: 0.68), gitlab_getting_started_chunk_003 (score: 0.64), git_basics_getting_repository_chunk_002 (score: 0.63)
 
-**Answer**: I do not have enough information in the available documents to answer this question. The provided context mentions that obtaining a repository involves pulling down all the data and checking out a working copy [1], and creating a local copy in your working directory [2], but it does not provide the specific commands or steps to clone a repository. [1] [2]
+**Answer**: Based on the provided context, I do not have enough information to answer this question. The available chunks mention concepts related to obtaining a Git repository (e.g., "creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version" [1], and "you create a local copy of the repository in your working directory" [2]), but they do not specify the actual `git clone` command or its usage.
 
 **Source**: data/raw/01_git_basics_getting_repository.md
 
@@ -41,7 +41,9 @@
 
 **Retrieved chunks**: gitlab_getting_started_chunk_001 (score: 0.63), github_about_git_chunk_007 (score: 0.61), github_about_git_chunk_004 (score: 0.61)
 
-**Answer**: I do not have enough information in the available documents to answer this question. (Source: [4] Chunk: branching_branch_management_chunk_001)
+**Answer**: I do not have enough information in the available documents to answer this question.
+
+The provided context mentions Git branching in [Chunk 4](branching_branch_management_chunk_001) which discusses "Branch Management" and references creating, merging, and deleting branches, but it does not define what a Git branch is or provide the specific commands to create one. Other chunks ([1], [2], [3], [5]) discuss Git basics, commands, and repositories but do not cover branch creation.
 
 **Source**: data/raw/09_gitlab_getting_started.md
 
@@ -52,14 +54,23 @@
 
 **Retrieved chunks**: branching_basic_branching_merging_chunk_016 (score: 0.74), branching_basic_branching_merging_chunk_013 (score: 0.73), branching_basic_branching_merging_chunk_011 (score: 0.72)
 
-**Answer**: Based on the provided documents, you can resolve merge conflicts in Git by following these steps:
+**Answer**: Based on the provided context, here's how to resolve merge conflicts in Git:
 
-1. **Edit the conflicting sections**: Merge conflicts appear as blocks separated by `=======`, showing the different versions of the code. You must manually edit the file to fix these sections [2].
-2. **Mark the file as resolved**: After editing, stage the file. Staging the file marks it as resolved in Git [4]. Alternatively, you can use a graphical interface to resolve the issues by running `git mergetool` [4].
-3. **Verify resolution**: Run `git status` to confirm that all conflicts have been resolved [1].
-4. **Conclude the merge**: Once verified, finish the merge process by running `git commit` [1].
+1. **Identify the conflict**: When merging, Git will indicate conflicts with messages like `CONFLICT (content): Merge conflict in index.html` [11].
 
-*Sources: [1], [2], [4]*
+2. **Examine the conflict markers**: The conflicted file will contain conflict markers showing both versions:
+   - The top part (above `=======`) represents one version
+   - The bottom part (below `=======`) represents the other version (e.g., from `iss53` branch) [13].
+
+3. **Resolve the conflict**: Edit the file to choose which changes to keep (or combine them manually).
+
+4. **Mark as resolved**: Stage the resolved file using `git add` to mark it as resolved in Git [14].
+
+5. **Optional graphical tool**: You can use `git mergetool` to launch a visual merge tool for easier resolution [14].
+
+6. **Complete the merge**: After all conflicts are fixed, run `git status` to verify ("All conflicts fixed but you are still merging"), then run `git commit` to conclude the merge [16].
+
+**Sources**: [11], [13], [14], [16]
 
 **Source**: data/raw/03_branching_basic_branching_merging.md
 
@@ -70,7 +81,15 @@
 
 **Retrieved chunks**: github_about_git_chunk_009 (score: 0.63), gitlab_getting_started_chunk_002 (score: 0.62), github_about_git_chunk_008 (score: 0.61)
 
-**Answer**: Based on the provided context, `git add` is used to stage changes, which is the first step in preparing them to be included in the project's history. `git commit` then takes a snapshot of those staged changes to record them in the project's history. Specifically, the version of the file that gets committed is exactly the version that was staged when `git add` was run [3, 4].
+**Answer**: Based on the provided context, the difference between `git add` and `git commit` is:
+
+- **`git add`** stages changes, placing them under the "Changes to be committed" heading. It prepares the current version of a file to be included in the next snapshot. As noted in the Git Basics documentation: "the version of the file at the time you ran `git add` is what will be in the subsequent historical snapshot" [4].
+
+- **`git commit`** takes a snapshot of the staged changes and records them permanently in the project's history. The About Git documentation describes this as a two-step process: "it's necessary to stage and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-st[ep process]" [3], with `git commit` being the second step that creates the snapshot.
+
+In summary, `git add` prepares (stages) changes, while `git commit` finalizes them into a historical snapshot.
+
+Sources: [3], [4]
 
 **Source**: data/raw/08_github_about_git.md
 
@@ -81,7 +100,9 @@
 
 **Retrieved chunks**: git_tools_stashing_cleaning_chunk_002 (score: 0.63), git_tools_stashing_cleaning_chunk_001 (score: 0.62), git_tools_stashing_cleaning_chunk_004 (score: 0.55)
 
-**Answer**: Based on the provided context, you can temporarily shelve your changes using the `git stash push` command. The context notes that `git stash save` is being deprecated in favor of `git stash push` [1]. This is useful when your working directory is in a messy state and you need to switch branches temporarily to work on something else [2].
+**Answer**: Based on the provided context, you can stash your changes temporarily using the command `git stash push`. The context indicates that `git stash save` is being deprecated in favor of `git stash push` [1].
+
+**Source:** [1] Chunk: git_tools_stashing_cleaning_chunk_002
 
 **Source**: data/raw/07_git_tools_stashing_cleaning.md
 
@@ -92,7 +113,7 @@
 
 **Retrieved chunks**: gitlab_getting_started_chunk_005 (score: 0.69), gitlab_getting_started_chunk_004 (score: 0.69), gitlab_getting_started_chunk_009 (score: 0.58)
 
-**Answer**: I do not have enough information in the available documents to answer this question. (Sources: [1], [5])
+**Answer**: I do not have enough information in the available documents to answer this question. The provided context mentions merge conflicts and deleting branches after a successful merge (Chunk 1), and discusses branching concepts (Chunk 2) and general Git commands (Chunk 3), but does not contain specific instructions on how to perform a merge in GitLab.
 
 **Source**: data/raw/09_gitlab_getting_started.md
 
@@ -114,11 +135,12 @@
 
 **Retrieved chunks**: gitlab_getting_started_chunk_010 (score: 0.74), gitlab_getting_started_chunk_009 (score: 0.61), gitlab_getting_started_chunk_001 (score: 0.52)
 
-**Answer**: Based on the provided context, to set up SSH keys for GitLab, you must:
-1. Generate an SSH key pair on your local system.
-2. Add your SSH key to your Git... (Note: The provided context cuts off at this step).
+**Answer**: Based on the provided context, to set up SSH keys for GitLab you must:
 
-**Source:** Chunk [1] (`gitlab_getting_started_chunk_010`), `data/raw/09_gitlab_getting_started.md`
+1. Generate an SSH key pair on your local system.
+2. Add your SSH key to your GitLab account (the text cuts off at "Add your SSH key to your Git").
+
+Source: [1] Chunk: gitlab_getting_started_chunk_010
 
 **Source**: data/raw/09_gitlab_getting_started.md
 
@@ -129,15 +151,19 @@
 
 **Retrieved chunks**: git_tools_rebasing_chunk_001 (score: 0.54), git_tools_rebasing_chunk_018 (score: 0.54), git_tools_rebasing_chunk_009 (score: 0.54)
 
-**Answer**: Based on the provided context:
+**Answer**: Based on the provided context, here's what I can tell you about rebasing:
 
 **What is rebasing?**
-Rebasing is one of the two main methods for integrating changes from one branch into another (the other being `merge`). It works by replaying changes from one branch onto another. When you examine the log of a rebased branch, it displays a linear history, making it appear as though all the work happened in series, even if it originally occurred in parallel [1], [4], [5].
+- Rebasing is one of two main ways to integrate changes from one branch into another (the other being `merge`) [1].
+- When you examine the log of a rebased branch, it looks like a linear history: it appears that all the work happened in series, even when it originally happened in parallel [4].
+- Rebasing replays changes from one branch onto another; the final snapshot is the same as with a merge, but the history is different [5].
 
-**When should I use it?**
-You can use rebasing to create a cleaner, linear project history [4]. However, there is an important guideline: you should avoid rebasing commits that exist outside your repository or that others may have already based their work on [3]. Ultimately, whether to use rebasing or merging depends on your specific team and project requirements [2].
+**When should you use it?**
+- The context suggests that "it's up to you to decide which one is best for your particular situation" after understanding how both merge and rebase work [2].
+- There's an important guideline: you should not rebase commits that exist outside your repository and that people may have based work on. If you follow this guideline, "you'll be fine. If you don't, people will hate you, and you'll be scorned by friends and..." [3].
+- Often, rebasing is done "to make sure y..." (the text cuts off) [4].
 
-*Citations: [1], [2], [3], [4], [5]*
+The provided context doesn't contain a complete explanation of all scenarios where rebasing is recommended versus merging. For more detailed guidance on when to choose rebase over merge, additional context would be needed.
 
 **Source**: data/raw/06_git_tools_rebasing.md
 
@@ -148,7 +174,12 @@ You can use rebasing to create a cleaner, linear project history [4]. However, t
 
 **Retrieved chunks**: github_about_git_chunk_010 (score: 0.71), git_basics_getting_repository_chunk_002 (score: 0.70), github_about_git_chunk_012 (score: 0.66)
 
-**Answer**: Based on the provided context, you can push changes to a remote repository using the `git push` command. This command updates the remote repository with any commits made locally to a branch [1] Chunk: github_about_git_chunk_010 | Source: data/raw/08_github_about_git.md.
+**Answer**: To push changes to a remote repository: `git push <remote> <branch>`. For the first push (to set upstream): `git push -u origin <branch>`. Force push (careful!): `git push --force`.
+
+**Found in context:**
+  - github_about_git_chunk_010 (score: 0.71) [data/raw/08_github_about_git.md]
+  - git_basics_getting_repository_chunk_002 (score: 0.70) [data/raw/01_git_basics_getting_repository.md]
+  - github_about_git_chunk_012 (score: 0.66) [data/raw/08_github_about_git.md]
 
 **Source**: data/raw/08_github_about_git.md
 

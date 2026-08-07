@@ -29,10 +29,13 @@ from retrieval import (
 )
 
 # ── LLM Configuration ─────────────────────────────────────────────────────
-LLM_BASE_URL = "http://10.10.0.86:8000/v1"
-LLM_API_KEY = "hermes"
-LLM_MODEL = "qwen36-35b-moe"
+LLM_BASE_URL = "https://openrouter.ai/api/v1"
+LLM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 SCORE_THRESHOLD = 0.30
+
+# API key from environment variable (not stored in repo)
+# Set: export OPENROUTER_API_KEY=sk-or-v1-...
+LLM_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 
 # ── Prompt Templates ──────────────────────────────────────────────────────
 
@@ -259,9 +262,13 @@ def build_context_text(results):
 
 
 def generate_answer_llm(question, context):
-    """Try to generate answer using local LLM endpoint."""
+    """Try to generate answer using OpenRouter LLM (Nemotron with reasoning)."""
     try:
         from openai import OpenAI
+        if not LLM_API_KEY:
+            print("  [LLM недоступний] OPENROUTER_API_KEY not set in environment", file=sys.stderr)
+            return None, False
+
         client = OpenAI(base_url=LLM_BASE_URL, api_key=LLM_API_KEY)
 
         prompt = PROMPT_TEMPLATE.format(context=context, question=question)
@@ -271,22 +278,26 @@ def generate_answer_llm(question, context):
             messages=[{"role": "user", "content": prompt}],
             max_tokens=4096,
             temperature=0.1,
+            extra_body={"reasoning": {"enabled": True}},
         )
+        if not response.choices or not response.choices[0]:
+            print("  [LLM недоступний] Empty response from OpenRouter", file=sys.stderr)
+            return None, False
         msg = response.choices[0].message
-        # Qwen reasoning model: content after reasoning. Use content if available.
-        # If content is None (truncated reasoning), extract final answer from reasoning.
+        # Nemotron reasoning: content is the final answer, reasoning_details is separate
         answer = msg.content
-        if not answer and msg.reasoning:
-            # Extract the final answer — everything after "Response:" or last paragraph
-            reasoning_text = str(msg.reasoning)
-            for marker in ["Response:", "Output:", "Final Output"]:
-                if marker in reasoning_text:
-                    answer = reasoning_text.split(marker)[-1].strip()
-                    break
-            if not answer:
-                # Fallback: use last few lines of reasoning
-                lines = reasoning_text.strip().split("\n")
-                answer = "\n".join(lines[-3:]) if len(lines) > 3 else reasoning_text
+        if not answer:
+            # Fallback: extract from reasoning_details if available
+            rd = getattr(msg, "reasoning_details", None)
+            if rd:
+                reasoning_text = str(rd) if hasattr(rd, "content") else str(rd)
+                for marker in ["Response:", "Output:", "Final Output"]:
+                    if marker in reasoning_text:
+                        answer = reasoning_text.split(marker)[-1].strip()
+                        break
+                if not answer:
+                    lines = reasoning_text.strip().split("\n")
+                    answer = "\n".join(lines[-3:]) if len(lines) > 3 else reasoning_text
 
         return str(answer).strip() if answer else None, False
     except Exception as e:
