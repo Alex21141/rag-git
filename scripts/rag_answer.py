@@ -408,7 +408,7 @@ def answer_question(query, index, chunks, model):
 
     if answer is None:
         # LLM unavailable (rate limit, etc.) — return honest fallback, NOT template
-        # Template responses come from hardcoded TOPIC_MAP, not retrieved context
+        # Template responses come from hardcoded maps, not retrieved context
         # This violates the grounded QA principle: "answer only from retrieved context"
         answer = (
             "I do not have enough information in the available documents to answer this question. "
