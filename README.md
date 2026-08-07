@@ -64,7 +64,7 @@ chunks.jsonl → embedding_text → all-MiniLM-L6-v2 → FAISS index → cosine 
 
 ### 5. Висновки
 
-Семантичний retrieval працює для специфічних Git-запитів (clone, stash, push, merge conflicts, SSH keys), але має проблеми з generic концепціями (branch, commit history, rebasing). Для HW3 планується: hybrid retrieval (BM25 + semantic) + re-ranking.
+Семантичний retrieval працює для специфічних Git-запитів (clone, stash, push, merge conflicts, SSH keys), але має проблеми з generic концепціями (branch, commit history, rebasing).
 
 ### 6. Структура проєкту
 
