@@ -53,7 +53,129 @@ Question: {question}
 Answer:
 ```
 
-### 3. Результати запитів
+### 4. Prompt Improvements
+
+**Example 1: Adding role and instructions**
+
+#### Original prompt (v1)
+```
+Answer the question based on the context.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+#### Updated prompt (v2)
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+4. Always cite the source chunk ID or source file used in your answer.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+**Problem**: Без ролі модель давала загальні відповіді з власних знань, а не з контексту.
+
+**Result**: Додавання ролі та інструкції значно зменшило галюцинації.
+
+---
+
+**Example 2: Adding fallback rule**
+
+#### Original prompt (v1)
+```
+Answer the question based on the context.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+#### Updated prompt (v2)
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+**Problem**: Для запиту "How do I view the commit history?" модель намагалася вгадати відповідь, бо тема погано покрита в базі. Це призводило до вигаданих відповідей.
+
+**Result**: Чітке правило fallback дозволяє моделі чесно визнати відсутність інформації.
+
+---
+
+**Example 3: Mandatory source citations**
+
+#### Original prompt (v1)
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+#### Updated prompt (v2)
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+4. Always cite the source chunk ID or source file used in your answer.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+**Problem**: Відповіді не містили посилань на джерела, що ускладнювало перевірку коректності.
+
+**Result**: Вимога цитувати chunk_id і source_file робить відповіді перевірними.
+
+### 5. Результати запитів
 
 | # | Запит | Top-1 score | Chunk | Результат |
 |---|-------|-------------|-------|-----------|
