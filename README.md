@@ -13,10 +13,16 @@
 | **API key** | env var `OPENROUTER_API_KEY` (не в git) |
 | **Test queries** | 10 |
 
-### 1. Пайплайн
+### 1. QA Pipeline
+
+Реалізовано pipeline:
 
 ```
-question → semantic retrieval (FAISS) → top-5 chunks → build prompt → LLM answer with citations
+user question
+→ retrieve top-k chunks
+→ build prompt with context
+→ call LLM
+→ return grounded answer with source
 ```
 
 - **Retrieval**: FAISS cosine similarity, top-5 chunks per query
