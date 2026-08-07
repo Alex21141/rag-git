@@ -425,7 +425,7 @@ def generate_report(all_results):
     lines.append(f"**Embedding model**: `{MODEL_NAME}`\n")
     lines.append(f"**Index**: FAISS IndexFlatIP (dim={EMBEDDING_DIM})\n")
     lines.append(f"**Chunks in KB**: {chunk_count}\n")
-    lines.append(f"**Generation**: Template-based (LLM unavailable)\n")
+    lines.append(f"**LLM**: `{LLM_MODEL}` via `{LLM_BASE_URL}`\n")
     lines.append(f"**Relevance threshold**: {SCORE_THRESHOLD}\n")
     lines.append("")
 
