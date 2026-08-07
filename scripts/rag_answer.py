@@ -261,8 +261,9 @@ def build_context_text(results):
     return "\n\n---\n\n".join(parts)
 
 
-def generate_answer_llm(question, context):
+def generate_answer_llm(question, context, max_retries=2):
     """Try to generate answer using OpenRouter LLM (Nemotron with reasoning)."""
+    import time
     try:
         from openai import OpenAI
         if not LLM_API_KEY:
@@ -273,16 +274,29 @@ def generate_answer_llm(question, context):
 
         prompt = PROMPT_TEMPLATE.format(context=context, question=question)
 
-        response = client.chat.completions.create(
-            model=LLM_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=4096,
-            temperature=0.1,
-            extra_body={"reasoning": {"enabled": True}},
-        )
-        if not response.choices or not response.choices[0]:
-            print("  [LLM недоступний] Empty response from OpenRouter", file=sys.stderr)
-            return None, False
+        for attempt in range(max_retries):
+            try:
+                response = client.chat.completions.create(
+                    model=LLM_MODEL,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=4096,
+                    temperature=0.1,
+                    extra_body={"reasoning": {"enabled": True}},
+                )
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    print(f"  [LLM retry {attempt+1}/{max_retries}] {e}", file=sys.stderr)
+                    time.sleep(1)
+                    continue
+                raise
+
+            if not response.choices or not response.choices[0]:
+                print(f"  [LLM недоступний] Empty response (attempt {attempt+1}/{max_retries})", file=sys.stderr)
+                if attempt < max_retries - 1:
+                    time.sleep(1)
+                    continue
+                # Final attempt failed
+                return None, False
         msg = response.choices[0].message
         # Nemotron reasoning: content is the final answer, reasoning_details is separate
         answer = msg.content
@@ -572,6 +586,8 @@ def generate_report(all_results):
 
 
 def main():
+    import time
+
     parser = argparse.ArgumentParser(description="HW4: RAG Answer Generation")
     parser.add_argument("--test", action="store_true", help="Run all test queries")
     parser.add_argument("--report", action="store_true", help="Generate markdown report")
@@ -606,6 +622,12 @@ def main():
             print(f"  Top-1 score: {top_score:.2f} | {status}")
             print(f"  Answer: {preview}...")
             print()
+
+            # Wait 60s between queries to avoid free model rate limit
+            if i < len(TEST_QUERIES):
+                print("  ⏳ Waiting 60s before next query (free model rate limit)...")
+                time.sleep(60)
+                print()
 
     if args.report:
         if not all_results:
