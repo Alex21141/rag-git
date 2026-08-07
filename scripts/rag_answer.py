@@ -30,9 +30,8 @@ from retrieval import (
 
 # ── LLM Configuration ─────────────────────────────────────────────────────
 LLM_BASE_URL = "https://openrouter.ai/api/v1"
-LLM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
+LLM_MODEL = "nvidia/nemotron-3-nano-30b-a3b:free"
 SCORE_THRESHOLD = 0.30
-
 # API key from environment variable (not stored in repo)
 # Set: export OPENROUTER_API_KEY=sk-or-v1-...
 LLM_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
@@ -298,7 +297,7 @@ def generate_answer_llm(question, context, max_retries=2):
                 # Final attempt failed
                 return None, False
         msg = response.choices[0].message
-        # Nemotron reasoning: content is the final answer, reasoning_details is separate
+        # Nano Nemotron: content may be None, reasoning in reasoning_details
         answer = msg.content
         if not answer:
             # Fallback: extract from reasoning_details if available
@@ -629,8 +628,8 @@ def main():
 
             # Wait 4s between queries to stay within free model rate limit (20 RPM)
             if i < len(TEST_QUERIES):
-                print("  ⏳ Waiting 4s before next query...")
-                time.sleep(4)
+                print("  ⏳ Waiting 20s before next query...")
+                time.sleep(20)
                 print()
 
     if args.report:
