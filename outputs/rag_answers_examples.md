@@ -1,36 +1,27 @@
 # HW4: Генерація відповіді RAG — Результати тесту
 
-**Embedding модель:** `sentence-transformers/all-MiniLM-L6-v2`
-
-**Індекс:** FAISS IndexFlatIP (dim=384)
-
-**Чанків у KB:** 145
-
-**LLM**: `nvidia/nemotron-3-nano-30b-a3b:free` via `https://openrouter.ai/api/v1`
-
-**Поріг релевантності:** 0.3
-
-
-## Підсумкова таблиця
-
-| # | Запит | Top-1 score | Результат |
-|---|----------|-------------|--------|
-| 1 | How do I clone a Git repository? | 0.68 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | 0.63 | ❌ Fallback |
-| 3 | How to resolve merge conflicts in Git? | 0.74 | ✅ Grounded |
-| 4 | What is the difference between git add and git commit? | 0.63 | ✅ Grounded |
-| 5 | How do I stash my changes temporarily? | 0.63 | ✅ Grounded |
-| 6 | How do I merge a branch in GitLab? | 0.69 | ✅ Grounded |
-| 7 | How do I view the commit history? | 0.58 | ❌ Fallback |
-| 8 | How to set up SSH keys for GitLab? | 0.74 | ✅ Grounded |
-| 9 | What is rebasing and when should I use it? | 0.54 | ✅ Grounded |
-| 10 | How do I push changes to a remote repository? | 0.71 | ✅ Grounded |
+| Параметр | Значення |
+|----------|----------|
+| **Embedding модель** | all-MiniLM-L6-v2 |
+| **LLM модель** | nvidia/nemotron-3-nano-30b-a3b:free (OpenRouter) |
+| **Індекс** | FAISS, 145 чанків, dim=384 |
+| **Score threshold** | 0.30 |
+| **TOP_K** | 5 |
+| **LLM mode** | **Real LLM** (не template) |
 
 ## Запит 1: How do I clone a Git repository?
 
-**Отримані чанки:** git_basics_getting_repository_chunk_006 (score: 0.68), gitlab_getting_started_chunk_003 (score: 0.64), git_basics_getting_repository_chunk_002 (score: 0.63)
+**Отримані чанки:** git_basics_getting_repository_chunk_006 (score: 0.68), gitlab_getting_started_chunk_003 (score: 0.64), git_basics_getting_repository_chunk_002 (score: 0.63), github_about_git_chunk_007 (score: 0.62), github_about_git_chunk_010 (score: 0.61)
 
-**Відповідь**: To clone a repository you run `git clone <url>` which creates a new directory, initializes a `.git` folder inside it, pulls down all of the repository’s data, and checks out a working copy of the latest version. This description is given in chunk [1].
+**Відповідь**: To clone a Git repository you use the `git clone` command followed by the repository’s URL (and optionally a directory name).  
+For example:
+
+```bash
+git clone https://github.com/owner/repo.git          # clones into a folder named “repo”
+git clone https://github.com/owner/repo.git mylibgit # clones into a folder named “mylibgit”
+```
+
+The command creates a local copy of the remote repository, including all files, history, and branches, and checks out a working copy ready for you to work on [1][4][5].
 
 **Джерело:** data/raw/01_git_basics_getting_repository.md
 
@@ -39,28 +30,53 @@
 
 ## Запит 2: What is a Git branch and how do I create one?
 
-**Отримані чанки:** gitlab_getting_started_chunk_001 (score: 0.63), github_about_git_chunk_007 (score: 0.61), github_about_git_chunk_004 (score: 0.61)
+**Отримані чанки:** gitlab_getting_started_chunk_001 (score: 0.63), github_about_git_chunk_007 (score: 0.61), github_about_git_chunk_004 (score: 0.61), branching_branch_management_chunk_001 (score: 0.59), gitlab_getting_started_chunk_002 (score: 0.59)
 
-**Відповідь**: I do not have enough information in the available documents to answer this question.
+**Відповідь**: A Git branch is a separate line of development that lets you work on different versions of a project without affecting other branches. You create a new branch with the `git branch` command (e.g., `git branch feature‑x`). The branch you are currently working on is marked with an asterisk (`*`) in the output of `git branch`.  
+
+**Source:** Chunk [4] – *branching_branch_management_chunk_001* (data/raw/04_branching_branch_management.md)
 
 **Джерело:** data/raw/09_gitlab_getting_started.md
 
-**Коментар:** Fallback — insufficient relevant context
+**Коментар:** Grounded — answer based on relevant chunk
 
 
 ## Запит 3: How to resolve merge conflicts in Git?
 
-**Отримані чанки:** branching_basic_branching_merging_chunk_016 (score: 0.74), branching_basic_branching_merging_chunk_013 (score: 0.73), branching_basic_branching_merging_chunk_011 (score: 0.72)
+**Отримані чанки:** branching_basic_branching_merging_chunk_016 (score: 0.74), branching_basic_branching_merging_chunk_013 (score: 0.73), branching_basic_branching_merging_chunk_011 (score: 0.72), branching_basic_branching_merging_chunk_014 (score: 0.72), branching_basic_branching_merging_chunk_010 (score: 0.68)
 
-**Відповідь**: To resolve a merge conflict you first look at the conflicted files (Git will mark them as “both modified”).  
-Edit each file to keep the desired version of the content, then **stage the resolved file** with `git add`.  
-After all conflicts are staged, finish the merge by committing the result (`git commit` or `git commit` to conclude the merge).  
-If you prefer a visual aid, you can run `git mergetool` to launch a merge‑tool that helps you resolve the conflicts.  
+**Відповідь**: To resolve a merge conflict you must:
 
-**Sources:**  
-- [1] Chunk branching_basic_branching_merging_chunk_016 – “verify that all conflicts have been resolved… use “git commit” to conclude merge”  
-- [4] Chunk branching_basic_branching_merging_chunk_014 – “Staging the file marks it as resolved in Git… you can run `git mergetool`”  
-- [13] Chunk branching_basic_branching_merging_chunk_013 – describes the conflict and the need to resolve it before proceeding.
+1. **Identify the conflicted files** – after a failed merge run `git status` to see which files are listed under “Unmerged paths”.  
+   *Source: [3] – “Git hasn’t automatically created a new merge commit. It has paused the process while you resolve the conflict… you can run `git status` … Unmerged paths …”*
+
+2. **Open each conflicted file and edit the conflict markers** – the file will contain the conflict markers `<<<<<<<`, `=======`, and `>>>>>>>`.  
+   *Source: [2] – “In order to resolve the conflict, you have to either choose one side or the other or merge the contents yourself… After you’ve resolved each of these sections in each conflicted file, run `git add` on each file to mark …”*
+
+3. **Remove the conflict markers and keep the desired combined content** – replace the marker block with the version you want (it can contain parts from both sides).  
+   *Source: [2] – “…replace the entire block with this: `<div id="footer">…</div>` … The `<<<<<<<`, `=======`, and `>>>>>>>` lines have been completely removed.”*
+
+4. **Mark the file as resolved** – stage the edited file with `git add`.  
+   *Source: [3] – “…run `git add` on each file to mark resolution.”*  
+   *Source: [4] – “Staging the file marks it as resolved in Git.”*
+
+5. **Complete the merge** – once all conflicted files are staged, finish the merge commit.  
+   *Source: [1] – “If you’re happy with that, and you verify that everything that had conflicts has been staged, you can type `git commit` to finalize the merge commit.”*  
+   *Source: [4] – “If you want to use a graphical tool to resolve these issues, you can run `git mergetool` …”*
+
+**Summary of commands**
+
+```bash
+# after a merge conflict
+git status                     # see unmerged paths
+# edit each conflicted file, remove <<<<<<<, =======, >>>>>>> markers
+git add <file>                 # mark the file as resolved
+git commit                     # finish the merge (or use a message with -m)
+# optional graphical aid
+git mergetool                  # launch a merge‑tool to help resolve conflicts
+```
+
+These steps—detecting conflicts, editing the conflict markers, staging the resolved files, and committing—are the standard way to resolve merge conflicts in Git.
 
 **Джерело:** data/raw/03_branching_basic_branching_merging.md
 
@@ -69,18 +85,12 @@ If you prefer a visual aid, you can run `git mergetool` to launch a merge‑tool
 
 ## Запит 4: What is the difference between git add and git commit?
 
-**Отримані чанки:** github_about_git_chunk_009 (score: 0.63), gitlab_getting_started_chunk_002 (score: 0.62), github_about_git_chunk_008 (score: 0.61)
+**Отримані чанки:** github_about_git_chunk_009 (score: 0.63), gitlab_getting_started_chunk_002 (score: 0.62), github_about_git_chunk_008 (score: 0.61), git_basics_recording_changes_chunk_007 (score: 0.57), github_about_git_chunk_007 (score: 0.56)
 
-**Відповідь**: **Відповідь**
+**Відповідь**: `git add` stages the changes you have made, moving them from the working directory into the staging area so they are included in the next snapshot.  
+`git commit` then takes that staged snapshot and records it permanently in the repository’s history.  
 
-- **`git add`** – This command stages the changes you have made to files. It moves the modified files from the working directory into the *index* (the staging area) so that those specific changes are prepared to be included in the next commit. [4]
-
-- **`git commit`** – This command takes the staged changes and records them as a new commit in the repository’s history. It creates a permanent snapshot of the project at that point, using the files that were staged by `git add`. [1]
-
-**Citations**
-
-- The description of `git commit` as creating a snapshot comes from Chunk [1] (github_about_git_chunk_009).  
-- The relationship between staging with `git add` and then committing is explained in Chunk [4] (git_basics_recording_changes_chunk_007).
+**Sources:** [3] and [4]
 
 **Джерело:** data/raw/08_github_about_git.md
 
@@ -89,14 +99,11 @@ If you prefer a visual aid, you can run `git mergetool` to launch a merge‑tool
 
 ## Запит 5: How do I stash my changes temporarily?
 
-**Отримані чанки:** git_tools_stashing_cleaning_chunk_002 (score: 0.63), git_tools_stashing_cleaning_chunk_001 (score: 0.62), git_tools_stashing_cleaning_chunk_004 (score: 0.55)
+**Отримані чанки:** git_tools_stashing_cleaning_chunk_002 (score: 0.63), git_tools_stashing_cleaning_chunk_001 (score: 0.62), git_tools_stashing_cleaning_chunk_004 (score: 0.55), git_tools_stashing_cleaning_chunk_013 (score: 0.55), git_tools_stashing_cleaning_chunk_005 (score: 0.53)
 
-**Відповідь**: To stash your changes temporarily you can use the **`git stash push`** command (the newer replacement for the deprecated `git stash save`). After stashing, the changes are saved on a stack and you can later bring them back with **`git stash apply`** (or `git stash pop` to apply and drop them).  
+**Відповідь**: You can temporarily store (stash) your changes with the **`git stash`** command – the newer **`git stash push`** form is recommended because it also lets you stash selected paths, but the classic `git stash` (or `git stash save`) still works. After stashing, the changes are kept on a stack and can be re‑applied later using **`git stash apply`** (or `git stash apply stash@{n}` to target a specific stash).  
 
-- The deprecation of `git stash save` in favor of `git stash push` is noted in chunk **[1]**.  
-- The usage of `git stash apply` to restore a stashed change is described in chunk **[5]**.  
-
-So, run `git stash push` to temporarily stash your modifications, and later run `git stash apply` (or `git stash pop`) to retrieve them.
+*See the discussion of stashing in chunk [2] and the example of applying a stash in chunk [5].*
 
 **Джерело:** data/raw/07_git_tools_stashing_cleaning.md
 
@@ -105,23 +112,11 @@ So, run `git stash push` to temporarily stash your modifications, and later run 
 
 ## Запит 6: How do I merge a branch in GitLab?
 
-**Отримані чанки:** gitlab_getting_started_chunk_005 (score: 0.69), gitlab_getting_started_chunk_004 (score: 0.69), gitlab_getting_started_chunk_009 (score: 0.58)
+**Отримані чанки:** gitlab_getting_started_chunk_005 (score: 0.69), gitlab_getting_started_chunk_004 (score: 0.69), gitlab_getting_started_chunk_009 (score: 0.58), branching_branch_management_chunk_002 (score: 0.58), git_tools_rebasing_chunk_001 (score: 0.57)
 
-**Відповідь**: To merge a branch in GitLab you can do it either through the GitLab user interface or from the command line.  
+**Відповідь**: To merge a branch in GitLab you create a **merge request** that targets the repository’s default branch (typically `main`). After opening the request, GitLab will try to merge the changes; if there are conflicts you must resolve them manually, then click **Merge** to integrate the branch. This process safely brings the changes into the default branch while preserving the commit history.  
 
-**Using the GitLab UI**  
-1. Open the repository and go to the **Merge Requests** page.  
-2. Click **New merge request**, select the source branch you want to merge and the target branch you want to merge into.  
-3. Review the changes and click **Merge** to complete the merge.
-
-**Using the command line**  
-1. Checkout the branch you want to merge into (the target branch).  
-2. Run `git merge <source‑branch>` to merge the source branch into the current branch.  
-3. Push the result to the remote repository if needed.  
-
-These steps are outlined in the GitLab documentation for getting started with Git.  
-
-[1] Chunk: gitlab_getting_started_chunk_005 | Score: 0.6909 | Source: data/raw/09_gitlab_getting_started.md | Section: Get started with Git
+[2] Chunk: gitlab_getting_started_chunk_004 – describes merging a branch via a merge request and handling conflicts.
 
 **Джерело:** data/raw/09_gitlab_getting_started.md
 
@@ -130,7 +125,7 @@ These steps are outlined in the GitLab documentation for getting started with Gi
 
 ## Запит 7: How do I view the commit history?
 
-**Отримані чанки:** github_about_git_chunk_001 (score: 0.58), git_basics_recording_changes_chunk_027 (score: 0.55), git_basics_recording_changes_chunk_028 (score: 0.54)
+**Отримані чанки:** github_about_git_chunk_001 (score: 0.58), git_basics_recording_changes_chunk_027 (score: 0.55), git_basics_recording_changes_chunk_028 (score: 0.54), gitlab_getting_started_chunk_002 (score: 0.52), git_basics_recording_changes_chunk_029 (score: 0.50)
 
 **Відповідь**: I do not have enough information in the available documents to answer this question.
 
@@ -141,9 +136,15 @@ These steps are outlined in the GitLab documentation for getting started with Gi
 
 ## Запит 8: How to set up SSH keys for GitLab?
 
-**Отримані чанки:** gitlab_getting_started_chunk_010 (score: 0.74), gitlab_getting_started_chunk_009 (score: 0.61), gitlab_getting_started_chunk_001 (score: 0.52)
+**Отримані чанки:** gitlab_getting_started_chunk_010 (score: 0.74), gitlab_getting_started_chunk_009 (score: 0.61), gitlab_getting_started_chunk_001 (score: 0.52), gitlab_getting_started_chunk_003 (score: 0.46), git_basics_getting_repository_chunk_007 (score: 0.45)
 
-**Відповідь**: To set up SSH keys for GitLab you need to **generate an SSH key pair on your local system and then add that key to your GitLab account** so that you can authenticate Git operations over SSH without entering a password each time. This process is outlined in the “Get started with Git” section of the GitLab getting‑started guide [1].
+**Відповідь**: To set up SSH keys for GitLab you need to:
+
+1. **Generate an SSH key pair on your local system** – this creates the public‑private key pair that will be used for authentication.  
+2. **Add your SSH key to your GitLab account** – upload the public key so GitLab can recognize your machine.  
+3. **Verify your SSH connection to GitLab** – test that the key works by attempting an SSH connection (e.g., `ssh -T git@gitlab.com`).
+
+These steps are outlined in **Chunk [1]** of the provided documentation.
 
 **Джерело:** data/raw/09_gitlab_getting_started.md
 
@@ -152,185 +153,42 @@ These steps are outlined in the GitLab documentation for getting started with Gi
 
 ## Запит 9: What is rebasing and when should I use it?
 
-**Отримані чанки:** git_tools_rebasing_chunk_001 (score: 0.54), git_tools_rebasing_chunk_018 (score: 0.54), git_tools_rebasing_chunk_009 (score: 0.54)
+**Отримані чанки:** git_tools_rebasing_chunk_001 (score: 0.54), git_tools_rebasing_chunk_018 (score: 0.54), git_tools_rebasing_chunk_009 (score: 0.54), git_tools_rebasing_chunk_004 (score: 0.52), git_tools_rebasing_chunk_005 (score: 0.47)
 
-**Відповідь**: Rebasing is a Git operation that **rewrites the commit history of a branch by moving (or “replaying”) its commits onto a new base commit**, creating a linear history that looks as if all the changes were made sequentially [1][4].  
+**Відповідь**: **What is rebasing?**  
+Rebasing is a way of integrating changes by *re‑playing a series of commits onto a new base commit*, which rewrites the branch’s history so that the commits appear as if they were introduced sequentially on top of the new base. [1]  
 
-**When to use it**  
-- When you want a clean, linear project history and are preparing a branch to be integrated or shared [2].  
-- When you need to keep the repository’s history tidy before pushing your work to a remote repository [2].  
-- When you want to combine or reorder commits locally before they become part of the shared history [1][4].  
+**When should you use it?**  
+- **Clean up local work before you share it.** You can rebase your local commits to tidy the history, then push the cleaned‑up branch. [2]  
+- **Make sure your changes apply cleanly onto another branch** (for example, onto `origin/master` when contributing to a project you don’t maintain). This gives the maintainer a linear, easy‑to‑apply series of patches. [4]  
+- **Keep a linear project history** when you want the log to show a straight line of commits rather than a merge‑generated fork. [5]  
 
-**Caveats**  
-- Rebasing should generally be done on commits that have not yet been published or shared with others, because it rewrites history [3].  
-- If you rebase commits that others have based work on, you may cause confusion or conflicts for them [3].  
+**When should you avoid it?**  
+- **Never rebase commits that have already been pushed and shared** with others, because rewriting those commits forces everyone else to re‑merge and can cause confusion. [3]  
 
-In short, use rebasing to maintain a clear, linear commit history for your own work or for branches that have not yet been made public, but avoid rebasing commits that are already part of a shared repository.  
-
-**Sources**: [1], [2], [3], [4] (all from *git_tools_rebasing_chunk_*.md).
+In short, use rebasing to maintain a clean, linear history for private or freshly‑pushed work, but refrain from rebasing any history that has already been published.
 
 **Джерело:** data/raw/06_git_tools_rebasing.md
-
-**Коментар:** Partial — context partially relevant
-
-
-## Запит 10: How do I push changes to a remote repository?
-
-**Отримані чанки:** github_about_git_chunk_010 (score: 0.71), git_basics_getting_repository_chunk_002 (score: 0.70), github_about_git_chunk_012 (score: 0.66)
-
-**Відповідь**: To push changes to a remote repository you use the `git push` command. This command updates the remote repository with any commits that you have made locally on a branch.  
-
-**Source:** Chunk [1] – “github_about_git_chunk_010” (Section: About Git) – bullet point “* `git push` updates the remote repository with any commits made locally to a branch.”
-
-**Джерело:** data/raw/08_github_about_git.md
 
 **Коментар:** Grounded — answer based on relevant chunk
 
 
----
+## Запит 10: How do I push changes to a remote repository?
 
-## Покращення шаблону запиту
+**Отримані чанки:** github_about_git_chunk_010 (score: 0.71), git_basics_getting_repository_chunk_002 (score: 0.70), github_about_git_chunk_012 (score: 0.66), distributed_workflows_chunk_006 (score: 0.61), gitlab_getting_started_chunk_007 (score: 0.59)
 
+**Відповідь**: To push your local commits to a remote repository you first commit the changes and then run the **`git push`** command.  
+For the first push of a new branch you can also set the upstream in one step with:
 
-### Приклад 1: Додавання ролі та інструкцій
-
-
-#### Початковий промпт (v1)
-
+```bash
+git push --set-upstream origin <branch-name>
 ```
 
-Answer the question based on the context.
+These steps are shown in the examples that explain pushing to GitHub [1] and illustrate the basic workflow of pushing after a commit [3].  
 
-Context:
-{context}
+**Source:** [1] and [3] (chunks github_about_git_chunk_010 and git_basics_getting_repository_chunk_002).
 
-Question: {question}
+**Джерело:** data/raw/08_github_about_git.md
 
-Answer:
-```
-
-
-#### Оновлений промпт (v2)
-
-```
-
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
-
-Context:
-{context}
-
-Question: {question}
-
-Answer:
-```
-
-
-**Проблема:** Without a role, the model gave generic answers based on its own knowledge, not the context. For example, for a GitLab Flow query, the model generated an answer from general knowledge, even though the context did not contain such information.
-
-
-**Аналіз результату:** Adding a clear role ('You are a Git tutoring assistant') and the instruction 'Answer ONLY based on the provided context' significantly reduced hallucinations. The model is now limited to only the provided context.
-
-
-### Приклад 2: Додавання правила fallback
-
-
-#### Початковий промпт (v1)
-
-```
-
-Answer the question based on the context.
-
-Context:
-{context}
-
-Question: {question}
-
-Answer:
-```
-
-
-#### Оновлений промпт (v2)
-
-```
-
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-
-Context:
-{context}
-
-Question: {question}
-
-Answer:
-```
-
-
-**Проблема:** For the 'How do I view the commit history?' query, the model tried to guess an answer because the topic was not well covered in the knowledge base. This led to hallucinated answers that were not based on facts.
-
-
-**Аналіз результату:** A clear fallback rule allows the model to honestly admit missing information. For uncovered topics, the model now returns 'I do not have enough information' instead of making up an answer.
-
-
-### Приклад 3: Обовязкове цитування джерел
-
-
-#### Початковий промпт (v1)
-
-```
-
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-
-Context:
-{context}
-
-Question: {question}
-
-Answer:
-```
-
-
-#### Оновлений промпт (v2)
-
-```
-
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
-
-Context:
-{context}
-
-Question: {question}
-
-Answer:
-```
-
-
-**Проблема:** Answers did not include source references, making it difficult to verify correctness and traceability of answers.
-
-
-**Аналіз результату:** Requiring chunk_id and source_file citations makes answers verifiable. Every statement can be traced back to a specific part of the document.
+**Коментар:** Grounded — answer based on relevant chunk
 

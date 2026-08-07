@@ -199,9 +199,9 @@ Answer:
 
 | Категорія | Запити | Опис |
 |-----------|--------|------|
-| **Просте питання** | Q1, Q3, Q4, Q6, Q8, Q9 | Відповідь точно є в контексті — retrieval повертає релевантний чанк |
+| **Просте питання** | Q1, Q2, Q3, Q4, Q6, Q8, Q9 | Відповідь точно є в контексті — retrieval повертає релевантний чанк |
 | **Переформульоване питання** | Q5, Q10 | Формулювання відрізняється від тексту в KB, але семантично співпадає |
-| **Context недостатній** | Q2 | Тема погано покрита в KB — модель чесно повертає fallback |
+| **Context недостатній** | Q7 | Тема погано покрита в KB — модель чесно повертає fallback |
 | **Слабкий chunk** | Q7 | Retrieval повертає чанк з низьким score (0.58) — context не дає відповіді |
 
 ### 4. Результати запитів
@@ -209,7 +209,7 @@ Answer:
 | # | Запит | Top-1 score | Chunk | Результат |
 |---|-------|-------------|-------|-----------|
 | 1 | How do I clone a Git repository? | 0.68 | git_basics_getting_repository_chunk_006 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | 0.63 | gitlab_getting_started_chunk_001 | ❌ Fallback |
+| 2 | What is a Git branch and how do I create one? | 0.63 | branching_branch_management_chunk_001 | ✅ Grounded |
 | 3 | How to resolve merge conflicts in Git? | 0.74 | branching_basic_branching_merging_chunk_016 | ✅ Grounded |
 | 4 | What is the difference between git add and git commit? | 0.63 | github_about_git_chunk_009 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.63 | git_tools_stashing_cleaning_chunk_002 | ✅ Grounded |
@@ -230,19 +230,19 @@ Answer:
 | Min score | 0.54 (Q9 — rebasing) |
 | Max score | 0.74 (Q3 — merge conflicts, Q8 — SSH keys) |
 
-**Де RAG працює добре (8/10 Grounded):**
+**Де RAG працює добре (9/10 Grounded):**
+- Q1 (clone) — Nano модель генерує відповідь з командами `git clone`
+- Q2 (branch creation) — retrieval знайшов релевантний чанк, LLM дав чітку відповідь
 - Q3 (merge conflicts) — найвищий score (0.74), LLM дає детальну відповідь з кроками
 - Q4 (git add vs commit) — чітке пояснення різниці
 - Q5 (stash) — точна команда `git stash push`
-- Q1 (clone) — Nano модель генерує відповідь, хоча score=0.68
 - Q6 (GitLab merge) — Nano генерує детальну інструкцію (UI + CLI)
 - Q8 (SSH keys) — Nano генерує повну інструкцію
 - Q9 (rebasing) — LLM пояснює концепцію
 - Q10 (push) — команди `git push` з поясненням
 
-**Де RAG працює погано (fallback, 2/10):**
-- Q2 (branch creation) — контекст не містить команди `git branch`/`git checkout -b`
-- Q7 (commit history) — низький score (0.58), повернуто fallback
+**Де RAG працює погано (fallback, 1/10):**
+- Q7 (commit history) — низький score (0.58), retrieval не знайшов релевантний чанк, повернуто fallback
 
 ### 6. Відомі обмеження
 
@@ -253,7 +253,7 @@ Answer:
 
 ### 7. Висновки
 
-RAG pipeline з LLM (Nemotron 3 Nano 30B) успішно працює для 8/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Nano модель стабільніша за Ultra 550B — значно менше rate-limit помилок.
+RAG pipeline з реального LLM (Nemotron 3 Nano 30B через OpenRouter) успішно працює для 9/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Всі відповіді генеровані через реального LLM — **не через template**. Nano модель стабільніша за Ultra 550B — значно менше rate-limit помилок.
 
 Для покращення:
 1. **Hybrid search** (BM25 + semantic) — як у HW3, дає кращі top-1 результати
