@@ -64,7 +64,7 @@ Answer:
 | 5 | How do I stash my changes temporarily? | 0.63 | git_tools_stashing_cleaning_chunk_002 | ✅ Grounded |
 | 6 | How do I merge a branch in GitLab? | 0.69 | gitlab_getting_started_chunk_005 | ✅ Fallback |
 | 7 | How do I view the commit history? | 0.58 | github_about_git_chunk_001 | ✅ Fallback |
-| 8 | How to set up SSH keys for GitLab? | 0.74 | gitlab_getting_started_chunk_010 | ✅ Grounded |
+| 8 | How to set up SSH keys for GitLab? | 0.74 | gitlab_getting_started_chunk_010 | ✅ Fallback |
 | 9 | What is rebasing and when should I use it? | 0.54 | git_tools_rebasing_chunk_001 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.71 | github_about_git_chunk_010 | ✅ Grounded |
 
@@ -72,8 +72,8 @@ Answer:
 
 | Метрика | Значення |
 |---------|----------|
-| Grounded (повна відповідь LLM) | 7/10 (70%) |
-| Fallback (контекст недостатній) | 3/10 (30%) |
+| Grounded (повна відповідь LLM) | 5/10 (50%) |
+| Fallback (контекст недостатній) | 5/10 (50%) |
 | Not relevant | 0/10 (0%) |
 | Середній top-1 score | 0.65 |
 | Min score | 0.54 (Q9 — rebasing) |
@@ -83,14 +83,15 @@ Answer:
 - Q3 (merge conflicts) — найвищий score (0.74), LLM дає детальну відповідь з кроками
 - Q4 (git add vs commit) — чітке пояснення різниці
 - Q5 (stash) — точна команда `git stash push`
-- Q8 (SSH keys) — покрокова інструкція
 - Q9 (rebasing) — LLM пояснює концепцію
 - Q10 (push) — команди `git push` з поясненням
 
 **Де RAG працює погано (fallback):**
+- Q1 (clone) — контекст не містить команди `git clone`
 - Q2 (branch creation) — контекст не містить команди `git branch`/`git checkout -b`
 - Q6 (GitLab merge) — контекст не містить інструкцію Merge Request
 - Q7 (commit history) — контекст повернув generic GitHub intro, без `git log`
+- Q8 (SSH keys) — контекст згадує SSH але не має повної інструкції
 
 ### 5. Відомі обмеження
 
