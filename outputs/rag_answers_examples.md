@@ -34,7 +34,6 @@ The command creates a local copy of the remote repository, including all files, 
 
 **Відповідь**: A Git branch is a separate line of development that lets you work on different versions of a project without affecting other branches. You create a new branch with the `git branch` command (e.g., `git branch feature‑x`). The branch you are currently working on is marked with an asterisk (`*`) in the output of `git branch`.  
 
-**Source:** Chunk [4] – *branching_branch_management_chunk_001* (data/raw/04_branching_branch_management.md)
 
 **Джерело:** data/raw/09_gitlab_getting_started.md
 
@@ -90,7 +89,6 @@ These steps—detecting conflicts, editing the conflict markers, staging the res
 **Відповідь**: `git add` stages the changes you have made, moving them from the working directory into the staging area so they are included in the next snapshot.  
 `git commit` then takes that staged snapshot and records it permanently in the repository’s history.  
 
-**Sources:** [3] and [4]
 
 **Джерело:** data/raw/08_github_about_git.md
 
@@ -186,7 +184,6 @@ git push --set-upstream origin <branch-name>
 
 These steps are shown in the examples that explain pushing to GitHub [1] and illustrate the basic workflow of pushing after a commit [3].  
 
-**Source:** [1] and [3] (chunks github_about_git_chunk_010 and git_basics_getting_repository_chunk_002).
 
 **Джерело:** data/raw/08_github_about_git.md
 
