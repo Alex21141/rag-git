@@ -31,7 +31,29 @@ user question
 - **Citations**: each answer cites source chunk_id + source_file
 - **Fallback**: if context lacks info → "I do not have enough information"
 
-### 2. Результати запитів
+### 2. Prompt template
+
+Prompt використовується у pipeline — містить роль, правило grounded answering, fallback та вимогу цитувати джерело:
+
+```
+You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+
+IMPORTANT RULES:
+1. Answer ONLY based on the provided context below.
+2. If the context does not contain enough information to answer the question, say:
+   "I do not have enough information in the available documents to answer this question."
+3. Do NOT use any general knowledge outside the provided context.
+4. Always cite the source chunk ID or source file used in your answer.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:
+```
+
+### 3. Результати запитів
 
 | # | Запит | Top-1 score | Chunk | Результат |
 |---|-------|-------------|-------|-----------|
@@ -46,7 +68,7 @@ user question
 | 9 | What is rebasing and when should I use it? | 0.54 | git_tools_rebasing_chunk_001 | ✅ Grounded |
 | 10 | How do I push changes to a remote repository? | 0.71 | github_about_git_chunk_010 | ✅ Grounded |
 
-### 3. Аналіз
+### 4. Аналіз
 
 | Метрика | Значення |
 |---------|----------|
@@ -70,14 +92,14 @@ user question
 - Q6 (GitLab merge) — контекст не містить інструкцію Merge Request
 - Q7 (commit history) — контекст повернув generic GitHub intro, без `git log`
 
-### 4. Відомі обмеження
+### 5. Відомі обмеження
 
 - ⚠️ Semantic retrieval bottleneck — низькі scores (Q7=0.58, Q9=0.54) дають нерелевантні чанки
 - ⚠️ No hybrid search — чистий semantic search (без BM25) гірший на generic запити
 - ⚠️ No query expansion — запитується точний текст, без додавання синонімів
 - ⚠️ Free model limits — `nvidia/nemotron-3-ultra-550b-a55b:free` може повертати порожню відповідь (rate limit)
 
-### 5. Висновки
+### 6. Висновки
 
 RAG pipeline з LLM (Nemotron 3 Ultra) працює для специфічних Git-запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній.
 
@@ -86,7 +108,7 @@ RAG pipeline з LLM (Nemotron 3 Ultra) працює для специфічни�
 2. **Query expansion** — додавати синоніми та альтернативні формулювання
 3. **Top-k = 10** — більше чанків у контексті може покрити прогалини
 
-### 6. Структура проєкту
+### 7. Структура проєкту
 
 ```
 rag-github/
