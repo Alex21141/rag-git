@@ -35,20 +35,33 @@ user question
 
 Шаблон використовується у pipeline — містить роль, правило grounded answering, fallback та вимогу цитувати джерело.
 
-**Початковий шаблон (PROMPT_V1):**
+**Початковий шаблон (PROMPT_V1) — заповнений реальним контекстом:**
 
 ```
 Answer the question based on the context.
 
 Context:
-{context}
+--- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
+creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
+If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
+$ git clone  mylibgit
+That command does the same thing as the previous one, but the target directory is called `mylibgit`.
 
-Question: {question}
+--- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
+repository, you create a local copy of the repository in your working directory.
+You can edit files, add new ones, and test your code.
+To collaborate, you can:
+- Commit: After you make changes in your working directory, commit those changes to your local repository.
+- Push: Push your changes to a remote Git repository hosted on GitLab.
+
+... [truncated — 5 total chunks retrieved]
+
+Question: How do I clone a Git repository?
 
 Answer:
 ```
 
-**Фінальний шаблон (PROMPT_TEMPLATE):**
+**Фінальний шаблон (PROMPT_TEMPLATE) — заповнений реальним контекстом:**
 
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
@@ -61,9 +74,22 @@ IMPORTANT RULES:
 4. Always cite the source chunk ID or source file used in your answer.
 
 Context:
-{context}
+--- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
+creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
+If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
+$ git clone  mylibgit
+That command does the same thing as the previous one, but the target directory is called `mylibgit`.
 
-Question: {question}
+--- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
+repository, you create a local copy of the repository in your working directory.
+You can edit files, add new ones, and test your code.
+To collaborate, you can:
+- Commit: After you make changes in your working directory, commit those changes to your local repository.
+- Push: Push your changes to a remote Git repository hosted on GitLab.
+
+... [truncated — 5 total chunks retrieved]
+
+Question: How do I clone a Git repository?
 
 Answer:
 ```
