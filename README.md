@@ -74,19 +74,32 @@ Answer:
 
 *Запит*: `How do I clone a Git repository?`
 
-#### Початковий промпт (v1)
+#### Початковий промпт (v1) — заповнений реальним контекстом
 ```
 Answer the question based on the context.
 
 Context:
-{context}
+--- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
+creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
+If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
+$ git clone  mylibgit
+That command does the same thing as the previous one, but the target directory is called `mylibgit`.
 
-Question: {question}
+--- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
+repository, you create a local copy of the repository in your working directory.
+You can edit files, add new ones, and test your code.
+To collaborate, you can:
+- Commit: After you make changes in your working directory, commit those changes to your local repository.
+- Push: Push your changes to a remote Git repository hosted on GitLab.
+
+... [truncated — 5 total chunks retrieved]
+
+Question: How do I clone a Git repository?
 
 Answer:
 ```
 
-#### Оновлений промпт (v2)
+#### Оновлений промпт (v2) — заповнений реальним контекстом
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -98,9 +111,22 @@ IMPORTANT RULES:
 4. Always cite the source chunk ID or source file used in your answer.
 
 Context:
-{context}
+--- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
+creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
+If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
+$ git clone  mylibgit
+That command does the same thing as the previous one, but the target directory is called `mylibgit`.
 
-Question: {question}
+--- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
+repository, you create a local copy of the repository in your working directory.
+You can edit files, add new ones, and test your code.
+To collaborate, you can:
+- Commit: After you make changes in your working directory, commit those changes to your local repository.
+- Push: Push your changes to a remote Git repository hosted on GitLab.
+
+... [truncated — 5 total chunks retrieved]
+
+Question: How do I clone a Git repository?
 
 Answer:
 ```
@@ -121,19 +147,39 @@ Answer:
 
 *Запит*: `How do I view the commit history?`
 
-#### Початковий промпт (v1)
+#### Початковий промпт (v1) — заповнений реальним контекстом
 ```
 Answer the question based on the context.
 
 Context:
-{context}
+--- Source: github_about_git_chunk_001 (data/raw/08_github_about_git.md) ---
+# About Git
+Learn about the version control system, Git, and how it works with GitHub.
+## About version control and Git
+A version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together. As developers make changes to the project, any earlier version of the project can be recovered at any time.
+Developers can review project history to find out:
+* Which changes were made?
+* Who made the changes?
+* When were the changes made?
+* Why were changes needed?
 
-Question: {question}
+--- Source: git_basics_recording_changes_chunk_027 (data/raw/02_git_basics_recording_changes.md) ---
+and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	new file:   README
+#	modified:   CONTRIBUTING.md
+
+... [truncated — 5 total chunks retrieved]
+
+Question: How do I view the commit history?
 
 Answer:
 ```
 
-#### Оновлений промпт (v2)
+#### Оновлений промпт (v2) — заповнений реальним контекстом
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -144,9 +190,29 @@ IMPORTANT RULES:
 3. Do NOT use any general knowledge outside the provided context.
 
 Context:
-{context}
+--- Source: github_about_git_chunk_001 (data/raw/08_github_about_git.md) ---
+# About Git
+Learn about the version control system, Git, and how it works with GitHub.
+## About version control and Git
+A version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together. As developers make changes to the project, any earlier version of the project can be recovered at any time.
+Developers can review project history to find out:
+* Which changes were made?
+* Who made the changes?
+* When were the changes made?
+* Why were changes needed?
 
-Question: {question}
+--- Source: git_basics_recording_changes_chunk_027 (data/raw/02_git_basics_recording_changes.md) ---
+and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	new file:   README
+#	modified:   CONTRIBUTING.md
+
+... [truncated — 5 total chunks retrieved]
+
+Question: How do I view the commit history?
 
 Answer:
 ```
@@ -167,19 +233,36 @@ Answer:
 
 *Запит*: `What is the difference between git add and git commit?`
 
-#### Початковий промпт (v1)
+#### Початковий промпт (v1) — заповнений реальним контекстом
 ```
 Answer the question based on the context.
 
 Context:
-{context}
+--- Source: github_about_git_chunk_009 (data/raw/08_github_about_git.md) ---
+become a part of the snapshot with `git commit`.
+* `git status` shows the status of changes as untracked, modified, or staged.
+* `git branch` shows the branches being worked on locally.
+* `git merge` merges lines of development together. This command is typically used to combine changes made on two distinct branches. For example, a developer would merge when they want to combine changes from a feature branch into the main branch for deployment.
 
-Question: {question}
+--- Source: gitlab_getting_started_chunk_002 (data/raw/09_gitlab_getting_started.md) ---
+history of your project.
+It serves as a central hub where Git manages and tracks changes to your code.
+When you initialize a Git repository or clone an existing one, Git creates a hidden directory,
+`.git`, inside the project directory.
+The directory contains all the essential metadata and objects Git uses to manage your repository,
+including the complete history of all changes made to the files.
+
+--- Source: github_about_git_chunk_008 (data/raw/08_github_about_git.md) ---
+changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of the next snapshot and a part of the project's history.
+
+... [truncated — 5 total chunks retrieved]
+
+Question: What is the difference between git add and git commit?
 
 Answer:
 ```
 
-#### Оновлений промпт (v2)
+#### Оновлений промпт (v2) — заповнений реальним контекстом
 ```
 You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
 
@@ -191,9 +274,26 @@ IMPORTANT RULES:
 4. Always cite the source chunk ID or source file used in your answer.
 
 Context:
-{context}
+--- Source: github_about_git_chunk_009 (data/raw/08_github_about_git.md) ---
+become a part of the snapshot with `git commit`.
+* `git status` shows the status of changes as untracked, modified, or staged.
+* `git branch` shows the branches being worked on locally.
+* `git merge` merges lines of development together. This command is typically used to combine changes made on two distinct branches. For example, a developer would merge when they want to combine changes from a feature branch into the main branch for deployment.
 
-Question: {question}
+--- Source: gitlab_getting_started_chunk_002 (data/raw/09_gitlab_getting_started.md) ---
+history of your project.
+It serves as a central hub where Git manages and tracks changes to your code.
+When you initialize a Git repository or clone an existing one, Git creates a hidden directory,
+`.git`, inside the project directory.
+The directory contains all the essential metadata and objects Git uses to manage your repository,
+including the complete history of all changes made to the files.
+
+--- Source: github_about_git_chunk_008 (data/raw/08_github_about_git.md) ---
+changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of the next snapshot and a part of the project's history.
+
+... [truncated — 5 total chunks retrieved]
+
+Question: What is the difference between git add and git commit?
 
 Answer:
 ```
