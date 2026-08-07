@@ -9,7 +9,7 @@
 | **Chunks** | 145 |
 | **Top-k retrieval** | 5 chunks |
 | **Relevance threshold** | 0.3 |
-| **LLM** | OpenRouter — `nvidia/nemotron-3-ultra-550b-a55b:free` (reasoning) |
+| **LLM** | OpenRouter — `nvidia/nemotron-3-nano-30b-a3b:free` (reasoning) |
 | **API key** | env var `OPENROUTER_API_KEY` (не в git) |
 | **Test queries** | 10 |
 
@@ -27,7 +27,7 @@ user question
 
 - **Retrieval**: FAISS cosine similarity, top-5 chunks per query
 - **Prompt building**: context = retrieved chunk texts, joined with separators
-- **Answer generation**: OpenRouter Nemotron 3 Ultra 550B (reasoning enabled)
+- **Answer generation**: OpenRouter Nemotron 3 Nano 30B (reasoning enabled)
 - **Citations**: each answer cites source chunk_id + source_file
 - **Fallback**: if context lacks info → "I do not have enough information"
 
@@ -57,52 +57,52 @@ Answer:
 
 | # | Запит | Top-1 score | Chunk | Результат |
 |---|-------|-------------|-------|-----------|
-| 1 | How do I clone a Git repository? | 0.68 | git_basics_getting_repository_chunk_006 | ❌ Fallback |
+| 1 | How do I clone a Git repository? | 0.68 | git_basics_getting_repository_chunk_006 | ✅ Grounded |
 | 2 | What is a Git branch and how do I create one? | 0.63 | gitlab_getting_started_chunk_001 | ❌ Fallback |
 | 3 | How to resolve merge conflicts in Git? | 0.74 | branching_basic_branching_merging_chunk_016 | ✅ Grounded |
 | 4 | What is the difference between git add and git commit? | 0.63 | github_about_git_chunk_009 | ✅ Grounded |
 | 5 | How do I stash my changes temporarily? | 0.63 | git_tools_stashing_cleaning_chunk_002 | ✅ Grounded |
-| 6 | How do I merge a branch in GitLab? | 0.69 | gitlab_getting_started_chunk_005 | ❌ Fallback |
+| 6 | How do I merge a branch in GitLab? | 0.69 | gitlab_getting_started_chunk_005 | ✅ Grounded |
 | 7 | How do I view the commit history? | 0.58 | github_about_git_chunk_001 | ❌ Fallback |
-| 8 | How to set up SSH keys for GitLab? | 0.74 | gitlab_getting_started_chunk_010 | ❌ Fallback |
+| 8 | How to set up SSH keys for GitLab? | 0.74 | gitlab_getting_started_chunk_010 | ✅ Grounded |
 | 9 | What is rebasing and when should I use it? | 0.54 | git_tools_rebasing_chunk_001 | ✅ Grounded |
-| 10 | How do I push changes to a remote repository? | 0.71 | github_about_git_chunk_010 | ❌ Fallback |
+| 10 | How do I push changes to a remote repository? | 0.71 | github_about_git_chunk_010 | ✅ Grounded |
 
 ### 4. Аналіз
 
 | Метрика | Значення |
 |---------|----------|
-| Grounded (повна відповідь LLM) | 4/10 (40%) |
-| Fallback (контекст недостатній або LLM недоступний) | 6/10 (60%) |
+| Grounded (повна відповідь LLM) | 8/10 (80%) |
+| Fallback (контекст недостатній) | 2/10 (20%) |
 | Not relevant | 0/10 (0%) |
 | Середній top-1 score | 0.65 |
 | Min score | 0.54 (Q9 — rebasing) |
 | Max score | 0.74 (Q3 — merge conflicts, Q8 — SSH keys) |
 
-**Де RAG працює добре:**
+**Де RAG працює добре (8/10 Grounded):**
 - Q3 (merge conflicts) — найвищий score (0.74), LLM дає детальну відповідь з кроками
 - Q4 (git add vs commit) — чітке пояснення різниці
 - Q5 (stash) — точна команда `git stash push`
+- Q1 (clone) — Nano модель генерує відповідь, хоча score=0.68
+- Q6 (GitLab merge) — Nano генерує детальну інструкцію (UI + CLI)
+- Q8 (SSH keys) — Nano генерує повну інструкцію
 - Q9 (rebasing) — LLM пояснює концепцію
+- Q10 (push) — команди `git push` з поясненням
 
-**Де RAG працює погано (fallback):**
-- Q1 (clone) — контекст не містить команди `git clone`
+**Де RAG працює погано (fallback, 2/10):**
 - Q2 (branch creation) — контекст не містить команди `git branch`/`git checkout -b`
-- Q6 (GitLab merge) — контекст не містить інструкцію Merge Request
-- Q7 (commit history) — LLM недоступний (rate limit), повернуто template-відповідь
-- Q8 (SSH keys) — контекст згадує SSH але не має повної інструкції
-- Q10 (push) — LLM недоступний (rate limit), повернуто template-відповідь
+- Q7 (commit history) — низький score (0.58), повернуто fallback
 
 ### 5. Відомі обмеження
 
 - ⚠️ Semantic retrieval bottleneck — низькі scores (Q7=0.58, Q9=0.54) дають нерелевантні чанки
 - ⚠️ No hybrid search — чистий semantic search (без BM25) гірший на generic запити
 - ⚠️ No query expansion — запитується точний текст, без додавання синонімів
-- ⚠️ Free model limits — `nvidia/nemotron-3-ultra-550b-a55b:free` може повертати порожню відповідь (rate limit)
+- ⚠️ Free model limits — `nvidia/nemotron-3-nano-30b-a3b:free` має rate-limit (20 RPM, 1000 RPD). Застосовано cooldown 20s та retry-логіку
 
 ### 6. Висновки
 
-RAG pipeline з LLM (Nemotron 3 Ultra) працює для специфічних Git-запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній.
+RAG pipeline з LLM (Nemotron 3 Nano 30B) успішно працює для 8/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Nano модель стабільніша за Ultra 550B — значно менше rate-limit помилок.
 
 Для покращення:
 1. **Hybrid search** (BM25 + semantic) — як у HW3, дає кращі top-1 результати
