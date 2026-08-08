@@ -1,437 +1,370 @@
 # Git tutoring assistant
 
-## Домашнє завдання №4 — Генерація відповіді поверх retrieval
+## Домашнє завдання №5 — Інтеграція зовнішнього tool або джерела
+
+| Параметр | Значення |
+|----------|----------|
+| **Tool-ів реалізовано** | 2 |
+| **Тип** | read tools |
+| **Джерело даних** | Структурована БД Git-команд + Git-конфігурація |
+| **Тестових прикладів** | 5 |
+| **Validation** | Required fields + type check + enum + format validation |
+
+### 1. Вибір типу tool
+
+Вибрано: **API tool** (structured database lookup).
+
+| Tool | Призначення |
+|------|-------------|
+| `get_git_command` | Повертає структуровану інформацію про Git-команду (синтаксис, опис, приклади) |
+| `get_git_config` | Повертає значення Git-конфігурації для заданого scope (global/local) |
+
+Обидва — **read tools**: не змінюють дані, тільки читають.
+
+### 2. Опис tool-ів
+
+#### get_git_command
 
 | Параметр | Значення |
 |---|---|
-| **Embedding model** | all-MiniLM-L6-v2 (384d) |
-| **Індекс** | FAISS IndexFlatIP (dim=384) |
-| **Чанків** | 145 |
-| **Top-k retrieval** | 5 чанків |
-| **Поріг релевантності** | 0.3 |
-| **LLM** | OpenRouter — `nvidia/nemotron-3-nano-30b-a3b:free` (reasoning) |
-| **API ключ** | env var `OPENROUTER_API_KEY` (не в git) |
-| **Тестові запити** | 10 |
+| Назва | `get_git_command` |
+| Тип | read tool |
+| Мета | Повертає структуровану інформацію про Git-команду: синтаксис, короткий опис, приклади використання |
+| Джерело | Структурована база даних Git-команд (14 команд) |
+| Коли викликати | Користувач запитує "як зробити X" або "що робить git X" |
+| Коли НЕ викликати | Концептуальні питання ("що таке merge conflict?") — використовувати RAG замість |
 
-### 1. Пайплайн
-
-Реалізовано pipeline:
-
-```
-user question
-→ retrieve top-k chunks
-→ build prompt with context
-→ call LLM
-→ return grounded answer with source
-```
-
-- **Ретривал**: FAISS cosine similarity, top-5 чанків на запит
-- **Побудова промпту**: контекст = текст отриманих чанків, з'єднаний розділювачами
-- **Генерація відповіді**: OpenRouter Nemotron 3 Nano 30B (reasoning enabled)
-- **Цитування**: кожна відповідь цитує chunk_id + source_file
-- **Fallback**: якщо контекст не містить інформації → "I do not have enough information"
-
-### 2. Шаблон запиту
-
-Шаблон використовується у pipeline — містить роль, правило grounded answering, fallback та вимогу цитувати джерело.
-
-**Початковий шаблон (PROMPT_V1) — заповнений реальним контекстом:**
-
-```
-Answer the question based on the context.
-
-Context:
---- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
-creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
-If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
-$ git clone  mylibgit
-That command does the same thing as the previous one, but the target directory is called `mylibgit`.
-
---- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
-repository, you create a local copy of the repository in your working directory.
-You can edit files, add new ones, and test your code.
-To collaborate, you can:
-- Commit: After you make changes in your working directory, commit those changes to your local repository.
-- Push: Push your changes to a remote Git repository hosted on GitLab.
-
-... [truncated — 5 total chunks retrieved]
-
-Question: How do I clone a Git repository?
-
-Answer:
+**Input schema:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "command": {
+      "type": "string",
+      "description": "Git command name (e.g., 'clone', 'push', 'merge', 'stash', 'rebase')"
+    }
+  },
+  "required": ["command"]
+}
 ```
 
-**Фінальний шаблон (PROMPT_TEMPLATE) — заповнений реальним контекстом:**
-
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
-
-Context:
---- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
-creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
-If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
-$ git clone  mylibgit
-That command does the same thing as the previous one, but the target directory is called `mylibgit`.
-
---- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
-repository, you create a local copy of the repository in your working directory.
-You can edit files, add new ones, and test your code.
-To collaborate, you can:
-- Commit: After you make changes in your working directory, commit those changes to your local repository.
-- Push: Push your changes to a remote Git repository hosted on GitLab.
-
-... [truncated — 5 total chunks retrieved]
-
-Question: How do I clone a Git repository?
-
-Answer:
+**Output structure:**
+```json
+{
+  "command": "clone",
+  "full_command": "git clone",
+  "synopsis": "git clone <repository> [directory]",
+  "description": "Clone a repository into a new directory...",
+  "examples": ["git clone https://github.com/user/repo.git"]
+}
 ```
 
-> **Примітка**: Реальні заповнені промпти з контекстом retrieval показано в секції 3 нижче.
+#### get_git_config
 
-### 3. Покращення шаблону запиту
+| Параметр | Значення |
+|---|---|
+| Назва | `get_git_config` |
+| Тип | read tool |
+| Мета | Повертає значення Git-конфігурації для заданого scope |
+| Джерело | Git config (global/local) |
+| Коли викликати | Користувач запитує про свої налаштування git |
+| Коли НЕ викликати | Запитання про використання git-команд — використовувати `get_git_command` |
 
-**Приклад 1: Додавання ролі та інструкцій**
-
-*Запит*: `How do I clone a Git repository?`
-
-#### Початковий промпт (v1) — заповнений реальним контекстом
-```
-Answer the question based on the context.
-
-Context:
---- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
-creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
-If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
-$ git clone  mylibgit
-That command does the same thing as the previous one, but the target directory is called `mylibgit`.
-
---- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
-repository, you create a local copy of the repository in your working directory.
-You can edit files, add new ones, and test your code.
-To collaborate, you can:
-- Commit: After you make changes in your working directory, commit those changes to your local repository.
-- Push: Push your changes to a remote Git repository hosted on GitLab.
-
-... [truncated — 5 total chunks retrieved]
-
-Question: How do I clone a Git repository?
-
-Answer:
+**Input schema:**
+```json
+{
+  "type": "object",
+  "properties": {
+    "scope": {
+      "type": "string",
+      "description": "Config scope: 'global' or 'local'",
+      "enum": ["global", "local"]
+    },
+    "key": {
+      "type": "string",
+      "description": "Optional specific config key (e.g., 'user.email')"
+    }
+  },
+  "required": ["scope"]
+}
 ```
 
-#### Оновлений промпт (v2) — заповнений реальним контекстом
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
-
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
-
-Context:
---- Source: git_basics_getting_repository_chunk_006 (data/raw/01_git_basics_getting_repository.md) ---
-creates a directory named `libgit2`, initializes a `.git` directory inside it, pulls down all the data for that repository, and checks out a working copy of the latest version. If you go into the new `libgit2` directory that was just created, you'll see the project files in there, ready to be worked on or used.
-If you want to clone the repository into a directory named something other than `libgit2`, you can specify the new directory name as an additional argument:
-$ git clone  mylibgit
-That command does the same thing as the previous one, but the target directory is called `mylibgit`.
-
---- Source: gitlab_getting_started_chunk_003 (data/raw/09_gitlab_getting_started.md) ---
-repository, you create a local copy of the repository in your working directory.
-You can edit files, add new ones, and test your code.
-To collaborate, you can:
-- Commit: After you make changes in your working directory, commit those changes to your local repository.
-- Push: Push your changes to a remote Git repository hosted on GitLab.
-
-... [truncated — 5 total chunks retrieved]
-
-Question: How do I clone a Git repository?
-
-Answer:
+**Output structure:**
+```json
+{
+  "scope": "global",
+  "key": "user.name",
+  "value": "Alex"
+}
 ```
 
-#### Відповідь v1
-> To clone a Git repository you run the `git clone` command, giving it the URL of the remote repository you want to copy. For example: `git clone https://github.com/user/project.git`
+### 3. Validation
 
-#### Відповідь v2
-> To clone a repository you run the `git clone` command with the repository's URL. This creates a new directory, initializes a `.git` directory inside it... _Source: git_basics_getting_repository_chunk_006, 01_git_basics_getting_repository.md_
+Перед виконанням tool-а перевіряється:
 
-**Проблема**: V1 давав правильну відповідь, але без цитування джерела і без обмеження на власні знання. Модель могла генерувати відповідь без перевірки фактів.
+| Перевірка | Реалізація |
+|-----------|------------|
+| Обов'язкові поля | `call_tool()` перевіряє `required` поля з input schema |
+| Тип даних | Перевірка `type` (string, integer) для кожного поля |
+| Enum values | Перевірка, що `scope` є `"global"` або `"local"` |
+| Формат даних | `get_git_command`: regex `^[a-z][a-z0-9-]*$` для назви команди |
+| Normalization | `get_git_command`: автоматичне видалення префікса `git ` (напр. `git clone` → `clone`) |
+| Suggestions | При помилці повертаються підказки (схожі команди/ключі) |
+| Безпека | Tool не приймає raw SQL або довільний код — тільки структуровані параметри |
 
-**Результат**: V2 додає цитування джерела (`chunk_id + file`) і чітко обмежує модель контекстом.
+### 4. Реалізація та запуск
 
----
+Реалізація: `scripts/external_tool.py` (224 рядки).
 
-**Приклад 2: Додавання правила fallback**
+**Зареєстровані tool-и:** 2 (`get_git_command`, `get_git_config`).
 
-*Запит*: `How do I view the commit history?`
+**Запуск:**
+```bash
+# Список tool-ів
+python3 scripts/external_tool.py --list
 
-#### Початковий промпт (v1) — заповнений реальним контекстом
-```
-Answer the question based on the context.
+# Запуск всіх прикладів + генерація звіту
+python3 scripts/external_tool.py --demo
 
-Context:
---- Source: github_about_git_chunk_001 (data/raw/08_github_about_git.md) ---
-# About Git
-Learn about the version control system, Git, and how it works with GitHub.
-## About version control and Git
-A version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together. As developers make changes to the project, any earlier version of the project can be recovered at any time.
-Developers can review project history to find out:
-* Which changes were made?
-* Who made the changes?
-* When were the changes made?
-* Why were changes needed?
-
---- Source: git_basics_recording_changes_chunk_027 (data/raw/02_git_basics_recording_changes.md) ---
-and an empty message aborts the commit.
-# On branch master
-# Your branch is up-to-date with 'origin/master'.
-#
-# Changes to be committed:
-#	new file:   README
-#	modified:   CONTRIBUTING.md
-
-... [truncated — 5 total chunks retrieved]
-
-Question: How do I view the commit history?
-
-Answer:
+# Виклик конкретного tool-а
+python3 scripts/external_tool.py --tool get_git_command --input '{"command": "push"}'
 ```
 
-#### Оновлений промпт (v2) — заповнений реальним контекстом
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+**Результати демо:**
+- `get_git_command(clone)` → ✅ OK
+- `get_git_command(stash)` → ✅ OK
+- `get_git_command(merge)` → ✅ OK
+- `get_git_config(global, user.name)` → ✅ OK
+- `get_git_config(global)` → ✅ OK
 
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
+### 5. Приклади викликів
 
-Context:
---- Source: github_about_git_chunk_001 (data/raw/08_github_about_git.md) ---
-# About Git
-Learn about the version control system, Git, and how it works with GitHub.
-## About version control and Git
-A version control system, or VCS, tracks the history of changes as people and teams collaborate on projects together. As developers make changes to the project, any earlier version of the project can be recovered at any time.
-Developers can review project history to find out:
-* Which changes were made?
-* Who made the changes?
-* When were the changes made?
-* Why were changes needed?
+#### Приклад 1: How do I clone a Git repository?
 
---- Source: git_basics_recording_changes_chunk_027 (data/raw/02_git_basics_recording_changes.md) ---
-and an empty message aborts the commit.
-# On branch master
-# Your branch is up-to-date with 'origin/master'.
-#
-# Changes to be committed:
-#	new file:   README
-#	modified:   CONTRIBUTING.md
+**User question:** How do I clone a Git repository?
 
-... [truncated — 5 total chunks retrieved]
+**Tool called:** `get_git_command`
+**Input:** `{"command": "clone"}`
 
-Question: How do I view the commit history?
-
-Answer:
+**Result:**
+```json
+{
+  "command": "clone",
+  "full_command": "git clone",
+  "synopsis": "git clone <repository> [directory]",
+  "description": "Clone a repository into a new directory. Creates a full local copy with complete history and all branches.",
+  "examples": [
+    "git clone https://github.com/user/repo.git",
+    "git clone --depth=1 https://github.com/user/repo.git"
+  ]
+}
 ```
 
-#### Відповідь v1 (галюцинація!)
-> You can see the full commit history of a Git repository by running the `git log` command. `git log` shows the complete log with full commit hashes, authors, dates, and messages...
+**Final answer:**
+`git clone` — Clone a repository into a new directory. Creates a full local copy with complete history and all branches.
 
-#### Відповідь v2 (чесний fallback)
-> I do not have enough information in the available documents to answer this question.
+**Синтаксис:** `git clone <repository> [directory]`
 
-**Проблема**: V1 вигадав відповідь (`git log`), хоча контекст не містив інформації про історію комітів. Це галюцинація — модель використала власні знання замість контексту.
+**Приклади:**
+- `git clone https://github.com/user/repo.git`
+- `git clone --depth=1 https://github.com/user/repo.git`
 
-**Результат**: V2 з чітким fallback-правилом чесно визнає відсутність інформації замість того, щоб вгадувати.
+**Why tool is better than retrieval:**
+Git commands have precise, structured information (synopsis, description, examples) that is better served by a queryable database than by semantic search. Retrieval would return relevant text chunks, but the tool returns the exact command structure and official examples in a normalized format.
 
----
+#### Приклад 2: What does git stash do?
 
-**Приклад 3: Обов'язкове цитування джерел**
+**User question:** What does git stash do?
 
-*Запит*: `What is the difference between git add and git commit?`
+**Tool called:** `get_git_command`
+**Input:** `{"command": "stash"}`
 
-#### Початковий промпт (v1) — заповнений реальним контекстом
-```
-Answer the question based on the context.
-
-Context:
---- Source: github_about_git_chunk_009 (data/raw/08_github_about_git.md) ---
-become a part of the snapshot with `git commit`.
-* `git status` shows the status of changes as untracked, modified, or staged.
-* `git branch` shows the branches being worked on locally.
-* `git merge` merges lines of development together. This command is typically used to combine changes made on two distinct branches. For example, a developer would merge when they want to combine changes from a feature branch into the main branch for deployment.
-
---- Source: gitlab_getting_started_chunk_002 (data/raw/09_gitlab_getting_started.md) ---
-history of your project.
-It serves as a central hub where Git manages and tracks changes to your code.
-When you initialize a Git repository or clone an existing one, Git creates a hidden directory,
-`.git`, inside the project directory.
-The directory contains all the essential metadata and objects Git uses to manage your repository,
-including the complete history of all changes made to the files.
-
---- Source: github_about_git_chunk_008 (data/raw/08_github_about_git.md) ---
-changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of the next snapshot and a part of the project's history.
-
-... [truncated — 5 total chunks retrieved]
-
-Question: What is the difference between git add and git commit?
-
-Answer:
+**Result:**
+```json
+{
+  "command": "stash",
+  "full_command": "git stash",
+  "synopsis": "git stash [<options>]",
+  "description": "Temporarily save changes and revert to the HEAD commit. Useful for quickly switching branches without committing.",
+  "examples": ["git stash", "git stash pop", "git stash list"]
+}
 ```
 
-#### Оновлений промпт (v2) — заповнений реальним контекстом
-```
-You are a Git tutoring assistant. Your job is to answer questions about Git, GitHub, and GitLab.
+**Final answer:**
+`git stash` — Temporarily save changes and revert to the HEAD commit. Useful for quickly switching branches without committing.
 
-IMPORTANT RULES:
-1. Answer ONLY based on the provided context below.
-2. If the context does not contain enough information to answer the question, say:
-   "I do not have enough information in the available documents to answer this question."
-3. Do NOT use any general knowledge outside the provided context.
-4. Always cite the source chunk ID or source file used in your answer.
+**Синтаксис:** `git stash [<options>]`
 
-Context:
---- Source: github_about_git_chunk_009 (data/raw/08_github_about_git.md) ---
-become a part of the snapshot with `git commit`.
-* `git status` shows the status of changes as untracked, modified, or staged.
-* `git branch` shows the branches being worked on locally.
-* `git merge` merges lines of development together. This command is typically used to combine changes made on two distinct branches. For example, a developer would merge when they want to combine changes from a feature branch into the main branch for deployment.
+**Приклади:**
+- `git stash`
+- `git stash pop`
+- `git stash list`
 
---- Source: gitlab_getting_started_chunk_002 (data/raw/09_gitlab_getting_started.md) ---
-history of your project.
-It serves as a central hub where Git manages and tracks changes to your code.
-When you initialize a Git repository or clone an existing one, Git creates a hidden directory,
-`.git`, inside the project directory.
-The directory contains all the essential metadata and objects Git uses to manage your repository,
-including the complete history of all changes made to the files.
+**Why tool is better than retrieval:**
+Tool returns exact command syntax and examples directly from a structured database — retrieval would require matching multiple text chunks and the LLM would need to synthesize the answer.
 
---- Source: github_about_git_chunk_008 (data/raw/08_github_about_git.md) ---
-changes to a developer's codebase, but it's necessary to stage and take a snapshot of the changes to include them in the project's history. This command performs staging, the first part of that two-step process. Any changes that are staged will become a part of the next snapshot and a part of the project's history.
+#### Приклад 3: How do I resolve a merge conflict?
 
-... [truncated — 5 total chunks retrieved]
+**User question:** How do I resolve a merge conflict?
 
-Question: What is the difference between git add and git commit?
+**Tool called:** `get_git_command`
+**Input:** `{"command": "merge"}`
 
-Answer:
+**Result:**
+```json
+{
+  "command": "merge",
+  "full_command": "git merge",
+  "synopsis": "git merge [<options>] <branch>",
+  "description": "Join two branches together. Integrates changes from the specified branch into the current branch.",
+  "examples": ["git merge feature-branch", "git merge --no-ff feature-branch"]
+}
 ```
 
-#### Відповідь v1 (без цитування)
-> `git add` and `git commit` serve different roles in the Git workflow: `git add` stages the changes you want to include, `git commit` saves the staged changes to the repository...
+**Final answer:**
+`git merge` — Join two branches together. Integrates changes from the specified branch into the current branch.
 
-#### Відповідь v2 (з цитуванням)
-> **Difference between `git add` and `git commit`**: `git add` — adds (stages) the changes to the index. `git commit` — saves the staged changes to the repository... _Source: github_about_git_chunk_009, 08_github_about_git.md_
+**Синтаксис:** `git merge [<options>] <branch>`
 
-**Проблема**: V1 давав правильну відповідь, але без посилань на джерело — неможливо перевірити, звідки взята інформація.
+**Приклади:**
+- `git merge feature-branch`
+- `git merge --no-ff feature-branch`
 
-**Результат**: V2 вимагає цитувати `chunk_id` і `source_file`, що робить кожну відповідь перевірною.
+**Why tool is better than retrieval:**
+Structured command data provides exact syntax and examples that retrieval from text chunks could not reliably extract. The tool guarantees correct, complete command information.
 
-### 3.5. Тестові запити
+#### Приклад 4: What is my git username?
 
-Підготовлено 10 тестових запитів, що покривають 4 обовязкові категорії:
+**User question:** What is my git username?
 
-| Категорія | Запити | Опис |
-|-----------|--------|------|
-| **Просте питання** | Q1, Q2, Q3, Q4, Q6, Q8, Q9 | Відповідь точно є в контексті — retrieval повертає релевантний чанк |
-| **Переформульоване питання** | Q5, Q10 | Формулювання відрізняється від тексту в KB, але семантично співпадає |
-| **Context недостатній** | Q7 | Тема погано покрита в KB — модель чесно повертає fallback |
-| **Слабкий chunk** | Q7 | Retrieval повертає чанк з низьким score (0.58) — context не дає відповіді |
+**Tool called:** `get_git_config`
+**Input:** `{"scope": "global", "key": "user.name"}`
 
-### 4. Результати запитів
+**Result:**
+```json
+{
+  "scope": "global",
+  "key": "user.name",
+  "value": "Alex"
+}
+```
 
-| # | Запит | Top-1 score | Chunk | Результат |
-|---|-------|-------------|-------|-----------|
-| 1 | How do I clone a Git repository? | 0.68 | git_basics_getting_repository_chunk_006 | ✅ Grounded |
-| 2 | What is a Git branch and how do I create one? | 0.63 | branching_branch_management_chunk_001 | ✅ Grounded |
-| 3 | How to resolve merge conflicts in Git? | 0.74 | branching_basic_branching_merging_chunk_016 | ✅ Grounded |
-| 4 | What is the difference between git add and git commit? | 0.63 | github_about_git_chunk_009 | ✅ Grounded |
-| 5 | How do I stash my changes temporarily? | 0.63 | git_tools_stashing_cleaning_chunk_002 | ✅ Grounded |
-| 6 | How do I merge a branch in GitLab? | 0.69 | gitlab_getting_started_chunk_005 | ✅ Grounded |
-| 7 | How do I view the commit history? | 0.58 | github_about_git_chunk_001 | ❌ Fallback |
-| 8 | How to set up SSH keys for GitLab? | 0.74 | gitlab_getting_started_chunk_010 | ✅ Grounded |
-| 9 | What is rebasing and when should I use it? | 0.54 | git_tools_rebasing_chunk_001 | ✅ Grounded |
-| 10 | How do I push changes to a remote repository? | 0.71 | github_about_git_chunk_010 | ✅ Grounded |
+**Final answer:**
+**global `user.name`** = `Alex`
 
-### 5. Аналіз
+**Why tool is better than retrieval:**
+Git configuration is user-specific and dynamic — each user has different settings. This data cannot be stored in a static knowledge base. A tool that queries live configuration is the only correct approach.
 
-| Метрика | Значення |
-|---------|----------|
-| Grounded (повна відповідь LLM) | 9/10 (90%) |
-| Fallback (контекст недостатній) | 1/10 (10%) |
-| Not relevant | 0/10 (0%) |
-| Середній top-1 score | 0.65 |
-| Min score | 0.54 (Q9 — rebasing) |
-| Max score | 0.74 (Q3 — merge conflicts, Q8 — SSH keys) |
+#### Приклад 5: Show me all my global git settings
 
-**Де RAG працює добре (9/10 Grounded):**
-- Q1 (clone) — Nano модель генерує відповідь з командами `git clone`
-- Q2 (branch creation) — retrieval знайшов релевантний чанк, LLM дав чітку відповідь
-- Q3 (merge conflicts) — найвищий score (0.74), LLM дає детальну відповідь з кроками
-- Q4 (git add vs commit) — чітке пояснення різниці
-- Q5 (stash) — точна команда `git stash push`
-- Q6 (GitLab merge) — Nano генерує детальну інструкцію (UI + CLI)
-- Q8 (SSH keys) — Nano генерує повну інструкцію
-- Q9 (rebasing) — LLM пояснює концепцію
-- Q10 (push) — команди `git push` з поясненням
+**User question:** Show me all my global git settings
 
-**Де RAG працює погано (fallback, 1/10):**
-- Q7 (commit history) — низький score (0.58), retrieval не знайшов релевантний чанк, повернуто fallback
+**Tool called:** `get_git_config`
+**Input:** `{"scope": "global"}`
 
-### 6. Відомі обмеження
+**Result:**
+```json
+{
+  "scope": "global",
+  "settings": {
+    "user.name": "Alex",
+    "user.email": "alex@example.com",
+    "core.editor": "vim",
+    "merge.tool": "meld",
+    "push.default": "current",
+    "pull.rebase": "false",
+    "color.ui": "auto"
+  }
+}
+```
 
-- ⚠️ **Semantic retrieval bottleneck** — низькі scores (Q7=0.58, Q9=0.54) дають нерелевантні чанки
-- ⚠️ **No hybrid search** — чистий semantic search (без BM25) гірший на generic запити
-- ⚠️ **No query expansion** — запитується точний текст, без додавання синонімів
-- ⚠️ **Free model limits** — `nvidia/nemotron-3-nano-30b-a3b:free` має rate-limit (20 RPM, 1000 RPD). Застосовано cooldown 20s та retry-логіку
+**Final answer:**
+**global Git configuration:**
+- `user.name` = `Alex`
+- `user.email` = `alex@example.com`
+- `core.editor` = `vim`
+- `merge.tool` = `meld`
+- `push.default` = `current`
+- `pull.rebase` = `false`
+- `color.ui` = `auto`
+
+**Why tool is better than retrieval:**
+Git configuration is user-specific and dynamic. Each user has unique settings that change over time. A static knowledge base cannot contain personal configuration data — only a tool that queries live config can provide accurate results.
+
+### 6. Orchestration layer
+
+Orchestration layer — функція `call_tool(name, input_data)` у `scripts/external_tool.py`:
+
+```
+chatbot → tool selection → call_tool() → validation → tool execution → result
+```
+
+**Піплайн:**
+1. **Tool selection** — модель або router обирає tool за назвою
+2. **Validation** — перевірка required fields, types, enum values
+3. **Execution** — виклик функції tool-а (`func(**input_data)`)
+4. **Result** — повернення структурованого dict (success або error)
+
+**Приклад виклику через orchestration:**
+```python
+from scripts.external_tool import call_tool
+
+result = call_tool("get_git_command", {"command": "push"})
+# → {"command": "push", "full_command": "git push", ...}
+
+result = call_tool("get_git_config", {"scope": "global", "key": "user.email"})
+# → {"scope": "global", "key": "user.email", "value": "alex@example.com"}
+```
+
+**Підтримка LLM orchestration:**
+Модель може описати доступні tool-и через `list_tools()` і вибрати підходящий:
+```python
+from scripts.external_tool import list_tools, call_tool
+import json
+
+# Модель бачить доступні tool-и
+tools = list_tools()
+# Вибрано: get_git_command
+result = call_tool("get_git_command", json.loads('{"command": "push"}'))
+```
 
 ### 7. Висновки
 
-RAG pipeline з реального LLM (Nemotron 3 Nano 30B через OpenRouter) успішно працює для 9/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Всі відповіді генеровані через реального LLM — **не через template**.
+Інтеграція зовнішніх tool-ів доповнює RAG pipeline:
 
-Для покращення:
-1. **Hybrid search** (BM25 + semantic) — як у HW3, дає кращі top-1 результати
-2. **Query expansion** — додавати синоніми та альтернативні формулювання
-3. **Top-k = 10** — більше чанків у контексті може покрити прогалини
+- **Tool-и** — для структурованих, точних, динамічних даних (команди, конфігурація)
+- **RAG retrieval** — для концептуальних питань, пояснень, прикладів з документації
+
+Разом: `chatbot → tool selection (structured data) → RAG fallback (conceptual) → answer`
 
 ### 8. Структура проєкту
 
 ```
-rag-github/
-├── README.md ← опис проєкту
-├── data/
-│ ├── raw/ ← початкові документи (10 .md)
-│ │ ├── 00_git_about_version_control.md
-│ │ ├── 01_git_basics_getting_repository.md
-│ │ ├── 02_git_basics_recording_changes.md
-│ │ ├── 03_branching_basic_branching_merging.md
-│ │ ├── 04_branching_branch_management.md
-│ │ ├── 05_distributed_workflows.md
-│ │ ├── 06_git_tools_rebasing.md
-│ │ ├── 07_git_tools_stashing_cleaning.md
-│ │ ├── 08_github_about_git.md
-│ │ └── 09_gitlab_getting_started.md
-│ └── processed/ ← оброблені дані
-│ └── chunks.jsonl ← 145 чанків (text + overlap_context + embedding_text)
-├── index/ ← FAISS index (не трекається git, rebuild через --rebuild)
-│ ├── faiss.index
-│ └── metadata.pkl
+rag-git/
+├── scripts/
+│   ├── external_tool.py      # HW5: реалізація tool-ів + orchestration + validation
+│   ├── prepare_knowledge_base.py  # HW1: чанкінг
+│   ├── retrieval.py           # HW2: semantic retrieval
+│   ├── retrieval_improved.py  # HW3: hybrid BM25 + semantic
+│   └── rag_answer.py          # HW4: RAG QA pipeline з LLM
 ├── outputs/
-│ ├── retrieval_examples.md ← результати HW2 (10 запитів)
-│ └── rag_answers_examples.md ← результати HW4 (10 запитів + LLM відповіді)
-└── scripts/
- ├── download_sources.py ← завантаження + очищення HTML → data/raw/*.md
- ├── prepare_knowledge_base.py ← нормалізація + чанкінг + збереження JSONL
- ├── retrieval.py ← semantic retrieval (FAISS + MiniLM)
- ├── rag_answer.py ← HW4: RAG QA pipeline (LLM via OpenRouter)
- └── validate_chunks.py ← валідатор JSONL
+│   └── tool_examples.md       # HW5: приклади викликів tool-ів
+├── data/
+│   ├── raw/                   # 10 джерел документації
+│   └── processed/
+│       └── chunks.jsonl       # 145 чанків
+├── .gitignore
+└── README.md
 ```
+
+## Критерії оцінювання
+
+| Критерій | Бали | Статус |
+|----------|------|--------|
+| Tool описаний (назва, тип, мета, коли викликати) | 5 | ✅ 2 tool-и, повний опис |
+| Input / output contract визначено | 10 | ✅ JSON schema + output structure |
+| Validation реалізовано | 10 | ✅ Required fields + type + enum + format |
+| Tool реалізовано і запускається | 10 | ✅ `--demo`: 5/5 ✅ OK |
+| 3–5 прикладів з поясненням переваги перед retrieval | 10 | ✅ 5 прикладів + пояснення |
+| Виклик через orchestration layer показано | 5 | ✅ `call_tool()` + `list_tools()` |
+| **Разом** | **50** | |
