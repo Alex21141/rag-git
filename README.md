@@ -163,9 +163,9 @@ python3 scripts/external_tool.py --tool get_git_command --input '{"command": "pu
 **Final answer:**
 `git clone` — Clone a repository into a new directory. Creates a full local copy with complete history and all branches.
 
-**Синтаксис:** `git clone <repository> [directory]`
+**Synopsis:** `git clone <repository> [directory]`
 
-**Приклади:**
+**Examples:**
 - `git clone https://github.com/user/repo.git`
 - `git clone --depth=1 https://github.com/user/repo.git`
 
@@ -193,9 +193,9 @@ Git-команди мають точну структуровану інформ
 **Final answer:**
 `git stash` — Temporarily save changes and revert to the HEAD commit. Useful for quickly switching branches without committing.
 
-**Синтаксис:** `git stash [<options>]`
+**Synopsis:** `git stash [<options>]`
 
-**Приклади:**
+**Examples:**
 - `git stash`
 - `git stash pop`
 - `git stash list`
@@ -224,9 +224,9 @@ Tool повертає точний синтаксис команди та при
 **Final answer:**
 `git merge` — Join two branches together. Integrates changes from the specified branch into the current branch.
 
-**Синтаксис:** `git merge [<options>] <branch>`
+**Synopsis:** `git merge [<options>] <branch>`
 
-**Приклади:**
+**Examples:**
 - `git merge feature-branch`
 - `git merge --no-ff feature-branch`
 
