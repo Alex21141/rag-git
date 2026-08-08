@@ -107,8 +107,8 @@
 - `git clone https://github.com/user/repo.git`
 - `git clone --depth=1 https://github.com/user/repo.git`
 
-**Why tool is better than retrieval:**
-Git commands have precise, structured information (synopsis, description, examples) that is better served by a queryable database than by semantic search. Retrieval would return relevant text chunks, but the tool returns the exact command structure and official examples in a normalized format.
+**Чому tool кращий за retrieval:**
+Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
 
 ## Приклад 2
 
@@ -146,8 +146,8 @@ Git commands have precise, structured information (synopsis, description, exampl
 - `git stash pop`
 - `git stash list`
 
-**Why tool is better than retrieval:**
-Git commands have precise, structured information (synopsis, description, examples) that is better served by a queryable database than by semantic search. Retrieval would return relevant text chunks, but the tool returns the exact command structure and official examples in a normalized format.
+**Чому tool кращий за retrieval:**
+Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
 
 ## Приклад 3
 
@@ -183,8 +183,8 @@ Git commands have precise, structured information (synopsis, description, exampl
 - `git merge feature-branch`
 - `git merge --no-ff feature-branch`
 
-**Why tool is better than retrieval:**
-Git commands have precise, structured information (synopsis, description, examples) that is better served by a queryable database than by semantic search. Retrieval would return relevant text chunks, but the tool returns the exact command structure and official examples in a normalized format.
+**Чому tool кращий за retrieval:**
+Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
 
 ## Приклад 4
 
@@ -210,8 +210,8 @@ Git commands have precise, structured information (synopsis, description, exampl
 **Final answer:**
 **global `user.name`** = `Alex`
 
-**Why tool is better than retrieval:**
-Git configuration is user-specific and dynamic — each user has different settings. This data cannot be stored in a static knowledge base. A tool that queries live configuration is the only correct approach.
+**Чому tool кращий за retrieval:**
+Git-конфігурація є персональною та динамічною — кожен користувач має різні налаштування. Ці дані неможливо зберігати в статичній knowledge base. Tool, який запитує поточну конфігурацію — єдиний правильний підхід.
 
 ## Приклад 5
 
@@ -250,5 +250,5 @@ Git configuration is user-specific and dynamic — each user has different setti
 - `pull.rebase` = `false`
 - `color.ui` = `auto`
 
-**Why tool is better than retrieval:**
-Git configuration is user-specific and dynamic — each user has different settings. This data cannot be stored in a static knowledge base. A tool that queries live configuration is the only correct approach.
+**Чому tool кращий за retrieval:**
+Git-конфігурація є персональною та динамічною — кожен користувач має різні налаштування. Ці дані неможливо зберігати в статичній knowledge base. Tool, який запитує поточну конфігурацію — єдиний правильний підхід.

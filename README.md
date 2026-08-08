@@ -169,8 +169,8 @@ python3 scripts/external_tool.py --tool get_git_command --input '{"command": "pu
 - `git clone https://github.com/user/repo.git`
 - `git clone --depth=1 https://github.com/user/repo.git`
 
-**Why tool is better than retrieval:**
-Git commands have precise, structured information (synopsis, description, examples) that is better served by a queryable database than by semantic search. Retrieval would return relevant text chunks, but the tool returns the exact command structure and official examples in a normalized format.
+**Чому tool кращий за retrieval:**
+Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
 
 #### Приклад 2: What does git stash do?
 
@@ -200,8 +200,8 @@ Git commands have precise, structured information (synopsis, description, exampl
 - `git stash pop`
 - `git stash list`
 
-**Why tool is better than retrieval:**
-Tool returns exact command syntax and examples directly from a structured database — retrieval would require matching multiple text chunks and the LLM would need to synthesize the answer.
+**Чому tool кращий за retrieval:**
+Tool повертає точний синтаксис команди та приклади напряму зі структурованої бази — retrieval вимагав би поєднання кількох текстових чанків, і моделі довелося б синтезувати відповідь.
 
 #### Приклад 3: How do I resolve a merge conflict?
 
@@ -230,8 +230,8 @@ Tool returns exact command syntax and examples directly from a structured databa
 - `git merge feature-branch`
 - `git merge --no-ff feature-branch`
 
-**Why tool is better than retrieval:**
-Structured command data provides exact syntax and examples that retrieval from text chunks could not reliably extract. The tool guarantees correct, complete command information.
+**Чому tool кращий за retrieval:**
+Структуровані дані команд дають точний синтаксис та приклади, які retrieval з текстових чанків не зміг би надійно видобути. Tool гарантує правильну та повну інформацію про команду.
 
 #### Приклад 4: What is my git username?
 
@@ -252,8 +252,8 @@ Structured command data provides exact syntax and examples that retrieval from t
 **Final answer:**
 **global `user.name`** = `Alex`
 
-**Why tool is better than retrieval:**
-Git configuration is user-specific and dynamic — each user has different settings. This data cannot be stored in a static knowledge base. A tool that queries live configuration is the only correct approach.
+**Чому tool кращий за retrieval:**
+Git-конфігурація є персональною та динамічною — кожен користувач має різні налаштування. Ці дані неможливо зберігати в статичній knowledge base. Tool, який запитує поточну конфігурацію — єдиний правильний підхід.
 
 #### Приклад 5: Show me all my global git settings
 
@@ -288,8 +288,8 @@ Git configuration is user-specific and dynamic — each user has different setti
 - `pull.rebase` = `false`
 - `color.ui` = `auto`
 
-**Why tool is better than retrieval:**
-Git configuration is user-specific and dynamic. Each user has unique settings that change over time. A static knowledge base cannot contain personal configuration data — only a tool that queries live config can provide accurate results.
+**Чому tool кращий за retrieval:**
+Git-конфігурація є персональною та динамічною. Кожен користувач має унікальні налаштування, що змінюються з часом. Статична knowledge base не може містити персональні дані конфігурації — лише tool, який запитує поточну конфігурацію, може надати точні результати.
 
 ### 6. Orchestration layer
 
