@@ -66,7 +66,7 @@
 | Назва | `get_git_config` |
 | Тип | read-інструмент |
 | Мета | Повертає значення Git-конфігурації для заданого scope |
-| Джерело | Git config (global/local) |
+| Джерело | `git config --{scope} --list` (subprocess, реальні дані) |
 | Коли викликати | Користувач запитує про свої налаштування git |
 | Коли НЕ викликати | Запитання про використання git-команд — використовувати `get_git_command` |
 
@@ -107,7 +107,7 @@
 | Обов'язкові поля | `call_tool()` перевіряє `required` поля з input schema |
 | Тип даних | Перевірка `type` (string, integer) для кожного поля |
 | Enum values | Перевірка, що `scope` є `"global"` або `"local"` |
-| Формат даних | `get_git_command`: regex `^[a-z][a-z0-9-]*$` для назви команди |
+| Формат даних | `get_git_command`: regex `^[a-z][a-z0-9-]*$` + maxLength 30 для назви команди |
 | Normalization | `get_git_command`: автоматичне видалення префікса `git ` (напр. `git clone` → `clone`) |
 | Suggestions | При помилці повертаються підказки (схожі команди/ключі) |
 | Безпека | Tool не приймає raw SQL або довільний код — тільки структуровані параметри |
@@ -134,8 +134,8 @@ python3 scripts/external_tool.py --tool get_git_command --input '{"command": "pu
 - `get_git_command(clone)` → ✅ OK
 - `get_git_command(stash)` → ✅ OK
 - `get_git_command(merge)` → ✅ OK
-- `get_git_config(global, user.name)` → ✅ OK
-- `get_git_config(global)` → ✅ OK
+- `get_git_config(global, user.name)` → ✅ OK (live subprocess)
+- `get_git_config(global)` → ✅ OK (live subprocess)
 
 ### 5. Приклади викликів
 
@@ -231,7 +231,7 @@ Tool повертає точний синтаксис команди та при
 - `git merge --no-ff feature-branch`
 
 **Чому tool кращий за retrieval:**
-Структуровані дані команд дають точний синтаксис та приклади, які retrieval з текстових чанків не зміг би надійно видобути. Tool гарантує правильну та повну інформацію про команду.
+`git merge` вимагає точного синтаксису аргументів (напр. 'git merge feature-branch') та підтримує кілька флагів (--no-ff, --squash, --abort). Tool повертає точний синтаксис та опції напряму, тоді як retrieval з прозової документації був би неоднозначним щодо позицій аргументів.
 
 #### Приклад 4: What is my git username?
 
@@ -245,15 +245,15 @@ Tool повертає точний синтаксис команди та при
 {
   "scope": "global",
   "key": "user.name",
-  "value": "Alex"
+  "value": "Alex21141"
 }
 ```
 
 **Final answer:**
-**global `user.name`** = `Alex`
+**global `user.name`** = `Alex21141`
 
 **Чому tool кращий за retrieval:**
-Git-конфігурація є персональною та динамічною — кожен користувач має різні налаштування. Ці дані неможливо зберігати в статичній базі знань. Інструмент, який запитує поточну конфігурацію — єдиний правильний підхід.
+Git-конфігурація є персональною та динамічною — кожен користувач має унікальні налаштування, що змінюються з часом. Запит конкретного ключа конфігурації (напр. user.name) вимагає живих даних, які неможливо зберігати в статичній базі знань.
 
 #### Приклад 5: Show me all my global git settings
 
@@ -267,26 +267,16 @@ Git-конфігурація є персональною та динамічно
 {
   "scope": "global",
   "settings": {
-    "user.name": "Alex",
-    "user.email": "alex@example.com",
-    "core.editor": "vim",
-    "merge.tool": "meld",
-    "push.default": "current",
-    "pull.rebase": "false",
-    "color.ui": "auto"
+    "user.name": "Alex21141",
+    "user.email": "alex21141@gmail.com"
   }
 }
 ```
 
 **Final answer:**
 **global Git configuration:**
-- `user.name` = `Alex`
-- `user.email` = `alex@example.com`
-- `core.editor` = `vim`
-- `merge.tool` = `meld`
-- `push.default` = `current`
-- `pull.rebase` = `false`
-- `color.ui` = `auto`
+- `user.name` = `Alex21141`
+- `user.email` = `alex21141@gmail.com`
 
 **Чому tool кращий за retrieval:**
 Git-конфігурація є персональною та динамічною. Кожен користувач має унікальні налаштування, що змінюються з часом. Статична база знань не може містити персональні дані конфігурації — лише інструмент, який запитує поточну конфігурацію, може надати точні результати.

@@ -7,7 +7,9 @@
 ## Зареєстровані tool-и
 
 - **`get_git_command`** — Get structured information about a Git command (synopsis, description, examples). Use when user asks about a specific git command or 'how do I X'.
+
 - **`get_git_config`** — Get Git configuration values for a given scope (global or local). Use when user asks about their git settings or configuration.
+
 
 ## Опис tool-ів
 
@@ -15,7 +17,7 @@
 
 | Параметр | Значення |
 |---|---|
-| Тип | read tool |
+| Тип | read-інструмент |
 | Мета | Повертає структуровану інформацію про Git-команду (синтаксис, опис, приклади) |
 | Коли викликати | Користувач запитує 'як зробити X' або 'що робить git X' |
 | Коли НЕ викликати | Концептуальні питання ('що таке merge conflict?') — використовувати RAG |
@@ -28,7 +30,8 @@
   "properties": {
     "command": {
       "type": "string",
-      "description": "Git command name (e.g., 'clone', 'push', 'merge', 'stash', 'rebase')"
+      "description": "Git command name (e.g., 'clone', 'push', 'merge', 'stash', 'rebase')",
+      "maxLength": 30
     }
   },
   "required": [
@@ -42,7 +45,7 @@
 
 | Параметр | Значення |
 |---|---|
-| Тип | read tool |
+| Тип | read-інструмент |
 | Мета | Повертає значення Git-конфігурації для заданого scope (global/local) |
 | Коли викликати | Користувач запитує про свої налаштування git |
 | Коли НЕ викликати | Запитання про використання git-команд — використовувати get_git_command |
@@ -108,7 +111,7 @@
 - `git clone --depth=1 https://github.com/user/repo.git`
 
 **Чому tool кращий за retrieval:**
-Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
+git clone has precise syntax with multiple valid forms (HTTPS, SSH, --depth, --branch). A tool returns the exact synopsis and official examples in a normalized format, whereas retrieval would return scattered text chunks that the LLM must synthesize.
 
 ## Приклад 2
 
@@ -147,7 +150,7 @@ Git-команди мають точну структуровану інформ
 - `git stash list`
 
 **Чому tool кращий за retrieval:**
-Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
+git stash is a complex command with multiple sub-commands (stash, stash pop, stash push, stash list, stash apply). A tool returns all sub-commands in a single structured response with clear syntax, while retrieval would require matching several chunks and the LLM might miss some sub-commands.
 
 ## Приклад 3
 
@@ -184,7 +187,7 @@ Git-команди мають точну структуровану інформ
 - `git merge --no-ff feature-branch`
 
 **Чому tool кращий за retrieval:**
-Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
+git merge requires exact branch-argument syntax (e.g., 'git merge feature-branch') and supports multiple flags (--no-ff, --squash, --abort). A tool returns the precise synopsis and flag options directly, whereas retrieval from prose documentation would be ambiguous about argument positions.
 
 ## Приклад 4
 
@@ -203,15 +206,15 @@ Git-команди мають точну структуровану інформ
 {
   "scope": "global",
   "key": "user.name",
-  "value": "Alex"
+  "value": "Alex21141"
 }
 ```
 
 **Final answer:**
-**global `user.name`** = `Alex`
+**global `user.name`** = `Alex21141`
 
 **Чому tool кращий за retrieval:**
-Git-конфігурація є персональною та динамічною — кожен користувач має різні налаштування. Ці дані неможливо зберігати в статичній knowledge base. Tool, який запитує поточну конфігурацію — єдиний правильний підхід.
+Git configuration is user-specific and dynamic — each user has unique settings that change over time. Querying a specific config key (e.g., user.name) requires live data that cannot be stored in a static knowledge base.
 
 ## Приклад 5
 
@@ -229,26 +232,16 @@ Git-конфігурація є персональною та динамічно
 {
   "scope": "global",
   "settings": {
-    "user.name": "Alex",
-    "user.email": "alex@example.com",
-    "core.editor": "vim",
-    "merge.tool": "meld",
-    "push.default": "current",
-    "pull.rebase": "false",
-    "color.ui": "auto"
+    "user.name": "Alex21141",
+    "user.email": "alex21141@gmail.com"
   }
 }
 ```
 
 **Final answer:**
 **global Git configuration:**
-- `user.name` = `Alex`
-- `user.email` = `alex@example.com`
-- `core.editor` = `vim`
-- `merge.tool` = `meld`
-- `push.default` = `current`
-- `pull.rebase` = `false`
-- `color.ui` = `auto`
+- `user.name` = `Alex21141`
+- `user.email` = `alex21141@gmail.com`
 
 **Чому tool кращий за retrieval:**
-Git-конфігурація є персональною та динамічною — кожен користувач має різні налаштування. Ці дані неможливо зберігати в статичній knowledge base. Tool, який запитує поточну конфігурацію — єдиний правильний підхід.
+Git configuration is user-specific and dynamic. Each user has unique settings that change over time. A static knowledge base cannot contain personal configuration data — only a tool that queries live config can provide accurate results.

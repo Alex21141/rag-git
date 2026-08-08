@@ -142,6 +142,7 @@ GIT_COMMANDS = {
             "command": {
                 "type": "string",
                 "description": "Git command name (e.g., 'clone', 'push', 'merge', 'stash', 'rebase')",
+                "maxLength": 30,
             }
         },
         "required": ["command"],
@@ -173,6 +174,12 @@ def get_git_command(command: str) -> dict:
             "valid_commands": list(GIT_COMMANDS.keys()),
         }
 
+    # Validation: length check
+    if len(cmd) > 30:
+        return {
+            "error": f"Command name too long: '{cmd}' ({len(cmd)} chars). Max 30 characters.",
+        }
+
     # Lookup
     result = GIT_COMMANDS.get(cmd)
     if not result:
@@ -200,25 +207,35 @@ def get_git_command(command: str) -> dict:
 # When useful: user asks "how do I configure X" or "what is my current X setting"
 # When NOT useful: asking how to use git commands (use get_git_command)
 
-# Mock data — simulates a user's Git config
+# Fallback mock data — used when subprocess fails (e.g., no git installed)
 MOCK_GIT_CONFIG = {
     "global": {
         "user.name": "Alex",
         "user.email": "alex@example.com",
-        "core.editor": "vim",
-        "merge.tool": "meld",
-        "push.default": "current",
-        "pull.rebase": "false",
-        "color.ui": "auto",
     },
-    "local": {
-        "user.name": "Alex",
-        "user.email": "alex@example.com",
-        "core.repositoryformatversion": "0",
-        "remote.origin.url": "git@github.com:Alex21141/rag-git.git",
-        "branch.hw5-external-tool.remote": "origin",
-    },
+    "local": {},
 }
+
+
+def _get_git_config_live(scope: str) -> dict:
+    """Query real git config via subprocess. Falls back to MOCK_GIT_CONFIG on error."""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["git", "config", f"--{scope}", "--list"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode == 0:
+            config = {}
+            for line in result.stdout.strip().split("\n"):
+                if "=" in line:
+                    key, val = line.split("=", 1)
+                    config[key.strip()] = val.strip()
+            if config:
+                return config
+    except (subprocess.SubprocessError, FileNotFoundError, OSError):
+        pass
+    return MOCK_GIT_CONFIG.get(scope, {})
 
 
 @register_tool(
@@ -245,7 +262,7 @@ def get_git_config(scope: str, key: Optional[str] = None) -> dict:
     """
     Tool: get_git_config
     Type: read tool
-    Purpose: Returns Git configuration values from a config database.
+    Purpose: Returns Git configuration values from live git config (subprocess).
     When useful: user asks about their git settings
     When NOT useful: asking how to use git commands (use get_git_command)
     """
@@ -260,9 +277,15 @@ def get_git_config(scope: str, key: Optional[str] = None) -> dict:
             "error": f"Invalid scope: '{scope}'. Must be 'global' or 'local'.",
         }
 
-    config = MOCK_GIT_CONFIG.get(scope, {})
-    if not config:
-        return {"error": f"No {scope} configuration found."}
+    # Query live git config (falls back to mock on error)
+    config = _get_git_config_live(scope)
+    if not config and scope == "local":
+        # Local config only exists inside a git repo — return informative message
+        return {
+            "scope": scope,
+            "settings": {},
+            "note": "No local configuration found. This tool should be run from inside a git repository.",
+        }
 
     # If key specified, return only that key
     if key:
@@ -395,7 +418,7 @@ def generate_examples_report(all_results) -> str:
     lines.append(f"**Тестових прикладів**: {len(all_results)}\n")
     lines.append("## Зареєстровані tool-и\n")
     for tool in list_tools():
-        lines.append(f"- **`{tool['name']}`** — {tool['description']}")
+        lines.append(f"- **`{tool['name']}`** — {tool['description']}\n")
     lines.append("")
 
     # Tool descriptions
@@ -403,7 +426,7 @@ def generate_examples_report(all_results) -> str:
     lines.append("### 1. get_git_command\n")
     lines.append("| Параметр | Значення |")
     lines.append("|---|---|")
-    lines.append("| Тип | read tool |")
+    lines.append("| Тип | read-інструмент |")
     lines.append("| Мета | Повертає структуровану інформацію про Git-команду (синтаксис, опис, приклади) |")
     lines.append("| Коли викликати | Користувач запитує 'як зробити X' або 'що робить git X' |")
     lines.append("| Коли НЕ викликати | Концептуальні питання ('що таке merge conflict?') — використовувати RAG |")
@@ -416,7 +439,7 @@ def generate_examples_report(all_results) -> str:
     lines.append("### 2. get_git_config\n")
     lines.append("| Параметр | Значення |")
     lines.append("|---|---|")
-    lines.append("| Тип | read tool |")
+    lines.append("| Тип | read-інструмент |")
     lines.append("| Мета | Повертає значення Git-конфігурації для заданого scope (global/local) |")
     lines.append("| Коли викликати | Користувач запитує про свої налаштування git |")
     lines.append("| Коли НЕ викликати | Запитання про використання git-команд — використовувати get_git_command |")
@@ -457,7 +480,7 @@ def generate_examples_report(all_results) -> str:
 
         # Why tool > retrieval
         why = get_tool_advantage(r)
-        lines.append(f"**Why tool is better than retrieval:**\n{why}\n")
+        lines.append(f"**Чому tool кращий за retrieval:**\n{why}\n")
 
     output_path = os.path.join(output_dir, "tool_examples.md")
     with open(output_path, "w", encoding="utf-8") as f:
@@ -468,19 +491,45 @@ def generate_examples_report(all_results) -> str:
 def get_tool_advantage(result: dict) -> str:
     """Explain why tool is better than retrieval for this case."""
     tool = result["tool_called"]
+
     if tool == "get_git_command":
-        return (
+        cmd = result["input"].get("command", "")
+        explanations = {
+            "clone": (
+                "git clone has precise syntax with multiple valid forms (HTTPS, SSH, --depth, --branch). "
+                "A tool returns the exact synopsis and official examples in a normalized format, "
+                "whereas retrieval would return scattered text chunks that the LLM must synthesize."
+            ),
+            "stash": (
+                "git stash is a complex command with multiple sub-commands (stash, stash pop, stash push, stash list, stash apply). "
+                "A tool returns all sub-commands in a single structured response with clear syntax, "
+                "while retrieval would require matching several chunks and the LLM might miss some sub-commands."
+            ),
+            "merge": (
+                "git merge requires exact branch-argument syntax (e.g., 'git merge feature-branch') and supports multiple flags (--no-ff, --squash, --abort). "
+                "A tool returns the precise synopsis and flag options directly, "
+                "whereas retrieval from prose documentation would be ambiguous about argument positions."
+            ),
+        }
+        return explanations.get(cmd, (
             "Git commands have precise, structured information (synopsis, description, examples) "
             "that is better served by a queryable database than by semantic search. "
             "Retrieval would return relevant text chunks, but the tool returns the exact command "
             "structure and official examples in a normalized format."
-        )
+        ))
+
     if tool == "get_git_config":
+        input_data = result["input"]
+        if "key" in input_data:
+            return (
+                "Git configuration is user-specific and dynamic — each user has unique settings that change over time. "
+                "Querying a specific config key (e.g., user.name) requires live data that cannot be stored in a static knowledge base."
+            )
         return (
-            "Git configuration is user-specific and dynamic — each user has different settings. "
-            "This data cannot be stored in a static knowledge base. "
-            "A tool that queries live configuration is the only correct approach."
+            "Git configuration is user-specific and dynamic. Each user has unique settings that change over time. "
+            "A static knowledge base cannot contain personal configuration data — only a tool that queries live config can provide accurate results."
         )
+
     return "Tool provides structured, real-time data that retrieval cannot reliably serve."
 
 
