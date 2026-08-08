@@ -396,7 +396,7 @@ Answer:
 
 ### 7. Висновки
 
-RAG pipeline з реального LLM (Nemotron 3 Nano 30B через OpenRouter) успішно працює для 9/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Всі відповіді генеровані через реального LLM — **не через template**. Nano модель стабільніша за Ultra 550B — значно менше rate-limit помилок.
+RAG pipeline з реального LLM (Nemotron 3 Nano 30B через OpenRouter) успішно працює для 9/10 запитів. Модель дотримується інструкції "Answer ONLY based on context" і коректно повертає fallback коли контекст недостатній. Всі відповіді генеровані через реального LLM — **не через template**.
 
 Для покращення:
 1. **Hybrid search** (BM25 + semantic) — як у HW3, дає кращі top-1 результати
