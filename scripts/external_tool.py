@@ -408,14 +408,41 @@ def run_demo() -> list:
 
 
 def generate_examples_report(all_results) -> str:
-    """Generate outputs/tool_examples.md."""
+    """Generate outputs/tool_examples.md with metadata header."""
+    import datetime
+
     output_dir = os.path.join(os.path.dirname(__file__), "..", "outputs")
     os.makedirs(output_dir, exist_ok=True)
 
+    output_path = os.path.join(output_dir, "tool_examples.md")
+
+    # Check if file exists — warn but allow overwrite on explicit --demo
+    if os.path.exists(output_path):
+        existing_size = os.path.getsize(output_path)
+        print(f"⚠️  File already exists: {output_path} ({existing_size} bytes) — will overwrite")
+
+    # Validate results before generating report
+    valid_results = 0
+    for r in all_results:
+        if "error" not in r.get("result", {}):
+            valid_results += 1
+
+    # Metadata header — timestamp, tool count, success rate
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    success_rate = f"{valid_results}/{len(all_results)}" if all_results else "0/0"
+
     lines = []
     lines.append("# HW5: Інтеграція зовнішнього tool — Приклади викликів\n")
-    lines.append(f"**Tool-ів зареєстровано**: {len(TOOLS)}\n")
-    lines.append(f"**Тестових прикладів**: {len(all_results)}\n")
+    lines.append("## Metadata\n")
+    lines.append("| Параметр | Значення |")
+    lines.append("|---|---|")
+    lines.append(f"| **Згенеровано** | {timestamp} |")
+    lines.append(f"| **Tool-ів зареєстровано** | {len(TOOLS)} |")
+    lines.append(f"| **Тестових прикладів** | {len(all_results)} |")
+    lines.append(f"| **Успішних викликів** | {success_rate} |")
+    lines.append(f"| **Вхідні дані** | Вбудована БД ({len(GIT_COMMANDS)} команд) + git config (subprocess) |")
+    lines.append(f"| **Скрипт** | `scripts/external_tool.py` |")
+    lines.append("")
     lines.append("## Зареєстровані tool-и\n")
     for tool in list_tools():
         lines.append(f"- **`{tool['name']}`** — {tool['description']}\n")

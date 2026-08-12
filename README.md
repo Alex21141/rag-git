@@ -332,17 +332,33 @@ result = call_tool("get_git_command", json.loads('{"command": "push"}'))
 ```
 rag-git/
 ├── scripts/
-│   ├── external_tool.py      # HW5: реалізація tool-ів + інтеграція + валідація
-│   ├── prepare_knowledge_base.py  # HW1: чанкінг
-│   ├── retrieval.py           # HW2: semantic retrieval
-│   ├── retrieval_improved.py  # HW3: hybrid BM25 + semantic
-│   └── rag_answer.py          # HW4: RAG QA pipeline з LLM
+│   ├── external_tool.py          # HW5: реалізація tool-ів + інтеграція + валідація
+│   ├── download_sources.py       # HW1: завантаження Git документації
+│   ├── prepare_knowledge_base.py # HW1: чанкінг документації
+│   ├── validate_chunks.py        # HW1: валідація чанків
+│   ├── retrieval.py              # HW2: semantic retrieval (FAISS + embeddings)
+│   └── rag_answer.py             # HW4: RAG QA pipeline з LLM
 ├── outputs/
-│   └── tool_examples.md       # HW5: приклади викликів tool-ів
+│   ├── tool_examples.md           # HW5: приклади викликів tool-ів (5 прикладів)
+│   ├── retrieval_examples.md      # HW2: приклади semantic retrieval
+│   └── rag_answers_examples.md    # HW4: приклади RAG відповідей
 ├── data/
-│   ├── raw/                   # 10 джерел документації
+│   ├── raw/
+│   │   ├── 00_git_about_version_control.md
+│   │   ├── 01_git_basics_getting_repository.md
+│   │   ├── 02_git_basics_recording_changes.md
+│   │   ├── 03_branching_basic_branching_merging.md
+│   │   ├── 04_branching_branch_management.md
+│   │   ├── 05_distributed_workflows.md
+│   │   ├── 06_git_tools_rebasing.md
+│   │   ├── 07_git_tools_stashing_cleaning.md
+│   │   ├── 08_github_about_git.md
+│   │   └── 09_gitlab_getting_started.md
 │   └── processed/
-│       └── chunks.jsonl       # 145 чанків
+│       └── chunks.jsonl           # 145 чанків
+├── index/
+│   ├── faiss.index                # FAISS індекс (223 KB)
+│   └── metadata.pkl               # Метадані чанків (294 KB)
 ├── .gitignore
 └── README.md
 ```
