@@ -1,364 +1,86 @@
-# Git tutoring assistant
+# Домашнє завдання №6 — Перша agentic-структура
 
-## Домашнє завдання №5 — Інтеграція зовнішнього tool або джерела
-
-| Параметр | Значення |
-|----------|----------|
-| **Tool-ів реалізовано** | 2 |
-| **Тип** | read-інструменти |
-| **Джерело даних** | Структурована БД Git-команд + Git-конфігурація |
-| **Тестових прикладів** | 5 |
-| **Валідація** | Обов'язкові поля + перевірка типу + enum + перевірка формату |
-
-### 1. Вибір типу tool
-
-Вибрано: **API tool** (пошук у структурованій базі даних).
-
-| Tool | Призначення |
-|------|-------------|
-| `get_git_command` | Повертає структуровану інформацію про Git-команду (синтаксис, опис, приклади) |
-| `get_git_config` | Повертає значення Git-конфігурації для заданого scope (global/local) |
-
-Обидва — **read-інструменти**: не змінюють дані, тільки читають.
-
-### 2. Опис tool-ів
-
-#### get_git_command
-
-| Параметр | Значення |
-|---|---|
-| Назва | `get_git_command` |
-| Тип | read-інструмент |
-| Мета | Повертає структуровану інформацію про Git-команду: синтаксис, короткий опис, приклади використання |
-| Джерело | Структурована база даних Git-команд (14 команд) |
-| Коли викликати | Користувач запитує "як зробити X" або "що робить git X" |
-| Коли НЕ викликати | Концептуальні питання ("що таке merge conflict?") — використовувати RAG замість |
-
-**Input schema:**
-```json
-{
-  "type": "object",
-  "properties": {
-    "command": {
-      "type": "string",
-      "description": "Git command name (e.g., 'clone', 'push', 'merge', 'stash', 'rebase')"
-    }
-  },
-  "required": ["command"]
-}
-```
-
-**Output structure:**
-```json
-{
-  "command": "clone",
-  "full_command": "git clone",
-  "synopsis": "git clone <repository> [directory]",
-  "description": "Clone a repository into a new directory...",
-  "examples": ["git clone https://github.com/user/repo.git"]
-}
-```
-
-#### get_git_config
-
-| Параметр | Значення |
-|---|---|
-| Назва | `get_git_config` |
-| Тип | read-інструмент |
-| Мета | Повертає значення Git-конфігурації для заданого scope |
-| Джерело | `git config --{scope} --list` (subprocess, реальні дані) |
-| Коли викликати | Користувач запитує про свої налаштування git |
-| Коли НЕ викликати | Запитання про використання git-команд — використовувати `get_git_command` |
-
-**Input schema:**
-```json
-{
-  "type": "object",
-  "properties": {
-    "scope": {
-      "type": "string",
-      "description": "Config scope: 'global' or 'local'",
-      "enum": ["global", "local"]
-    },
-    "key": {
-      "type": "string",
-      "description": "Optional specific config key (e.g., 'user.email')"
-    }
-  },
-  "required": ["scope"]
-}
-```
-
-**Output structure:**
-```json
-{
-  "scope": "global",
-  "key": "user.name",
-  "value": "Alex"
-}
-```
-
-### 3. Validation
-
-Перед виконанням tool-а перевіряється:
-
-| Перевірка | Реалізація |
-|-----------|------------|
-| Обов'язкові поля | `call_tool()` перевіряє `required` поля з input schema |
-| Тип даних | Перевірка `type` (string, integer) для кожного поля |
-| Enum values | Перевірка, що `scope` є `"global"` або `"local"` |
-| Формат даних | `get_git_command`: regex `^[a-z][a-z0-9-]*$` + maxLength 30 для назви команди |
-| Normalization | `get_git_command`: автоматичне видалення префікса `git ` (напр. `git clone` → `clone`) |
-| Suggestions | При помилці повертаються підказки (схожі команди/ключі) |
-| Безпека | Tool не приймає raw SQL або довільний код — тільки структуровані параметри |
-
-### 4. Реалізація та запуск
-
-Реалізація: `scripts/external_tool.py` (224 рядки).
-
-**Зареєстровані tool-и:** 2 (`get_git_command`, `get_git_config`).
-
-**Запуск:**
-```bash
-# Список tool-ів
-python3 scripts/external_tool.py --list
-
-# Запуск всіх прикладів + генерація звіту
-python3 scripts/external_tool.py --demo
-
-# Виклик конкретного tool-а
-python3 scripts/external_tool.py --tool get_git_command --input '{"command": "push"}'
-```
-
-**Результати демо:**
-- `get_git_command(clone)` → ✅ OK
-- `get_git_command(stash)` → ✅ OK
-- `get_git_command(merge)` → ✅ OK
-- `get_git_config(global, user.name)` → ✅ OK (live subprocess)
-- `get_git_config(global)` → ✅ OK (live subprocess)
-
-### 5. Приклади викликів
-
-#### Приклад 1: How do I clone a Git repository?
-
-**User question:** How do I clone a Git repository?
-
-**Tool called:** `get_git_command`
-**Input:** `{"command": "clone"}`
-
-**Result:**
-```json
-{
-  "command": "clone",
-  "full_command": "git clone",
-  "synopsis": "git clone <repository> [directory]",
-  "description": "Clone a repository into a new directory. Creates a full local copy with complete history and all branches.",
-  "examples": [
-    "git clone https://github.com/user/repo.git",
-    "git clone --depth=1 https://github.com/user/repo.git"
-  ]
-}
-```
-
-**Final answer:**
-`git clone` — Clone a repository into a new directory. Creates a full local copy with complete history and all branches.
-
-**Synopsis:** `git clone <repository> [directory]`
-
-**Examples:**
-- `git clone https://github.com/user/repo.git`
-- `git clone --depth=1 https://github.com/user/repo.git`
-
-**Чому tool кращий за retrieval:**
-Git-команди мають точну структуровану інформацію (синтаксис, опис, приклади), яку краще надавати через запитуючу базу даних, ніж через семантичний пошук. Retrieval повернув би релевантні текстові чанки, а tool повертає точну структуру команди та офіційні приклади у нормалізованому форматі.
-
-#### Приклад 2: What does git stash do?
-
-**User question:** What does git stash do?
-
-**Tool called:** `get_git_command`
-**Input:** `{"command": "stash"}`
-
-**Result:**
-```json
-{
-  "command": "stash",
-  "full_command": "git stash",
-  "synopsis": "git stash [<options>]",
-  "description": "Temporarily save changes and revert to the HEAD commit. Useful for quickly switching branches without committing.",
-  "examples": ["git stash", "git stash pop", "git stash list"]
-}
-```
-
-**Final answer:**
-`git stash` — Temporarily save changes and revert to the HEAD commit. Useful for quickly switching branches without committing.
-
-**Synopsis:** `git stash [<options>]`
-
-**Examples:**
-- `git stash`
-- `git stash pop`
-- `git stash list`
-
-**Чому tool кращий за retrieval:**
-Tool повертає точний синтаксис команди та приклади напряму зі структурованої бази — retrieval вимагав би поєднання кількох текстових чанків, і моделі довелося б синтезувати відповідь.
-
-#### Приклад 3: How do I resolve a merge conflict?
-
-**User question:** How do I resolve a merge conflict?
-
-**Tool called:** `get_git_command`
-**Input:** `{"command": "merge"}`
-
-**Result:**
-```json
-{
-  "command": "merge",
-  "full_command": "git merge",
-  "synopsis": "git merge [<options>] <branch>",
-  "description": "Join two branches together. Integrates changes from the specified branch into the current branch.",
-  "examples": ["git merge feature-branch", "git merge --no-ff feature-branch"]
-}
-```
-
-**Final answer:**
-`git merge` — Join two branches together. Integrates changes from the specified branch into the current branch.
-
-**Synopsis:** `git merge [<options>] <branch>`
-
-**Examples:**
-- `git merge feature-branch`
-- `git merge --no-ff feature-branch`
-
-**Чому tool кращий за retrieval:**
-`git merge` вимагає точного синтаксису аргументів (напр. 'git merge feature-branch') та підтримує кілька флагів (--no-ff, --squash, --abort). Tool повертає точний синтаксис та опції напряму, тоді як retrieval з прозової документації був би неоднозначним щодо позицій аргументів.
-
-#### Приклад 4: What is my git username?
-
-**User question:** What is my git username?
-
-**Tool called:** `get_git_config`
-**Input:** `{"scope": "global", "key": "user.name"}`
-
-**Result:**
-```json
-{
-  "scope": "global",
-  "key": "user.name",
-  "value": "Alex21141"
-}
-```
-
-**Final answer:**
-**global `user.name`** = `Alex21141`
-
-**Чому tool кращий за retrieval:**
-Git-конфігурація є персональною та динамічною — кожен користувач має унікальні налаштування, що змінюються з часом. Запит конкретного ключа конфігурації (напр. user.name) вимагає живих даних, які неможливо зберігати в статичній базі знань.
-
-#### Приклад 5: Show me all my global git settings
-
-**User question:** Show me all my global git settings
-
-**Tool called:** `get_git_config`
-**Input:** `{"scope": "global"}`
-
-**Result:**
-```json
-{
-  "scope": "global",
-  "settings": {
-    "user.name": "Alex21141",
-    "user.email": "alex21141@gmail.com"
-  }
-}
-```
-
-**Final answer:**
-**global Git configuration:**
-- `user.name` = `Alex21141`
-- `user.email` = `alex21141@gmail.com`
-
-**Чому tool кращий за retrieval:**
-Git-конфігурація є персональною та динамічною. Кожен користувач має унікальні налаштування, що змінюються з часом. Статична база знань не може містити персональні дані конфігурації — лише інструмент, який запитує поточну конфігурацію, може надати точні результати.
-
-### 6. Інтеграція з chatbot-ом
-
-Шар інтеграції — функція `call_tool(name, input_data)` у `scripts/external_tool.py`:
+## Структура проєкту
 
 ```
-chatbot → вибір tool-а → call_tool() → валідація → виконання tool-а → результат
-```
-
-**Послідовність виконання:**
-1. **Вибір tool-а** — модель або router обирає tool за назвою
-2. **Валідація** — перевірка обов'язкових полів, типів, enum-значень
-3. **Виконання** — виклик функції tool-а (`func(**input_data)`)
-4. **Результат** — повернення структурованого dict (успіх або помилка)
-
-**Приклад виклику:**
-```python
-from scripts.external_tool import call_tool
-
-result = call_tool("get_git_command", {"command": "push"})
-# → {"command": "push", "full_command": "git push", ...}
-
-result = call_tool("get_git_config", {"scope": "global", "key": "user.email"})
-# → {"scope": "global", "key": "user.email", "value": "alex@example.com"}
-```
-
-**Підтримка LLM:**
-Модель може отримати список доступних tool-ів через `list_tools()` і вибрати підходящий:
-```python
-from scripts.external_tool import list_tools, call_tool
-import json
-
-# Модель бачить доступні tool-и
-tools = list_tools()
-# Вибрано: get_git_command
-result = call_tool("get_git_command", json.loads('{"command": "push"}'))
-```
-
-### 7. Висновки
-
-Інтеграція зовнішніх tool-ів доповнює RAG pipeline:
-
-- **Tool-и** — для структурованих, точних, динамічних даних (команди, конфігурація)
-- **RAG retrieval** — для концептуальних питань, пояснень, прикладів з документації
-
-Разом: `chatbot → вибір інструмента (структуровані дані) → RAG fallback (концептуальне) → відповідь`
-
-### 8. Структура проєкту
-
-```
-rag-git/
-├── scripts/
-│   ├── external_tool.py          # HW5: реалізація tool-ів + інтеграція + валідація
-│   ├── download_sources.py       # HW1: завантаження Git документації
-│   ├── prepare_knowledge_base.py # HW1: чанкінг документації
-│   ├── validate_chunks.py        # HW1: валідація чанків
-│   ├── retrieval.py              # HW2: semantic retrieval (FAISS + embeddings)
-│   └── rag_answer.py             # HW4: RAG QA pipeline з LLM
-├── outputs/
-│   ├── tool_examples.md           # HW5: приклади викликів tool-ів (5 прикладів)
-│   ├── retrieval_examples.md      # HW2: приклади semantic retrieval
-│   └── rag_answers_examples.md    # HW4: приклади RAG відповідей
-├── data/
-│   ├── raw/
-│   │   ├── 00_git_about_version_control.md
-│   │   ├── 01_git_basics_getting_repository.md
-│   │   ├── 02_git_basics_recording_changes.md
-│   │   ├── 03_branching_basic_branching_merging.md
-│   │   ├── 04_branching_branch_management.md
-│   │   ├── 05_distributed_workflows.md
-│   │   ├── 06_git_tools_rebasing.md
-│   │   ├── 07_git_tools_stashing_cleaning.md
-│   │   ├── 08_github_about_git.md
-│   │   └── 09_gitlab_getting_started.md
-│   └── processed/
-│       └── chunks.jsonl           # 145 чанків
-├── index/
-│   ├── faiss.index                # FAISS індекс (223 KB)
-│   └── metadata.pkl               # Метадані чанків (294 KB)
 ├── .gitignore
-└── README.md
+├── README.md
+├── data/
+│   └── sources/           # джерельні документи (індексовані на HW1)
+├── index/
+│   └── ...                # FAISS індекси (створені на HW1–HW2)
+├── outputs/
+│   ├── agent_flow_examples.md   # 5 трасувань agent-flow (HW6)
+│   ├── rag_answers_examples.md  # RAG відповіді (HW4)
+│   ├── retrieval_examples.md    # Retrieval приклади (HW2–HW3)
+│   └── tool_examples.md         # Tool приклади (HW5)
+└── scripts/
+    ├── agent_flow.py            # HW6: agent workflow (router + tools)
+    ├── external_tool.py         # HW5: external tool integration
+    ├── download_sources.py      # HW1: source preparation
+    ├── prepare_knowledge_base.py # HW1: KB preparation
+    ├── validate_chunks.py       # HW1: chunk validation
+    ├── retrieval.py             # HW2–HW3: semantic retrieval
+    └── rag_answer.py            # HW4: RAG answer generation
 ```
+
+## 1. Domain area і use case
+
+**Domain:** Git command reference and configuration
+
+**Use case:** User asks "how do I X in git?" or "what is my git setting Y?".
+         The agent routes the question to the correct tool.
+
+## 2. Tools (2)
+
+| # | Назва | Опис | Параметри |
+|---|---|---|---|
+| 1 | `get_git_command` | Get structured information about a Git command (synopsis, description, examples). Use when user asks about a specific git command or 'how do I X'. | `command` (git command name) |
+| 2 | `get_git_config` | Get Git configuration values for a given scope (global or local). Use when user asks about their git settings or configuration. | `scope` (global/local) |
+
+## 3. Routing rules
+
+| Правило (regex) | Інструмент |
+|---|---|
+| `(how\|як\|как).*(clone\|push\|merge\|rebase\|stash\|reset\|checkout\|branch\|log\|status\|diff\|commit\|add)` | `get_git_command` |
+| `(what\|який\|какой).*(clone\|push\|merge\|rebase\|stash\|reset\|checkout\|branch\|log\|status\|diff\|commit\|add)` | `get_git_command` |
+| `git\s+(clone\|push\|merge\|rebase\|stash\|reset\|checkout\|branch\|log\|status\|diff\|commit\|add)` | `get_git_command` |
+| `(config\|setting\|user\.name\|user\.email\|core\|push\.default)` | `get_git_config` |
+
+Запити, що не відповідають жодному правилу — повертають загальну відповідь без виклику інструмента.
+
+## 4. Agent workflow
+
+```
+Query → Route (keyword rules) → Execute (tool) → Observe → Synthesize → Final Answer
+```
+
+Парсинг параметрів — keyword extraction з вбудованої DB (14 git-команд).
+
+## 5. Trace examples (5)
+
+Див. `outputs/agent_flow_examples.md`
+
+| # | Запит | Route | Tool | Результат |
+|---|---|---|---|---|
+| 1 | how do I stash my changes? | `get_git_command` | `get_git_command(stash)` | Synopsis + examples ✅ |
+| 2 | how do I rebase onto main? | `get_git_command` | `get_git_command(rebase)` | Synopsis + examples ✅ |
+| 3 | what is my git user.name? | `get_git_config` | `get_git_config(global)` | Config settings ✅ |
+| 4 | how do I clone a repo with shallow history? | `get_git_command` | `get_git_command(clone)` | Synopsis + `--depth=1` example ✅ |
+| 5 | show me recent commits graph | `get_git_command` | `get_git_command(log)` | `--graph --all --oneline` ✅ |
+
+## 6. Lessons learned
+
+**Що працює добре:**
+- Keyword routing — простий, швидкий, без залежностей від LLM
+- Вбудована DB git-команд — не потребує зовнішніх залежностей
+- `get_git_config` через subprocess — повертає реальні налаштування системи
+
+**Що не працює добре:**
+- Routing не покриває всі варіанти запитів (наприклад "як скасувати останній коміт" не потрапляє в жодне правило)
+- Single-step agent — не може ланцюжувати кілька інструментів
+
+**Наступні кроки:**
+- Додати semantic routing (embedding-based) як fallback після keyword rules
+- Реалізувати multi-step agent: наприклад `get_git_command(reset)` → пояснити → `get_git_command(revert)` для порівняння
+- Покрити routing rules ширшим набором синтактичних конструкцій
