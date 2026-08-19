@@ -1,19 +1,19 @@
 ## Example 1
 
-**Query:** how do I stash my changes?
+Question: how do I stash my changes?
 
-**Route:** `get_git_command`
+Route: command_workflow
 
-**Tool called:** `get_git_command`
+Tool called: get_git_command
 
-**Args:**
+Args:
 ```json
 {
   "command": "stash"
 }
 ```
 
-**Observation:**
+Observation:
 ```json
 {
   "command": "stash",
@@ -26,35 +26,37 @@
 }
 ```
 
-**Synthesis:** Tool returned relevant data — summarizing for the user.
+State after step:
 
-**Final answer:**
-{
-  "command": "stash",
-  "synopsis": "git stash [push|pop|list|apply|drop] [<options>]",
-  "description": "Temporarily shelf changes in a dirty working directory",
-  "examples": [
-    "git stash push -m 'work in progress'",
-    "git stash pop"
-  ]
-}
+- Step 1 (Route): `{"user_goal": "how do I stash my changes?", "selected_route": "command_workflow", "tool_calls": [], "observations": [], "final_answer": null}`
+- Step 2 (Execute): `{"user_goal": "how do I stash my changes?", "selected_route": "command_workflow", "tool_calls": [{"name": "get_git_command", "args": {"command": "stash"}}], "observations": ["{\n  \"command\": \"stash\",\n  \"synopsis\": \"git stash [push|pop|list|apply|drop] [<options>]\",\n  \"description\": \"Temporarily shelf changes in a dirty working directo…"], "final_answer": null}`
+- Step 3 (Synthesize): `{"user_goal": "how do I stash my changes?", "selected_route": "command_workflow", "tool_calls": [{"name": "get_git_command", "args": {"command": "stash"}}], "observations": ["{\n  \"command\": \"stash\",\n  \"synopsis\": \"git stash [push|pop|list|apply|drop] [<options>]\",\n  \"description\": \"Temporarily shelf changes in a dirty working directo…"], "final_answer": "Використовуйте: `git stash [push|pop|list|apply|drop] [<options>]`.\nПризначення: Temporarily shelf changes in a dirty wo"}`
+
+Final answer:
+Використовуйте: `git stash [push|pop|list|apply|drop] [<options>]`.
+Призначення: Temporarily shelf changes in a dirty working directory.
+Приклади:
+- `git stash push -m 'work in progress'`
+- `git stash pop`
+
+---
 
 ## Example 2
 
-**Query:** how do I rebase onto main?
+Question: how do I rebase onto main?
 
-**Route:** `get_git_command`
+Route: command_workflow
 
-**Tool called:** `get_git_command`
+Tool called: get_git_command
 
-**Args:**
+Args:
 ```json
 {
   "command": "rebase"
 }
 ```
 
-**Observation:**
+Observation:
 ```json
 {
   "command": "rebase",
@@ -67,35 +69,37 @@
 }
 ```
 
-**Synthesis:** Tool returned relevant data — summarizing for the user.
+State after step:
 
-**Final answer:**
-{
-  "command": "rebase",
-  "synopsis": "git rebase [<options>] [<branch>]",
-  "description": "Forward-port local commits to the updated upstream head",
-  "examples": [
-    "git rebase main",
-    "git rebase -i HEAD~3"
-  ]
-}
+- Step 1 (Route): `{"user_goal": "how do I rebase onto main?", "selected_route": "command_workflow", "tool_calls": [], "observations": [], "final_answer": null}`
+- Step 2 (Execute): `{"user_goal": "how do I rebase onto main?", "selected_route": "command_workflow", "tool_calls": [{"name": "get_git_command", "args": {"command": "rebase"}}], "observations": ["{\n  \"command\": \"rebase\",\n  \"synopsis\": \"git rebase [<options>] [<branch>]\",\n  \"description\": \"Forward-port local commits to the updated upstream head\",\n  \"examp…"], "final_answer": null}`
+- Step 3 (Synthesize): `{"user_goal": "how do I rebase onto main?", "selected_route": "command_workflow", "tool_calls": [{"name": "get_git_command", "args": {"command": "rebase"}}], "observations": ["{\n  \"command\": \"rebase\",\n  \"synopsis\": \"git rebase [<options>] [<branch>]\",\n  \"description\": \"Forward-port local commits to the updated upstream head\",\n  \"examp…"], "final_answer": "Використовуйте: `git rebase [<options>] [<branch>]`.\nПризначення: Forward-port local commits to the updated upstream hea"}`
+
+Final answer:
+Використовуйте: `git rebase [<options>] [<branch>]`.
+Призначення: Forward-port local commits to the updated upstream head.
+Приклади:
+- `git rebase main`
+- `git rebase -i HEAD~3`
+
+---
 
 ## Example 3
 
-**Query:** what is my git user.name?
+Question: what is my git user.name?
 
-**Route:** `get_git_config`
+Route: config_workflow
 
-**Tool called:** `get_git_config`
+Tool called: get_git_config
 
-**Args:**
+Args:
 ```json
 {
   "scope": "global"
 }
 ```
 
-**Observation:**
+Observation:
 ```json
 {
   "scope": "global",
@@ -106,96 +110,76 @@
 }
 ```
 
-**Synthesis:** Tool returned relevant data — summarizing for the user.
+State after step:
 
-**Final answer:**
-{
-  "scope": "global",
-  "settings": {
-    "user.name": "Alex21141",
-    "user.email": "alex21141@gmail.com"
-  }
-}
+- Step 1 (Route): `{"user_goal": "what is my git user.name?", "selected_route": "config_workflow", "tool_calls": [], "observations": [], "final_answer": null}`
+- Step 2 (Execute): `{"user_goal": "what is my git user.name?", "selected_route": "config_workflow", "tool_calls": [{"name": "get_git_config", "args": {"scope": "global"}}], "observations": ["{\n  \"scope\": \"global\",\n  \"settings\": {\n    \"user.name\": \"Alex21141\",\n    \"user.email\": \"alex21141@gmail.com\"\n  }\n}"], "final_answer": null}`
+- Step 3 (Synthesize): `{"user_goal": "what is my git user.name?", "selected_route": "config_workflow", "tool_calls": [{"name": "get_git_config", "args": {"scope": "global"}}], "observations": ["{\n  \"scope\": \"global\",\n  \"settings\": {\n    \"user.name\": \"Alex21141\",\n    \"user.email\": \"alex21141@gmail.com\"\n  }\n}"], "final_answer": "Налаштування git (scope: global):\n- `user.name` = `Alex21141`\n- `user.email` = `alex21141@gmail.com`"}`
+
+Final answer:
+Налаштування git (scope: global):
+- `user.name` = `Alex21141`
+- `user.email` = `alex21141@gmail.com`
+
+---
 
 ## Example 4
 
-**Query:** how do I clone a repo with shallow history?
+Question: show me recent commits graph
 
-**Route:** `get_git_command`
+Route: command_workflow
 
-**Tool called:** `get_git_command`
+Tool called: get_git_command
 
-**Args:**
+Args:
 ```json
 {
-  "command": "clone"
+  "command": "log"
 }
 ```
 
-**Observation:**
+Observation:
 ```json
 {
-  "command": "clone",
-  "synopsis": "git clone <repository> [directory]",
-  "description": "Clone a repository into a new directory",
+  "command": "log",
+  "synopsis": "git log [<options>] [<revision range>]",
+  "description": "Show commit logs",
   "examples": [
-    "git clone https://github.com/user/repo.git",
-    "git clone --depth=1 <url>"
+    "git log --oneline -10",
+    "git log --graph --all --oneline"
   ]
 }
 ```
 
-**Synthesis:** Tool returned relevant data — summarizing for the user.
+State after step:
 
-**Final answer:**
-{
-  "command": "clone",
-  "synopsis": "git clone <repository> [directory]",
-  "description": "Clone a repository into a new directory",
-  "examples": [
-    "git clone https://github.com/user/repo.git",
-    "git clone --depth=1 <url>"
-  ]
-}
+- Step 1 (Route): `{"user_goal": "show me recent commits graph", "selected_route": "command_workflow", "tool_calls": [], "observations": [], "final_answer": null}`
+- Step 2 (Execute): `{"user_goal": "show me recent commits graph", "selected_route": "command_workflow", "tool_calls": [{"name": "get_git_command", "args": {"command": "log"}}], "observations": ["{\n  \"command\": \"log\",\n  \"synopsis\": \"git log [<options>] [<revision range>]\",\n  \"description\": \"Show commit logs\",\n  \"examples\": [\n    \"git log --oneline -10\",\n…"], "final_answer": null}`
+- Step 3 (Synthesize): `{"user_goal": "show me recent commits graph", "selected_route": "command_workflow", "tool_calls": [{"name": "get_git_command", "args": {"command": "log"}}], "observations": ["{\n  \"command\": \"log\",\n  \"synopsis\": \"git log [<options>] [<revision range>]\",\n  \"description\": \"Show commit logs\",\n  \"examples\": [\n    \"git log --oneline -10\",\n…"], "final_answer": "Використовуйте: `git log [<options>] [<revision range>]`.\nПризначення: Show commit logs.\nПриклади:\n- `git log --oneline "}`
+
+Final answer:
+Використовуйте: `git log [<options>] [<revision range>]`.
+Призначення: Show commit logs.
+Приклади:
+- `git log --oneline -10`
+- `git log --graph --all --oneline`
+
+---
 
 ## Example 5
 
-**Query:** show me recent commits graph
+Question: what is the best pizza recipe?
 
-**Route:** `get_git_command`
+Route: clarification
 
-**Tool called:** `get_git_command`
+State after step:
 
-**Args:**
-```json
-{
-  "command": "commit"
-}
-```
+- Step 1 (Route): `{"user_goal": "what is the best pizza recipe?", "selected_route": "clarification", "tool_calls": [], "observations": [], "final_answer": null}`
+- Step 2 (Execute): `{"user_goal": "what is the best pizza recipe?", "selected_route": "clarification", "tool_calls": [], "observations": [], "final_answer": null}`
+- Step 3 (Synthesize): `{"user_goal": "what is the best pizza recipe?", "selected_route": "clarification", "tool_calls": [], "observations": [], "final_answer": "Уточніть, будь ласка: ви питаєте про git-команду (наприклад, 'як зробити rebase?') чи про налаштування git (наприклад, '"}`
 
-**Observation:**
-```json
-{
-  "command": "commit",
-  "synopsis": "git commit [<options>] [<pathspec>\u2026]",
-  "description": "Record changes to the repository",
-  "examples": [
-    "git commit -m 'fix: resolve issue #42'",
-    "git commit --amend"
-  ]
-}
-```
+Final answer:
+Уточніть, будь ласка: ви питаєте про git-команду (наприклад, 'як зробити rebase?') чи про налаштування git (наприклад, 'яке у мене user.name?').
 
-**Synthesis:** Tool returned relevant data — summarizing for the user.
-
-**Final answer:**
-{
-  "command": "commit",
-  "synopsis": "git commit [<options>] [<pathspec>\u2026]",
-  "description": "Record changes to the repository",
-  "examples": [
-    "git commit -m 'fix: resolve issue #42'",
-    "git commit --amend"
-  ]
-}
+---
 

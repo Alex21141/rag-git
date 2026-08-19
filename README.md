@@ -3,61 +3,96 @@
 ## 1. Область застосування та use case
 
 **Область:** Інструкція та конфігурація Git-команд
-**Use case:** Користувач запитує "як зробити X в git?" або "що налаштовано у моєму git Y?". Агент маршрутизує запит до правильного інструменту.
+**Use case:** Користувач запитує "як зробити X в git?" або "що налаштовано у моєму git Y?". Агент маршрутизує запит до правильного workflow і інструменту.
 
-## 2. Інструменти (2)
+## 2. Схема workflow
+
+```
+Запит
+→ Router (deterministic keyword rules, без LLM)
+  → [A] command_workflow → get_git_command → Observation → Synthesis → Answer
+  → [B] config_workflow  → get_git_config  → Observation → Synthesis → Answer
+  → [C] clarification    → (без інструмента) → уточнювальне питання
+```
+
+Три кроки:
+1. **Route** — вибір одного з трьох workflow
+2. **Execute** — виклик інструмента (крок 3 для route C пропускається)
+3. **Synthesize** — observation перетворюється на відповідь природною мовою
+
+## 3. Routes (3)
+
+| Route | Умова активації | Інструмент |
+|---|---|---|
+| `command_workflow` | У запиті є назва git-команди (word boundary) або маркер командного питання ("як зробити", "how do I", "commits", "graph") | `get_git_command` |
+| `config_workflow` | У запиті є ключові слова налаштувань: "config", "setting", "user.name", "user.email", "core.", "push.default" | `get_git_config` |
+| `clarification` | Запит не відповідає жодному правилу | — (запит уточнення) |
+
+Правила перевіряються детерміновано, без LLM. Route B (config) має пріоритет — найспецифічніші ключові слова.
+
+## 4. Інструменти (2, mock)
 
 | # | Назва | Опис | Параметри |
 |---|---|---|---|
-| 1 | `get_git_command` | Отримати структуровану інформацію про Git-команду: синтаксис, опис, приклади. Використовується коли користувач запитує про конкретну git-команду або "як зробити X". | `command` (назва git-команди) |
-| 2 | `get_git_config` | Отримати значення Git-налаштувань для заданого рівня (global або local). Використовується коли користувач запитує про свої налаштування git. | `scope` (global/local) |
+| 1 | `get_git_command` | Отримати структуровану інформацію про Git-команду: синтаксис, опис, приклади. Вбудована база 14 git-команд (з HW5) — фіксований результат, без зовнішніх API. | `command` (назва git-команди) |
+| 2 | `get_git_config` | Отримати значення Git-налаштувань для заданого рівня (global або local). | `scope` (global/local) |
 
-## 3. Правила маршрутизації
+## 5. State
 
-| Правило (regex) | Інструмент |
-|---|---|
-| `(how\|як\|как).*(clone\|push\|merge\|rebase\|stash\|reset\|checkout\|branch\|log\|status\|diff\|commit\|add)` | `get_git_command` |
-| `(what\|який\|какой).*(clone\|push\|merge\|rebase\|stash\|reset\|checkout\|branch\|log\|status\|diff\|commit\|add)` | `get_git_command` |
-| `git\s+(clone\|push\|merge\|rebase\|stash\|reset\|checkout\|branch\|log\|status\|diff\|commit\|add)` | `get_git_command` |
-| `(config\|setting\|user\.name\|user\.email\|core\|push\.default)` | `get_git_config` |
+State передається між кроками workflow і накопичується:
 
-Запити, що не відповідають жодному правилу — повертають загальну відповідь без виклику інструмента.
-
-## 4. Agentic-робочий процес
-
-```
-Запит → Маршрутизація (keyword rules) → Виконання (інструмент) → Спостереження → Синтез → Остаточна відповідь
+```json
+{
+  "user_goal":      "оригінальний запит користувача",
+  "selected_route": "command_workflow | config_workflow | clarification",
+  "tool_calls":     [ { "name": "...", "args": { ... } } ],
+  "observations":   [ "результат інструмента (JSON)" ],
+  "final_answer":   "синтезована відповідь"
+}
 ```
 
-Парсинг параметрів — keyword extraction з вбудованої бази даних (14 git-команд).
+- Після **Step 1**: заповнено `selected_route`
+- Після **Step 2**: додано записи в `tool_calls` та `observations`
+- Після **Step 3**: заповнено `final_answer`
 
-## 5. Приклади трасування (5)
+У `outputs/agent_flow_examples.md` для кожного прикладу наведено state після кожного кроку — видно, як state наповнюється з кроку в крок.
+
+## 6. Реалізація
+
+- Скрипт: `scripts/agent_flow.py`
+- Запуск: `python3 scripts/agent_flow.py`
+- Результат: `outputs/agent_flow_examples.md`
+
+## 7. Приклади трасування (5)
 
 Див. `outputs/agent_flow_examples.md`
 
-| # | Запит | Маршрут | Інструмент | Результат |
+| # | Запит | Route | Інструмент | Результат |
 |---|---|---|---|---|
-| 1 | how do I stash my changes? | `get_git_command` | `get_git_command(stash)` | Синтаксис + приклади ✅ |
-| 2 | how do I rebase onto main? | `get_git_command` | `get_git_command(rebase)` | Синтаксис + приклади ✅ |
-| 3 | what is my git user.name? | `get_git_config` | `get_git_config(global)` | Налаштування ✅ |
-| 4 | how do I clone a repo with shallow history? | `get_git_command` | `get_git_command(clone)` | Синтаксис + `--depth=1` ✅ |
-| 5 | show me recent commits graph | `get_git_command` | `get_git_command(log)` | `--graph --all --oneline` ✅ |
+| 1 | how do I stash my changes? | `command_workflow` | `get_git_command(stash)` | Синтаксис + приклади ✅ |
+| 2 | how do I rebase onto main? | `command_workflow` | `get_git_command(rebase)` | Синтаксис + приклади ✅ |
+| 3 | what is my git user.name? | `config_workflow` | `get_git_config(global)` | Налаштування ✅ |
+| 4 | show me recent commits graph | `command_workflow` | `get_git_command(log)` | `--graph --all --oneline` ✅ |
+| 5 | what is the best pizza recipe? | `clarification` | — | Уточнювальне питання 🟡 |
 
-## 6. Висновки
+Приклади 1–2 покривають route A, 3 — route B, 5 — route C. Приклад 4 показує контекстний вибір команди: "commits" + "graph" → `log` (а не `commit`).
+
+## 8. Висновки
 
 **Що працює добре:**
-- Keyword-маршрутизація — проста, швидка, не залежить від LLM
+- Детермінована keyword-маршрутизація — проста, швидка, не залежить від LLM
+- Три route з явним state — видно, як workflow накопичує контекст між кроками
 - Вбудована база даних git-команд — не потребує зовнішніх залежностей
-- `get_git_config` через subprocess — повертає реальні налаштування системи
+- Word-boundary парсинг + phrase hints розрізняють "commits" (→ `log`) і "commit" (→ `commit`)
 
 **Що не працює добре:**
-- Маршрутизація не покриває всі варіанти запитів (наприклад "як скасувати останній коміт" не потрапляє в жодне правило)
-- Однокроковий агент — не може ланцюжувати кілька інструментів
+- Маршрутизація не покриває всі мовні конструкції (наприклад "як скасувати останній коміт" без прямої назви команди потрапляє в clarification)
+- Single-step агент — викликає лише один інструмент за запит, не ланцюгує кілька
 
 **Наступні кроки:**
 - Додати семантичну маршрутизацію (embedding-based) як fallback після keyword rules
-- Реалізувати багатокроковий агент: наприклад `get_git_command(reset)` → пояснити → `get_git_command(revert)` для порівняння
-- Покрити правила маршрутизації ширшим набором синтактичних конструкцій
+- Реалізувати multi-step agent: наприклад `get_git_command(reset)` → пояснити → `get_git_command(revert)` для порівняння
+- Покрити routing rules ширшим набором синтактичних конструкцій
 
 ## Структура проєкту
 
