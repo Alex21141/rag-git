@@ -55,7 +55,7 @@ Workflow з HW6 — це **граф**: спільний state, послідов�
 
 Пояснення: `classify_request` — вхідна точка. Далі **умовне ребро** веде в один з трьох вузлів залежно від `selected_route`. Вузли-маршрути викликають інструмент (для `clarification` — не викликають). Після виконання маршруту `command_workflow` і `config_workflow` ідуть у спільний вузол `build_answer`, який формує фінальну відповідь; `clarification` закінчується одразу, бо його відповідь вже готова.
 
-## 3. State
+## 3. Спільний стан (State)
 
 ```python
 class AgentState(TypedDict, total=False):
