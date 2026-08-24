@@ -31,7 +31,7 @@ Workflow з HW6 — це **граф**: спільний state, послідов�
                      │   Класифікація запиту      │
                      │ (route_query з HW6)        │
                      └─────────────┬──────────────┘
-                                   │ умовний край
+                                   │ умовне ребро
                                    │ (route_decision)
         ┌──────────────────────────┼──────────────────────────┐
         ▼                          ▼                          ▼
@@ -42,7 +42,7 @@ Workflow з HW6 — це **граф**: спільний state, послідов�
 │                  │      │                  │      │                    │
 │ get_git_command  │      │ get_git_config   │      │ (без інструменту)  │
 └────────┬─────────┘      └────────┬─────────┘      └─────────┬──────────┘
-         │ звичайний край           │ звичайний край           │ звичайний край
+         │ звичайне ребро           │ звичайне ребро           │ звичайне ребро
          └────────────┬─────────────┘                          │
                       ▼                                        │
            ┌──────────────────────┐                            │
@@ -53,7 +53,7 @@ Workflow з HW6 — це **граф**: спільний state, послідов�
                      END                                      END
 ```
 
-Пояснення: `classify_request` — вхідна точка. Далі **умовний край** веде в один з трьох вузлів залежно від `selected_route`. Вузли-маршрути викликають інструмент (для `clarification` — не викликають). Після виконання маршруту `command_workflow` і `config_workflow` ідуть у спільний вузол `build_answer`, який формує фінальну відповідь; `clarification` закінчується одразу, бо його відповідь вже готова.
+Пояснення: `classify_request` — вхідна точка. Далі **умовне ребро** веде в один з трьох вузлів залежно від `selected_route`. Вузли-маршрути викликають інструмент (для `clarification` — не викликають). Після виконання маршруту `command_workflow` і `config_workflow` ідуть у спільний вузол `build_answer`, який формує фінальну відповідь; `clarification` закінчується одразу, бо його відповідь вже готова.
 
 ## 3. State
 
@@ -81,10 +81,10 @@ class AgentState(TypedDict, total=False):
 
 Доменний код (правила маршрутизації, mock-інструменти, синтез) **імпортується з `agent_flow.py` (HW6)**, а не копіюється — той самий workflow, інша обгортка.
 
-## 5. Края
+## 5. Ребра
 
-- **Умовний край** після `classify_request` → функція `route_decision(state)` повертає `state["selected_route"]`, мапінг: `command_workflow → command_workflow`, `config_workflow → config_workflow`, `clarification → clarification`.
-- **Звичайні края:** `command_workflow → build_answer`, `config_workflow → build_answer`, `clarification → END`, `build_answer → END`.
+- **Умовне ребро** після `classify_request` → функція `route_decision(state)` повертає `state["selected_route"]`, мапінг: `command_workflow → command_workflow`, `config_workflow → config_workflow`, `clarification → clarification`.
+- **Звичайні ребра:** `command_workflow → build_answer`, `config_workflow → build_answer`, `clarification → END`, `build_answer → END`.
 
 ## 6. Тестування (3 приклади)
 
@@ -103,9 +103,9 @@ class AgentState(TypedDict, total=False):
 | Аспект | Ручна реалізація | LangGraph |
 |---|---|---|
 | Складність коду | Простіше: одна функція `agent_run()` з if/else | Більше шаблонного коду: TypedDict, `add_node`, `add_edge`, `compile`, часткові оновлення |
-| Видимість workflow | Не явна — треба читати `agent_run` | Граф описаний явно: вузли/края видно у коді та через `graph.get_graph()` |
+| Видимість workflow | Не явна — треба читати `agent_run` | Граф описаний явно: вузли/ребра видно у коді та через `graph.get_graph()` |
 | Робота зі state | Вручну: один словник, накопичується в циклі | TypedDict + часткові оновлення — структура явна, злиття робить runtime |
-| Умовна маршрутизація | `if state["selected_route"] == ...` у коді кроку | Явний умовний край з мапінгом маршрут → вузол |
+| Умовна маршрутизація | `if state["selected_route"] == ...` у коді кроку | Явне умовне ребро з мапінгом маршрут → вузол |
 | Відладка/трасування | Ручний `snapshot()` у кожному кроці | Вбудоване (виконані вузли, checkpointing), частковий state після кожного вузла |
 | Ризик помилок | Легко пропустити крок або забути оновити поле state | Runtime валідує граф (немає вузла для маршруту → помилка при компіляції/виклику) |
 
