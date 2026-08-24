@@ -130,3 +130,33 @@ uv venv venv && uv pip install --python ./venv/bin/python langgraph
 ```
 
 Результат: `outputs/langgraph_examples.md` + консольне резюме (маршрут → вузли для кожного з 3 запитів).
+## 9. Структура проекту
+
+```
+.
+├── README.md                      # це завдання (HW7)
+├── data/
+│   ├── raw/                       # 12 джерел: git-scm.com + gitlab.com (markdown, HW1)
+│   └── processed/
+│       └── chunks.jsonl           # 1200 чанків: 800 символів, overlap 100, backtick-aware (HW2)
+├── scripts/
+│   ├── download_sources.py        # завантаження джерел (HW1)
+│   ├── prepare_knowledge_base.py  # chunking → chunks.jsonl (HW2)
+│   ├── validate_chunks.py         # валідація чанків (HW2)
+│   ├── retrieval.py               # FAISS-ретривал: top-5, hybrid, query expansion (HW3)
+│   ├── rag_answer.py              # RAG-відповіді: prompt, цитати, fallback (HW4)
+│   ├── external_tool.py           # mock-інструмент git (read-only) (HW5)
+│   ├── agent_flow.py              # custom workflow: state, routes, синтез (HW6)
+│   └── langgraph_flow.py          # ЦЕ ЗАВДАННЯ: той самий workflow на LangGraph
+└── outputs/
+    ├── retrieval_examples.md      # приклади ретривалу (HW3)
+    ├── rag_answers_examples.md    # RAG-відповіді (HW4)
+    ├── tool_examples.md           # виклики інструменту (HW5)
+    ├── agent_flow_examples.md     # трасування custom workflow (HW6)
+    └── langgraph_examples.md      # трасування графа LangGraph (це завдання)
+```
+
+Зв'язки між файлами:
+- `langgraph_flow.py` імпортує з `agent_flow.py` правила маршрутизації, mock-інструменти та синтез відповіді — доменна логіка однакова в обох реалізаціях, різниця лише в механіці виконання (ручний цикл vs граф).
+- `retrieval.py` використовує `data/processed/chunks.jsonl`; у HW7 ретривал не використовується (workflow детермінований), але залишається частиною проекту.
+- `index/` — локальний FAISS-індекс, не входить у git (`.gitignore`).
