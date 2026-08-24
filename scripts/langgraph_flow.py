@@ -186,7 +186,7 @@ def run_graph(app, question: str) -> dict:
             "tool_calls": final_state["tool_calls"],
             "observations": [
                 _compact_observation(o) for o in final_state["observations"]
-            ] or None,
+            ],
             "final_answer": final_state["final_answer"],
         },
     }

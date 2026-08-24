@@ -130,7 +130,7 @@ Final state:
   "user_goal": "what is the best pizza recipe?",
   "selected_route": "clarification",
   "tool_calls": [],
-  "observations": null,
+  "observations": [],
   "final_answer": "Уточніть, будь ласка: ви питаєте про git-команду (наприклад, 'як зробити rebase?') чи про налаштування git (наприклад, 'яке у мене user.name?')."
 }
 ```
