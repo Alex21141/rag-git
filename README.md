@@ -71,6 +71,14 @@ class AgentState(TypedDict, total=False):
 
 ## 4. Вузли (5)
 
+П'ять вузлів графа (кожен — окрема функція, реєструється через `graph.add_node`):
+
+1. **`classify_request`** — вхідна точка, визначає маршрут
+2. **`command_workflow`** — гілка «команда git»
+3. **`config_workflow`** — гілка «конфігурація git»
+4. **`clarification`** — гілка «не git-запит»
+5. **`build_answer`** — спільний синтез відповіді
+
 | Вузол | Функція | Оновлює поля |
 |---|---|---|
 | `classify_request` | Визначає маршрут (імпорт `route_query` з HW6) | `selected_route`, ініціалізує `tool_calls/observations`, `executed_nodes` |
