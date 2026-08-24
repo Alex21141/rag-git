@@ -1,33 +1,59 @@
-# Домашнє завдання №7 — Перенесення workflow на framework (LangGraph)
+# Домашнє завдання №7 — Перенесення workflow на фреймворк (LangGraph)
 
-## 1. Вибір framework і обґрунтування
+## 1. Вибір фреймворку та його обґрунтування
 
 **Обрано: LangGraph.**
 
-Обґрунтування:
-- Workflow з HW6 — це граф: спільний state, кроки (route → execute → synthesize) та **conditional routing** (3 routes). LangGraph відображає саме ці понятія: `StateGraph`, nodes як functions, conditional edges.
-- State у LangGraph — TypedDict з partial updates: кожен node повертає лише ті поля, які змінює. Це один-в-один відповідає ручному накопиченню state з HW6.
-- Вбудоване трасування (executed nodes, checkpointing, `graph.get_graph()`) — те, що в HW6 довелося робити вручну (`snapshot()` у кожному кроці).
-- Альтернативи (LlamaIndex Workflow, CrewAI Flow, smolagents) орієнтовані на LLM-event-driven підхід і для детермінованого 5-node графа з mock-інструментами додають зайву абстракцію.
+### 1.1. Аналіз альтернатив
+
+| Фреймворк | Модель виконання | Сильні сторони | Слабкі сторони для нашої задачі |
+|---|---|---|---|
+| **LangGraph** | Явний граф: state (TypedDict), nodes, edges, conditional routing | Прямо відображає те, що ми робили вручну в HW6: спільний state, кроки, розгалуження. Підтримка циклів, паралельних гілок, checkpointing | Більше шаблонного коду, ніж у plain-Python циклі |
+| **LlamaIndex Workflows** | Event-driven: async-кроки, об'єкти `Step`/`Event`, маршрутизація за подіями | Зручний для LLM-піплайнів (RAG-кроки, streaming, паралельний fetch) | Event-driven модель зайва для детермінованого графа без подій; state розбитий на event-контексти, а не єдиний TypedDict |
+| **CrewAI (Flows + Crews)** | Мультиагентний: агенти з ролями/целями, оркестрація через `@start`/`@listen`/`@router` | Сильний для сценаріів «команда агентів» (researcher → writer → reviewer) | Надмірна абстракція (роли, персони, кооперація агентів) для задачі «маршрутизація запитання до інструменту»; state керований декораторами, менш явно, ніж граф |
+| **smolagents** | Одиночний агент: цикл «думка → виклик інструменту» (TextAgent/CodeAgent) | Мінімалізм, швидко стартувати з LLM-агентом | Немає явного графа: nodes/edges/conditional routing не виражаються на рівні фреймворку — розгалуження ховається в логіці агента, і ми втрачаємо те, ради чого фреймворк і потрібен |
+
+### 1.2. Висновок про вибір
+
+Workflow з HW6 — це **граф**: спільний state, послідовні кроки та явне розгалуження на 3 маршрути. LangGraph єдиний із розглянутих фреймворків, де state / nodes / edges / conditional routing є **первинними поняттями**:
+
+- State у LangGraph — TypedDict з partial updates: кожен node повертає лише ті поля, які змінює; злиття оновлень робить runtime. Це один-в-один відповідає ручному накопиченню state з HW6.
+- Conditional edge замість `if/elif` у коді кроку — маршрутизація стає структурою графа, а не текстом функції.
+- Вбудоване трасування та checkpointing — те, що в HW6 довелося писати вручну (`snapshot()` у кожному кроці).
+
+Інші фреймворки вирішують іншу задачу: LlamaIndex — event-driven LLM-піплайни, CrewAI — кооперація агентів із ролями, smolagents — мінімальний агентний цикл. Для детермінованого 5-node графа з 2 інструментами (без LLM) вони додають абстракцію, яка не збігається з формою задачі. Тому **LangGraph** — найкоротший шлях від HW6-логіки до фреймворкової реалізації без зміни семантики.
 
 ## 2. Схема графа
 
 ```
-                    ┌────────────────────────────────────────────┐
-                    │            classify_request                │
-                    │  (route_query — ті самі rules з HW6)       │
-                    └───────┬───────────────┬──────────────┬─────┘
-                            │ conditional   │              │
-            command_workflow┘    config_workflow     clarification
-                            │               │                 │
-                            └───────┬───────┘                 │
-                    ┌───────────────▼────────────┐            │
-                    │         build_answer       │            │
-                    │ (synthesize_command/config)│            │
-                    └───────────────┬────────────┘            │
-                                    │                         │
-                                   END                       END
+                     ┌────────────────────────────┐
+                     │      classify_request      │
+                     │   Класифікація запиту      │
+                     │ (route_query з HW6)        │
+                     └─────────────┬──────────────┘
+                                   │ умовний край
+                                   │ (route_decision)
+        ┌──────────────────────────┼──────────────────────────┐
+        ▼                          ▼                          ▼
+┌──────────────────┐      ┌──────────────────┐      ┌────────────────────┐
+│ command_workflow │      │ config_workflow  │      │  clarification     │
+│ Питання про      │      │ Питання про      │      │  Уточнювальне      │
+│ git-команди      │      │ налаштування     │      │  питання           │
+│                  │      │                  │      │                    │
+│ get_git_command  │      │ get_git_config   │      │ (без інструменту)  │
+└────────┬─────────┘      └────────┬─────────┘      └─────────┬──────────┘
+         │ звичайний край           │ звичайний край           │ звичайний край
+         └────────────┬─────────────┘                          │
+                      ▼                                        │
+           ┌──────────────────────┐                            │
+           │     build_answer     │                            │
+           │ Синтез відповіді     │                            │
+           └──────────┬───────────┘                            │
+                      ▼                                        ▼
+                     END                                      END
 ```
+
+Пояснення: `classify_request` — вхідна точка. Далі **умовний край** веде в один з трьох вузлів залежно від `selected_route`. Вузли-маршрути викликають інструмент (для `clarification` — не викликають). Після виконання маршруту `command_workflow` і `config_workflow` ідуть у спільний вузол `build_answer`, який формує фінальну відповідь; `clarification` закінчується одразу, бо його відповідь вже готова.
 
 ## 3. State
 
@@ -38,63 +64,63 @@ class AgentState(TypedDict, total=False):
     tool_calls: list         # [{name, args}]
     observations: list       # результати інструментів
     final_answer: str        # синтезована відповідь
-    executed_nodes: list     # трасування виконаних node
+    executed_nodes: list     # трасування виконаних вузлів
 ```
 
-Різниця проти HW6: `executed_nodes` — трасування графа (у HW6 це робив ручний `snapshot()` у `agent_run`). Кожен node повертає **partial dict** — LangGraph сам зливає оновлення в спільний state.
+Різниця проти HW6: `executed_nodes` — трасування графа (у HW6 це робив ручний `snapshot()` у `agent_run`). Кожен вузол повертає **частковий словник** — LangGraph сам зливає оновлення в спільний state.
 
-## 4. Nodes (5)
+## 4. Вузли (5)
 
-| Node | Функція | Оновлює поля |
+| Вузол | Функція | Оновлює поля |
 |---|---|---|
-| `classify_request` | Визначає route (імпорт `route_query` з HW6) | `selected_route`, ініціалізує `tool_calls/observations`, `executed_nodes` |
-| `command_workflow` | Викликає `get_git_command` (extract_command з HW6) | `tool_calls`, `observations`, `executed_nodes` |
+| `classify_request` | Визначає маршрут (імпорт `route_query` з HW6) | `selected_route`, ініціалізує `tool_calls/observations`, `executed_nodes` |
+| `command_workflow` | Викликає `get_git_command` (`extract_command` з HW6) | `tool_calls`, `observations`, `executed_nodes` |
 | `config_workflow` | Викликає `get_git_config` | `tool_calls`, `observations`, `executed_nodes` |
 | `clarification` | Формує уточнювальне питання (без інструменту) | `final_answer`, `executed_nodes` |
 | `build_answer` | Синтезує відповідь (`synthesize_command`/`synthesize_config` з HW6) | `final_answer`, `executed_nodes` |
 
-Domain-код (route rules, mock-інструменти, synthesis) **імпортується з `agent_flow.py` (HW6)**, а не копіюється — той самий workflow, інша обгортка.
+Доменний код (правила маршрутизації, mock-інструменти, синтез) **імпортується з `agent_flow.py` (HW6)**, а не копіюється — той самий workflow, інша обгортка.
 
-## 5. Edges
+## 5. Края
 
-- **Conditional edge** після `classify_request` → функція `route_decision(state)` повертає `state["selected_route"]`, маппінг: `command_workflow → command_workflow`, `config_workflow → config_workflow`, `clarification → clarification`.
-- Звичайні edges: `command_workflow → build_answer`, `config_workflow → build_answer`, `clarification → END`, `build_answer → END`.
+- **Умовний край** після `classify_request` → функція `route_decision(state)` повертає `state["selected_route"]`, мапінг: `command_workflow → command_workflow`, `config_workflow → config_workflow`, `clarification → clarification`.
+- **Звичайні края:** `command_workflow → build_answer`, `config_workflow → build_answer`, `clarification → END`, `build_answer → END`.
 
 ## 6. Тестування (3 приклади)
 
-Повні трасування — в `outputs/langgraph_examples.md` (input question, selected route, executed nodes, final state, final answer).
+Повні трасування — в `outputs/langgraph_examples.md` (запит, обраний маршрут, виконані вузли, фінальний state, фінальна відповідь).
 
-| # | Input | Route | Executed nodes | Інструмент |
+| # | Запит | Маршрут | Виконані вузли | Інструмент |
 |---|---|---|---|---|
 | 1 | how do I stash my changes? | `command_workflow` | classify_request → command_workflow → build_answer | `get_git_command(stash)` |
 | 2 | what is my git user.name? | `config_workflow` | classify_request → config_workflow → build_answer | `get_git_config(global)` |
 | 3 | what is the best pizza recipe? | `clarification` | classify_request → clarification | — |
 
-Поведення графа збігається з custom flow з HW6 (ті самі routes, інструменти, відповіді).
+Поведінка графа збігається з ручною реалізацією з HW6 (ті самі маршрути, інструменти, відповіді).
 
-## 7. Порівняння: custom flow (HW6) vs LangGraph (HW7)
+## 7. Порівняння: ручна реалізація (HW6) vs LangGraph (HW7)
 
-| Аспект | Custom flow | LangGraph |
+| Аспект | Ручна реалізація | LangGraph |
 |---|---|---|
-| Складність коду | Простіше: один `agent_run()` з if/else | Більше boilerplate: TypedDict, `add_node`, `add_edge`, `compile`, partial updates |
-| Видимість workflow | Не явна — треба читати `agent_run` | Граф описаний явно: nodes/edges видно у коді та через `graph.get_graph()` |
-| Робота зі state | Вручну: одна dict, накопичується в циклі | TypedDict + partial updates — структура явна, merge робить runtime |
-| Conditional routing | `if state["selected_route"] == ...` у коді кроку | Explicit conditional edge з маппінгом route → node |
-| Debug/трасування | Ручний `snapshot()` у кожному кроці | Вбудоване (executed nodes, checkpointing), partial state після кожного node |
-| Ризик помилок | Легко пропустити крок або забуднути оновити поле state | Runtime валідує graph (немає node для route → помилка при compile/invoke) |
+| Складність коду | Простіше: одна функція `agent_run()` з if/else | Більше шаблонного коду: TypedDict, `add_node`, `add_edge`, `compile`, часткові оновлення |
+| Видимість workflow | Не явна — треба читати `agent_run` | Граф описаний явно: вузли/края видно у коді та через `graph.get_graph()` |
+| Робота зі state | Вручну: один словник, накопичується в циклі | TypedDict + часткові оновлення — структура явна, злиття робить runtime |
+| Умовна маршрутизація | `if state["selected_route"] == ...` у коді кроку | Явний умовний край з мапінгом маршрут → вузол |
+| Відладка/трасування | Ручний `snapshot()` у кожному кроці | Вбудоване (виконані вузли, checkpointing), частковий state після кожного вузла |
+| Ризик помилок | Легко пропустити крок або забути оновити поле state | Runtime валідує граф (немає вузла для маршруту → помилка при компіляції/виклику) |
 
 **Що стало краще:**
-- Routing явний: маппінг route → node замість розрісненого if/else по кроках.
-- State структурований (TypedDict) і оновлюється partial-диктами — неможливо "забутити" поле, яке очікує наступний node.
-- Трасування (`executed_nodes`, а за потреби — checkpointing) дається без ручного snapshot-коду.
-- Граф легко розширювати: новий route = новий node + один рядок у conditional edge.
+- Маршрутизація стала явною: мапінг «маршрут → вузол» замість ланцюга if/else, розкиданого по кроках циклу.
+- State має структуру (TypedDict) і оновлюється частковими словниками — неможливо «забути» поле, якого чекає наступний вузол.
+- Трасування виконання (`executed_nodes`, за потреби — checkpointing) дається без ручного коду знімків стану.
+- Граф легко розширювати: новий маршрут = новий вузол + один рядок в умовному краї.
 
 **Що стало складніше:**
-- Boilerplate: TypedDict, `StateGraph`, `add_node` × 5, edges, `compile` — ~40 рядків "каркасу" для задачі, яка в custom flow помістилася б у 30.
-- Кожному node потрібно знати формат partial update (які поля повертати), а не просто мутувати dict.
-- Для детермінованого 5-node графа без LLM перевага framework переважно в читабельності, а не в функціональності.
+- Шаблонний код: TypedDict, `StateGraph`, 5 викликів `add_node`, края, `compile` — близько 40 рядків «каркасу» для задачі, яка в ручній реалізації помістилася б у 30.
+- Кожен вузол має знати формат часткового оновлення (які поля повертати), а не просто модифікувати словник.
+- Для детермінованого 5-вузлового графа без LLM перевага фреймворку — насамперед у читабельності, а не у функціональності.
 
-**Висновок:** для задачі розміру HW6 (3 steps, 3 routes) framework додає boilerplate, але робить структуру явною і розширюваною. Вигід LangGraph починає зростати від 4+ routes, паралельних гілок (fan-out), циклів (retry/feedback loop) та checkpointing — усі ці можливості в custom flow доводилося би писати вручну. Для цього розміру задачі: **окрема, але не зайва** складність.
+**Висновок:** для задачі розміру HW6 (3 кроки, 3 маршрути) фреймворк додає каркас, але робить структуру явною та розширюваною. Перевага LangGraph починає зростати від 4+ маршрутів, паралельних гілок, циклів (повторні спроби, зворотний зв'язок) та checkpointing — усе це в ручній реалізації доводилося б писати вручну. Для цього розміру задачі: додаткова, але не зайва складність.
 
 ## 8. Як запустити
 
@@ -103,4 +129,4 @@ uv venv venv && uv pip install --python ./venv/bin/python langgraph
 ./venv/bin/python scripts/langgraph_flow.py
 ```
 
-Результат: `outputs/langgraph_examples.md` + консольний summary (route → nodes для кожного з 3 запитів).
+Результат: `outputs/langgraph_examples.md` + консольне резюме (маршрут → вузли для кожного з 3 запитів).
