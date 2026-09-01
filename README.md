@@ -66,15 +66,35 @@ command передавав у tool вигаданий аргумент `query[:2
 Повне обґрунтування, повний changelog та чесний перелік
 remaining limitations — у **`FINAL_IMPROVEMENT.md`**.
 
-## 4. Як запустити
+## 4. A/B бенчмарк embedding-моделей (додаткове дослідження)
+
+Після зауваження, що `all-MiniLM-L6-v2` (384d) не спеціалізована для
+технічного контенту, проведено A/B на **реальних даних**: ті самі 145
+чанків GitLab-КБ і ті самі 10 test-запитів HW2 (`scripts/retrieval.py`).
+
+| Метрика | A: MiniLM-L6-v2 | B: bge-small-en-v1.5 |
+|---|---|---|
+| Середній top-1 cosine | 0.6642 | **0.8127** |
+| Top-1 за якістю (ручне читання чанків) | 3 / 3 / 4 нічиї | 3 / 3 / 4 нічиї |
+
+**Висновок:** це не «10 до 0». Перемоги B — за *приземленням на тему*
+(B віддає точну главу, A — загальний інтро); перемоги A — за *глибиною*
+(B бирає нішевий суб-чанк тої самої глави замість опенеру). Калібрація
+балів чітко на боці B (вищі і розрізненіші cosine → краще для пере-ранкінгу
+в гібриді HW3). B — та сама 384d, введення drop-in (`MODEL_NAME` +
+перебудова індексу за ~3 с). **Рекомендація: bge-small-en-v1.5 для
+semantic-ноги гібридного пошуку.** Деталі — `outputs/embedding_ab.md`.
+
+## 5. Як запустити
 
 ```bash
 ./venv/bin/python scripts/agent_flow.py        # HW6: 5 demo traces
 ./venv/bin/python scripts/langgraph_flow.py    # HW7: 3 route tests
 ./venv/bin/python scripts/eval_observability.py  # HW8: eval 10 кейсів
+./venv/bin/python scripts/embedding_ab_benchmark.py  # A/B embedding (torch + sentence-transformers)
 ```
 
-## 5. Що залишилось (коротко, повністю — в FINAL_IMPROVEMENT.md)
+## 6. Що залишилось (коротко, повністю — в FINAL_IMPROVEMENT.md)
 
 - Intent-мапа покриває кейси з eval; інші перефразування («скасувати
   останній комміт», «revert the previous commit») обробляються **безпечно**

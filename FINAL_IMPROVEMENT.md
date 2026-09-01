@@ -195,3 +195,31 @@ fallback; it no longer returns a confident wrong command.
 - **Only the HW6/HW7 deterministic path was changed.** The `--llm` demo
   (HW8) shows an LLM extractor would also fix these cases, but it is not
   integrated into the production graph (latency/cost trade, out of scope).
+
+## 7. Retrieval-layer A/B: MiniLM-L6-v2 vs bge-small-en-v1.5 (real KB)
+
+Separate investigation of the embedding model used by the HW2/HW3
+semantic retrieval leg. Question raised after noting that
+`all-MiniLM-L6-v2` (384d) is a general-purpose model, not specialized for
+technical content. Ran an A/B on the **real** data — the same 145-chunk
+GitLab collection and the same 10 test queries from `scripts/retrieval.py`
+(HW2 set). See `outputs/embedding_ab.md` / `.csv`.
+
+| metric | A: MiniLM-L6-v2 | B: bge-small-en-v1.5 |
+|---|---|---|
+| mean top-1 cosine | 0.6642 | 0.8127 |
+| top-1 topic grounding (manual read) | 3 wins / 3 losses / 4 ties | 3 wins / 3 losses / 4 ties |
+
+Key finding: it is **not** a runaway 10-0. B's wins are *topic-grounding*
+wins (for specific questions it returns the exact chapter, where A returns a
+generic intro); A's wins are *opener-vs-depth* (niche sub-chunk of the same
+chapter, milder). Score calibration clearly favors B (higher, more spread
+cosines → better for re-ranking/thresholds in the HW3 hybrid). B is the same
+384d, so adoption is a drop-in: change `MODEL_NAME` + rebuild the 145-chunk
+index (~3s). Its one mild weakness is mitigated by the hybrid, where BM25
+anchors exact terms. **Recommendation: use bge-small-en-v1.5 for the
+semantic leg of the hybrid.**
+
+(Note: this A/B documents the *option*; it is not wired into the retrieval
+pipeline on this branch — that pipeline is HW2/HW3 code, kept as-is here.
+Running `scripts/embedding_ab_benchmark.py` reproduces the numbers.)
