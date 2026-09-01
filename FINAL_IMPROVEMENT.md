@@ -196,31 +196,40 @@ fallback; it no longer returns a confident wrong command.
   (HW8) shows an LLM extractor would also fix these cases, but it is not
   integrated into the production graph (latency/cost trade, out of scope).
 
-## 7. Retrieval-layer A/B: MiniLM-L6-v2 vs bge-small-en-v1.5 (real KB)
+## 7. Retrieval-layer embedding A/B/C: MiniLM-L6-v2 vs bge-small vs nomic-embed (real KB)
 
 Separate investigation of the embedding model used by the HW2/HW3
 semantic retrieval leg. Question raised after noting that
 `all-MiniLM-L6-v2` (384d) is a general-purpose model, not specialized for
-technical content. Ran an A/B on the **real** data — the same 145-chunk
+technical content. Ran a benchmark on the **real** data — the same 145-chunk
 GitLab collection and the same 10 test queries from `scripts/retrieval.py`
 (HW2 set). See `outputs/embedding_ab.md` / `.csv`.
 
-| metric | A: MiniLM-L6-v2 | B: bge-small-en-v1.5 |
-|---|---|---|
-| mean top-1 cosine | 0.6642 | 0.8127 |
-| top-1 topic grounding (manual read) | 3 wins / 3 losses / 4 ties | 3 wins / 3 losses / 4 ties |
+| metric | A: MiniLM-L6-v2 (384d) | B: bge-small-en-v1.5 (384d) | C: nomic-embed-text-v1.5 (768d) |
+|---|---|---|---|
+| mean top-1 cosine | 0.6642 | 0.8126 | 0.7256 |
+| mean top1-top2 margin | 0.0388 | 0.0377 | 0.0209 |
+| doc-level correct (manual) | 9/10 | 9/10 | 10/10 |
+| index build | 1.5s | 2.8s | 11.8s |
+| drop-in (same 384d)? | — (current) | yes | no (768d) |
 
-Key finding: it is **not** a runaway 10-0. B's wins are *topic-grounding*
-wins (for specific questions it returns the exact chapter, where A returns a
-generic intro); A's wins are *opener-vs-depth* (niche sub-chunk of the same
-chapter, milder). Score calibration clearly favors B (higher, more spread
-cosines → better for re-ranking/thresholds in the HW3 hybrid). B is the same
-384d, so adoption is a drop-in: change `MODEL_NAME` + rebuild the 145-chunk
-index (~3s). Its one mild weakness is mitigated by the hybrid, where BM25
-anchors exact terms. **Decision (project owner): keep all-MiniLM-L6-v2
-as-is** — bge-small-en-v1.5 is recorded as the measured drop-in upgrade
-option for the future.
+Key finding: **not a runaway** on any pair — the three are close at
+document level (9–10/10); the differences are chunk precision and score
+calibration. bge-small is the strongest single-model pick (best
+calibration, most precise tutorial chunk choices, *and* a 384d drop-in).
+nomic-embed-text-v1.5 is genuinely strong (best Q1 "clone", best Q7
+"history") but brings no net win here: it never beats bge where bge is
+already exact, has the weakest reranking margin, doubles index size, and
+requires code changes (768d). Its strengths (8K context, multilingual,
+long docs) don't matter for 145 short GitLab chunks. MiniLM's real
+weakness — generic intro chunks instead of the exact tutorial — is visible
+on Q1/Q2/Q7 and is what bge fixes. BM25 in the HW3 hybrid anchors exact
+terms, mitigating the semantic model's mild weaknesses. **Decision (project
+owner): keep all-MiniLM-L6-v2 as-is** — bge-small-en-v1.5 is recorded as
+the measured drop-in upgrade option; nomic-embed-text-v1.5 measured as an
+alternative.
 
-(Note: this A/B documents the *option*; it is not wired into the retrieval
-pipeline on this branch — that pipeline is HW2/HW3 code, kept as-is here.
-Running `scripts/embedding_ab_benchmark.py` reproduces the numbers.)
+(Note: this benchmark documents the *options*; none is wired into the
+retrieval pipeline on this branch — that pipeline is HW2/HW3 code, kept
+as-is here. Running `scripts/embedding_ab_benchmark.py` reproduces the
+numbers.)

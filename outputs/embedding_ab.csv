@@ -1,21 +1,31 @@
 model,model_name,query,top1_id,top1_score,top2_id,top2_score,top3_id,top3_score,margin
 A,sentence-transformers/all-MiniLM-L6-v2,How do I clone a Git repository?,8,0.7085,12,0.7084,11,0.6878,0.0002
-A,sentence-transformers/all-MiniLM-L6-v2,What is a Git branch and how do I create one?,135,0.6338,124,0.6076,127,0.6008,0.0263
-A,sentence-transformers/all-MiniLM-L6-v2,How to resolve merge conflicts in Git?,139,0.7214,65,0.7208,59,0.6859,0.0006
-A,sentence-transformers/all-MiniLM-L6-v2,What is the difference between git add and git commit?,128,0.6602,20,0.6152,127,0.5620,0.0450
-A,sentence-transformers/all-MiniLM-L6-v2,How do I stash my changes temporarily?,104,0.6201,108,0.5668,105,0.5470,0.0533
-A,sentence-transformers/all-MiniLM-L6-v2,How do I merge a branch in GitLab?,138,0.7146,129,0.5995,143,0.5947,0.1151
-A,sentence-transformers/all-MiniLM-L6-v2,How do I view the commit history?,124,0.5934,41,0.5861,121,0.5813,0.0073
-A,sentence-transformers/all-MiniLM-L6-v2,How to set up SSH keys for GitLab?,144,0.7434,143,0.6751,142,0.5240,0.0684
-A,sentence-transformers/all-MiniLM-L6-v2,What is rebasing and when should I use it?,86,0.5448,90,0.5123,102,0.5048,0.0326
-A,sentence-transformers/all-MiniLM-L6-v2,How do I push changes to a remote repository?,130,0.7015,132,0.6622,81,0.6570,0.0393
 B,BAAI/bge-small-en-v1.5,How do I clone a Git repository?,140,0.8193,8,0.8072,131,0.7978,0.0121
+C,nomic-ai/nomic-embed-text-v1.5,How do I clone a Git repository?,12,0.7507,10,0.7435,11,0.7356,0.0072
+A,sentence-transformers/all-MiniLM-L6-v2,What is a Git branch and how do I create one?,135,0.6338,124,0.6076,127,0.6008,0.0263
 B,BAAI/bge-small-en-v1.5,What is a Git branch and how do I create one?,67,0.8124,50,0.8024,135,0.8013,0.0099
+C,nomic-ai/nomic-embed-text-v1.5,What is a Git branch and how do I create one?,67,0.7384,135,0.7182,132,0.7165,0.0202
+A,sentence-transformers/all-MiniLM-L6-v2,How to resolve merge conflicts in Git?,139,0.7214,65,0.7208,59,0.6859,0.0006
 B,BAAI/bge-small-en-v1.5,How to resolve merge conflicts in Git?,63,0.8628,61,0.8310,60,0.8248,0.0318
+C,nomic-ai/nomic-embed-text-v1.5,How to resolve merge conflicts in Git?,139,0.7474,65,0.7308,60,0.7306,0.0166
+A,sentence-transformers/all-MiniLM-L6-v2,What is the difference between git add and git commit?,128,0.6602,20,0.6152,127,0.5620,0.0450
 B,BAAI/bge-small-en-v1.5,What is the difference between git add and git commit?,20,0.8289,43,0.8199,61,0.7934,0.0090
+C,nomic-ai/nomic-embed-text-v1.5,What is the difference between git add and git commit?,41,0.7641,22,0.7620,20,0.7451,0.0020
+A,sentence-transformers/all-MiniLM-L6-v2,How do I stash my changes temporarily?,104,0.6201,108,0.5668,105,0.5470,0.0533
 B,BAAI/bge-small-en-v1.5,How do I stash my changes temporarily?,115,0.7692,106,0.7511,108,0.7425,0.0181
+C,nomic-ai/nomic-embed-text-v1.5,How do I stash my changes temporarily?,104,0.6635,109,0.6494,108,0.6310,0.0141
+A,sentence-transformers/all-MiniLM-L6-v2,How do I merge a branch in GitLab?,138,0.7146,129,0.5995,143,0.5947,0.1151
 B,BAAI/bge-small-en-v1.5,How do I merge a branch in GitLab?,138,0.8190,137,0.7507,86,0.7481,0.0682
+C,nomic-ai/nomic-embed-text-v1.5,How do I merge a branch in GitLab?,138,0.8087,86,0.7609,139,0.7436,0.0477
+A,sentence-transformers/all-MiniLM-L6-v2,How do I view the commit history?,124,0.5934,41,0.5861,121,0.5813,0.0073
 B,BAAI/bge-small-en-v1.5,How do I view the commit history?,36,0.7543,31,0.7513,34,0.7509,0.0030
+C,nomic-ai/nomic-embed-text-v1.5,How do I view the commit history?,101,0.6444,42,0.6435,41,0.6225,0.0009
+A,sentence-transformers/all-MiniLM-L6-v2,How to set up SSH keys for GitLab?,144,0.7434,143,0.6751,142,0.5240,0.0684
 B,BAAI/bge-small-en-v1.5,How to set up SSH keys for GitLab?,144,0.8650,143,0.7190,13,0.6959,0.1459
+C,nomic-ai/nomic-embed-text-v1.5,How to set up SSH keys for GitLab?,144,0.7833,143,0.7038,142,0.6681,0.0794
+A,sentence-transformers/all-MiniLM-L6-v2,What is rebasing and when should I use it?,86,0.5448,90,0.5123,102,0.5048,0.0326
 B,BAAI/bge-small-en-v1.5,What is rebasing and when should I use it?,100,0.7765,86,0.7403,90,0.7364,0.0362
+C,nomic-ai/nomic-embed-text-v1.5,What is rebasing and when should I use it?,86,0.6482,102,0.6436,90,0.6382,0.0046
+A,sentence-transformers/all-MiniLM-L6-v2,How do I push changes to a remote repository?,130,0.7015,132,0.6622,81,0.6570,0.0393
 B,BAAI/bge-small-en-v1.5,How do I push changes to a remote repository?,130,0.8192,137,0.7769,132,0.7689,0.0423
+C,nomic-ai/nomic-embed-text-v1.5,How do I push changes to a remote repository?,130,0.7073,82,0.6915,137,0.6819,0.0158

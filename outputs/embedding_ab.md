@@ -1,4 +1,4 @@
-# A/B Embedding Benchmark — real KB data (Final branch)
+# A/B(/C) Embedding Benchmark — real KB data (Final branch)
 
 ## Setup
 
@@ -6,87 +6,107 @@
 - Queries: the 10 test queries from `scripts/retrieval.py` (HW2 set)
 - A: `sentence-transformers/all-MiniLM-L6-v2` (384d) — production model from HW2/HW3
 - B: `BAAI/bge-small-en-v1.5` (384d) — technical-domain candidate, drop-in (same dimension)
-- Cosine on normalized vectors, CPU, deterministic
+- C: `nomic-ai/nomic-embed-text-v1.5` (768d) — strong tech model, instruction-tuned (query prefix applied), NOT drop-in (index size changes)
+- Cosine on normalized vectors, CPU, deterministic. **Cosine values are not comparable across models** (each model has its own space calibration) — read the top-1 chunk choice, not the raw number.
 
 ## Top-1 retrieval per query
 
-| # | Query | A top-1 (score) | B top-1 (score) | Same? |
-|---|---|---|---|---|
-| 1 | How do I clone a Git repository? | `git_basics_getting_repository_chunk_002` (0.7085) | `gitlab_getting_started_chunk_006` (0.8193) | **no** |
-| 2 | What is a Git branch and how do I create one? | `gitlab_getting_started_chunk_001` (0.6338) | `branching_branch_management_chunk_001` (0.8124) | **no** |
-| 3 | How to resolve merge conflicts in Git? | `gitlab_getting_started_chunk_005` (0.7214) | `branching_basic_branching_merging_chunk_014` (0.8628) | **no** |
-| 4 | What is the difference between git add and git commit? | `github_about_git_chunk_008` (0.6602) | `git_basics_recording_changes_chunk_007` (0.8289) | **no** |
-| 5 | How do I stash my changes temporarily? | `git_tools_stashing_cleaning_chunk_001` (0.6201) | `git_tools_stashing_cleaning_chunk_012` (0.7692) | **no** |
-| 6 | How do I merge a branch in GitLab? | `gitlab_getting_started_chunk_004` (0.7146) | `gitlab_getting_started_chunk_004` (0.8190) | yes |
-| 7 | How do I view the commit history? | `github_about_git_chunk_004` (0.5934) | `git_basics_recording_changes_chunk_023` (0.7543) | **no** |
-| 8 | How to set up SSH keys for GitLab? | `gitlab_getting_started_chunk_010` (0.7434) | `gitlab_getting_started_chunk_010` (0.8650) | yes |
-| 9 | What is rebasing and when should I use it? | `git_tools_rebasing_chunk_001` (0.5448) | `git_tools_rebasing_chunk_015` (0.7765) | **no** |
-| 10 | How do I push changes to a remote repository? | `github_about_git_chunk_010` (0.7015) | `github_about_git_chunk_010` (0.8192) | yes |
+| # | Query | A top-1 (score) | B top-1 (score) | C top-1 (score) |
+|---|---|----|----|----|
+| 1 | How do I clone a Git repository? | `git_basics_getting_repository_chunk_002` (0.709) | `gitlab_getting_started_chunk_006` (0.819) | `git_basics_getting_repository_chunk_006` (0.751) |
+| 2 | What is a Git branch and how do I create one? | `gitlab_getting_started_chunk_001` (0.634) | `branching_branch_management_chunk_001` (0.812) | `branching_branch_management_chunk_001` (0.738) |
+| 3 | How to resolve merge conflicts in Git? | `gitlab_getting_started_chunk_005` (0.721) | `branching_basic_branching_merging_chunk_014` (0.863) | `gitlab_getting_started_chunk_005` (0.747) |
+| 4 | What is the difference between git add and git commit? | `github_about_git_chunk_008` (0.660) | `git_basics_recording_changes_chunk_007` (0.829) | `git_basics_recording_changes_chunk_028` (0.764) |
+| 5 | How do I stash my changes temporarily? | `git_tools_stashing_cleaning_chunk_001` (0.620) | `git_tools_stashing_cleaning_chunk_012` (0.769) | `git_tools_stashing_cleaning_chunk_001` (0.664) |
+| 6 | How do I merge a branch in GitLab? | `gitlab_getting_started_chunk_004` (0.715) | `gitlab_getting_started_chunk_004` (0.819) | `gitlab_getting_started_chunk_004` (0.809) |
+| 7 | How do I view the commit history? | `github_about_git_chunk_004` (0.593) | `git_basics_recording_changes_chunk_023` (0.754) | `git_tools_rebasing_chunk_016` (0.644) |
+| 8 | How to set up SSH keys for GitLab? | `gitlab_getting_started_chunk_010` (0.743) | `gitlab_getting_started_chunk_010` (0.865) | `gitlab_getting_started_chunk_010` (0.783) |
+| 9 | What is rebasing and when should I use it? | `git_tools_rebasing_chunk_001` (0.545) | `git_tools_rebasing_chunk_015` (0.777) | `git_tools_rebasing_chunk_001` (0.648) |
+| 10 | How do I push changes to a remote repository? | `github_about_git_chunk_010` (0.701) | `github_about_git_chunk_010` (0.819) | `github_about_git_chunk_010` (0.707) |
 
-## Score separation (top1 score, margin top1-top2)
+## Score separation (top-1 score, margin top1-top2)
 
-| # | Query | A top-1 | A margin | B top-1 | B margin |
-|---|---|---|---|---|---|
-| 1 | How do I clone a Git repository? | 0.7085 | 0.0002 | 0.8193 | 0.0121 |
-| 2 | What is a Git branch and how do I create one? | 0.6338 | 0.0263 | 0.8124 | 0.0099 |
-| 3 | How to resolve merge conflicts in Git? | 0.7214 | 0.0006 | 0.8628 | 0.0318 |
-| 4 | What is the difference between git add and git commit? | 0.6602 | 0.0450 | 0.8289 | 0.0090 |
-| 5 | How do I stash my changes temporarily? | 0.6201 | 0.0533 | 0.7692 | 0.0181 |
-| 6 | How do I merge a branch in GitLab? | 0.7146 | 0.1151 | 0.8190 | 0.0682 |
-| 7 | How do I view the commit history? | 0.5934 | 0.0073 | 0.7543 | 0.0030 |
-| 8 | How to set up SSH keys for GitLab? | 0.7434 | 0.0684 | 0.8650 | 0.1459 |
-| 9 | What is rebasing and when should I use it? | 0.5448 | 0.0326 | 0.7765 | 0.0362 |
-| 10 | How do I push changes to a remote repository? | 0.7015 | 0.0393 | 0.8192 | 0.0423 |
+| # | Query | A top-1 | A margin | B top-1 | B margin | C top-1 | C margin |
+|---|---|----|----|----|----|----|----|
+| 1 | How do I clone a Git repository? | 0.709 | 0.000 | 0.819 | 0.012 | 0.751 | 0.007 |
+| 2 | What is a Git branch and how do I create one? | 0.634 | 0.026 | 0.812 | 0.010 | 0.738 | 0.020 |
+| 3 | How to resolve merge conflicts in Git? | 0.721 | 0.001 | 0.863 | 0.032 | 0.747 | 0.017 |
+| 4 | What is the difference between git add and git commit? | 0.660 | 0.045 | 0.829 | 0.009 | 0.764 | 0.002 |
+| 5 | How do I stash my changes temporarily? | 0.620 | 0.053 | 0.769 | 0.018 | 0.664 | 0.014 |
+| 6 | How do I merge a branch in GitLab? | 0.715 | 0.115 | 0.819 | 0.068 | 0.809 | 0.048 |
+| 7 | How do I view the commit history? | 0.593 | 0.007 | 0.754 | 0.003 | 0.644 | 0.001 |
+| 8 | How to set up SSH keys for GitLab? | 0.743 | 0.068 | 0.865 | 0.146 | 0.783 | 0.079 |
+| 9 | What is rebasing and when should I use it? | 0.545 | 0.033 | 0.777 | 0.036 | 0.648 | 0.005 |
+| 10 | How do I push changes to a remote repository? | 0.701 | 0.039 | 0.819 | 0.042 | 0.707 | 0.016 |
 
 ## Aggregates
 
 - Top-1 agreement A vs B: **3/10**
-- Mean top-1 cosine — A: **0.6642**, B: **0.8127**
-- Mean margin (top1-top2) — A: **0.0388**, B: **0.0377** (bigger = clearer winner vs runner-up)
-- Timing: index build A 1.5s / B 3.0s; model load A 9.1s / B 3.5s
+- Top-1 agreement A vs C: **6/10**
+- Top-1 agreement B vs C: **4/10**
+- Mean top-1 cosine A: **0.6642** | mean margin A: **0.0388** (bigger margin = clearer winner vs runner-up)
+- Mean top-1 cosine B: **0.8126** | mean margin B: **0.0377** (bigger margin = clearer winner vs runner-up)
+- Mean top-1 cosine C: **0.7256** | mean margin C: **0.0209** (bigger margin = clearer winner vs runner-up)
+- Timing (index build / model load): A 1.5s / 3.9s; B 2.8s / 3.7s; C 11.8s / 3.7s
 
 ## Qualitative top-1 assessment (manual, reading the actual chunk text)
 
-Cosine scores are not comparable across models (B systematically scores
-higher), so the decisive question is *which chunk* each model surfaced.
-Judging each query's top-1 against the chunk's real content:
+Cosine scores are not comparable across models — what matters is *which*
+chunk each model lands on. Each top-1 was read manually:
 
-| # | Query | A top-1 chunk | B top-1 chunk | Better top-1 |
-|---|---|---|---|---|
-| 1 | clone a repo | getting_repository #002 ("two ways to get a repo") | getting_started #006 ("cloning it to your machine") | tie |
-| 2 | what is a branch | getting_started #001 (generic Git intro) | branch_management #001 (the Branching chapter) | **B** |
-| 3 | resolve merge conflicts | getting_started #005 (passing mention) | branching_merging #014 (resolution steps, `git mergetool`) | **B** |
-| 4 | add vs commit | about_git #008 (generic) | recording_changes #007 (the add/commit chapter) | **B** |
-| 5 | stash changes | stashing #001 (chapter opener) | stashing #012 (niche `git stash branch`) | **A** |
-| 6 | merge a branch | getting_started #004 | getting_started #004 | tie |
-| 7 | view commit history | about_git #004 ("revision history / snapshots") | recording_changes #023 (`git status`/`diff` example) | **A** |
-| 8 | set up SSH keys | getting_started #010 | getting_started #010 | tie |
-| 9 | what is rebasing | rebasing #001 (chapter opener, merge vs rebase) | rebasing #015 (niche "safe to rebase pushed") | **A** |
-| 10 | push changes | about_git #010 | about_git #010 | tie |
+| Query | A: MiniLM | B: bge-small | C: nomic |
+|---|---|---|---|
+| 1 clone | opener «обери спосіб отримати репо» (ok) | GitLab-інтро про клонування (weak) | **саме `git clone` туторіал** (libgit2) |
+| 2 branch | GitLab-інтро (weak) | **opener глави Branch Management** | **opener глави Branch Management** |
+| 3 merge conflict | GitLab-секція про conflicts (ok) | **глубина глави branching/merging (mergeconflict tutorial)** | GitLab-секція (ok) |
+| 4 add vs commit | github_about_git (generic) | **глава Recording Changes (add/commit workflow)** | та сама глава, глибший суб-чанк |
+| 5 stash | **opener глави Stashing** | та сама глава, суб-чанк | **opener глави Stashing** |
+| 6 merge in GitLab | **gitlab_getting_started ✓** | **✓** | **✓** |
+| 7 view history | «history = snapshots called commits» (generic) | diff-чанк Recording Changes (weak) | концепція «what history means» (rebase chapter) — тематично найточніший текст про history |
+| 8 SSH keys | **gitlab_getting_started ✓** | **✓** | **✓** |
+| 9 rebase | **opener глави Rebasing** | та сама глава, суб-чанк | **opener глави Rebasing** |
+| 10 push | **github_about_git ✓** | **✓** | **✓** |
 
-**Head-to-head: A wins 3 (5,7,9), B wins 3 (2,3,4), tie 4 (1,6,8,10).**
-It is *not* a runaway 10-0. The pattern is the insight:
+Document-level: A 9/10 acceptable, B 9/10 acceptable, **C 10/10 correct
+document** (Q7 — closest on topic but not the `git log` chunk; no model
+picked a dedicated `git log` tutorial).
 
-- **B's 3 wins are topic-grounding wins** — for specific topic questions
-  (branch, conflicts, add/commit) A returned a *generic* GitLab intro or a
-  general doc, while B returned the exact chapter. Those are real misses for
-  A.
-- **A's 3 wins are opener-vs-depth wins** — for "what is X" intro questions
-  A landed on the chapter *opener*, while B dug into a niche sub-chunk of
-  the *same* chapter (still the right doc, just a less ideal chunk). Milder.
-- **Score calibration favors B**: B's top-1 cosines (0.81) are higher and
-  more spread than A's (0.66), which matters for re-ranking / thresholds in
-  the HW3 hybrid (BM25 + semantic + metadata).
+### How nomic (C) compares to bge (B) specifically
 
-## Conclusion
+- **C's wins over B:** Q1 (actual `git clone` tutorial vs GitLab intro),
+  Q7 (topical "what history means" vs an off-target diff chunk).
+- **B's wins over C:** Q2/Q3 (bge's chunk choices are more precise
+  tutorials; C is ok there), and C is never *better* where B is already
+  at the exact tutorial.
+- **Margin (separation signal):** B 0.0377 ≈ A 0.0388 ≫ **C 0.0209** —
+  nomic clusters similar chunks tightly, which is the *weakest* reranking
+  signal of the three for a hybrid (BM25 + semantic).
+- **Cost:** 768d (2x index size), index build 11.8s vs 1.5s/2.8s, no
+  drop-in (FAISS index size changes, `prepare_knowledge_base.py` +
+  `retrieval.py` must both move to the new dimension).
+- **Agreement:** C agrees with A (MiniLM) on 6/10 top-1 — nomic's
+  "prefer chapter openers" behaviour is closest to MiniLM's, while B
+  (deep-subchunk behaviour) is the most different (3/10 with A).
 
-`bge-small-en-v1.5` is the stronger embedder for this technical KB: better
-topic grounding and better score calibration, at the same 384d (drop-in —
-only `MODEL_NAME` + an index rebuild of 145 chunks, ~3s). Its one mild
-weakness (preferring a deep niche chunk over the chapter opener for "what is
-X" intro questions) is small and is mitigated by the hybrid retrieval, where
+### Conclusion
+
+For *our* small GitLab KB the three models are close at document level
+(9–10/10); the differences are in chunk precision and score calibration.
+- **bge-small** stays the strongest single-model pick here: best
+  calibration (0.81, wide spread), good margins, and the most precise
+  chunk choices on tutorial-style queries — *and* it is a 384d drop-in.
+- **nomic-embed-text-v1.5** is genuinely strong (best Q1, best Q7) but
+  brings no net win for this KB: it does not beat bge anywhere bge is
+  already exact, has the weakest margin, doubles index size, and needs
+  code changes. Its documented strengths (8K context, multilingual,
+  long-doc handling) do not matter for 145 short GitLab chunks.
+- MiniLM-L6-v2's real weakness (generic intro chunks instead of the
+  exact tutorial) is visible on Q1/Q2/Q7 and is exactly what bge fixes.
+
 BM25 anchors the exact terms and metadata filters the doc. Recommendation:
-adopt bge-small-en-v1.5 for the semantic leg of the hybrid.
+adopt bge-small-en-v1.5 for the semantic leg of the hybrid; nomic is a
+reasonable alternative if index size / dimension are not a constraint, but
+on this data it is not the best pick.
 
-(Project decision: keep all-MiniLM-L6-v2 as-is for now; bge-small-en-v1.5
-is recorded here as the measured drop-in upgrade option.)
+(Project decision: keep all-MiniLM-L6-v2 as-is for now; bge-small
+recorded as the measured drop-in upgrade, nomic measured as well.)
