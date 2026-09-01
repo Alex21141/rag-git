@@ -297,7 +297,7 @@ def llm_extract_command(question: str, model: str = None) -> dict:
     except ImportError:
         return {"command": None, "ok": False,
                 "raw": "openai package not installed (pip install openai)"}
-    base = os.environ.get("LITELLM_BASE_URL", "http://10.10.0.41:4000/v1")
+    base = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000/v1")
     key = os.environ.get("LITELLM_API_KEY", "")
     model = model or os.environ.get("LITELLM_MODEL", "qwen38-27b-awq")
     valid = ", ".join(sorted(GIT_COMMANDS_KEYS))
@@ -388,7 +388,7 @@ def main():
     for case in EVAL_SET:
         res = run_one(app, case["question"])
         sc = score(case, res)
-        ans = res["answer"].replace("\n", " ⏎ ")
+        ans = sanitize(res["answer"]).replace("\n", " ⏎ ")
         if len(ans) > 200:
             ans = ans[:200] + "…"
         row = {
@@ -406,6 +406,11 @@ def main():
             "errors": sc["errors"],
             "notes": sc["notes"],
         }
+        # sanitize text fields only; keep id/latency as int for metrics
+        for k in ("question", "expected_behavior", "answer", "retrieved_chunks",
+                  "route_or_mode", "tools_used", "task_success", "groundedness",
+                  "answer_quality", "errors", "notes"):
+            row[k] = sanitize(str(row[k]))
         rows.append(row)
         raw.append({
             "id": case["id"],
@@ -414,8 +419,9 @@ def main():
             "route": res["route"],
             "executed_nodes": res["executed_nodes"],
             "tool_calls": res["tool_args"],
-            "observation": res["observations"][0] if res["observations"] else None,
-            "final_answer": res["answer"],
+            "observation": (sanitize(res["observations"][0])
+                            if res["observations"] else None),
+            "final_answer": sanitize(res["answer"]),
             "latency_ms": res["latency_ms"],
             "scoring": {k: sc[k] for k in
                         ("task_success", "groundedness", "answer_quality", "errors")},
@@ -509,6 +515,15 @@ def main():
     print("Wrote: outputs/eval_results.csv, eval_results.md, eval_summary.md, eval_raw.json")
     if args.llm:
         run_llm_demo(rows, raw)
+
+
+# ── Public-repo safety: mask PII in every emitted artifact ─────────────
+def sanitize(text: str) -> str:
+    """Mask personal/infra details in outputs (emails, internal IPs)."""
+    import re
+    text = re.sub(r"[a-zA-Z0-9._%+-]+@gmail\.com", "<email>", text)
+    text = re.sub(r"10\.10\.0\.\d+", "<internal-ip>", text)
+    return text
 
 
 def sc_score_chunks(case, res):

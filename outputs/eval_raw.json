@@ -129,9 +129,9 @@
         }
       }
     ],
-    "observation": "{\n  \"scope\": \"global\",\n  \"settings\": {\n    \"user.name\": \"Alex21141\",\n    \"user.email\": \"alex21141@gmail.com\"\n  }\n}",
-    "final_answer": "Налаштування git (scope: global):\n- `user.name` = `Alex21141`\n- `user.email` = `alex21141@gmail.com`",
-    "latency_ms": 4,
+    "observation": "{\n  \"scope\": \"global\",\n  \"settings\": {\n    \"user.name\": \"Alex21141\",\n    \"user.email\": \"<email>\"\n  }\n}",
+    "final_answer": "Налаштування git (scope: global):\n- `user.name` = `Alex21141`\n- `user.email` = `<email>`",
+    "latency_ms": 3,
     "scoring": {
       "task_success": "yes",
       "groundedness": "good",
@@ -159,7 +159,7 @@
     ],
     "observation": "{\n  \"scope\": \"local\",\n  \"settings\": {\n    \"core.repositoryformatversion\": \"0\",\n    \"core.filemode\": \"true\",\n    \"core.bare\": \"false\",\n    \"core.logallrefupdates\": \"true\",\n    \"remote.origin.url\": \"git@github.com:Alex21141/rag-git.git\",\n    \"remote.origin.fetch\": \"+refs/heads/*:refs/remotes/origin/*\",\n    \"branch.hw1-git.remote\": \"origin\",\n    \"branch.hw1-git.merge\": \"refs/heads/hw1-git\",\n    \"branch.hw7-langgraph.remote\": \"origin\",\n    \"branch.hw7-langgraph.merge\": \"refs/heads/hw7-langgraph\"\n  }\n}",
     "final_answer": "Налаштування git (scope: local):\n- `core.repositoryformatversion` = `0`\n- `core.filemode` = `true`\n- `core.bare` = `false`\n- `core.logallrefupdates` = `true`\n- `remote.origin.url` = `git@github.com:Alex21141/rag-git.git`\n- `remote.origin.fetch` = `+refs/heads/*:refs/remotes/origin/*`\n- `branch.hw1-git.remote` = `origin`\n- `branch.hw1-git.merge` = `refs/heads/hw1-git`\n- `branch.hw7-langgraph.remote` = `origin`\n- `branch.hw7-langgraph.merge` = `refs/heads/hw7-langgraph`",
-    "latency_ms": 3,
+    "latency_ms": 2,
     "scoring": {
       "task_success": "yes",
       "groundedness": "good",
