@@ -46,6 +46,7 @@ from agent_flow import (
     extract_command,
     synthesize_command,
     synthesize_config,
+    COMMAND_FALLBACK,
 )
 
 DOMAIN = "Git command reference and configuration"
@@ -76,9 +77,19 @@ def classify_request(state: AgentState) -> dict:
 
 
 def run_command_workflow(state: AgentState) -> dict:
-    """Node 2: викликати get_git_command для командного запитання."""
+    """Node 2: викликати get_git_command для командного запитання.
+
+    Final: guardrail — якщо команду не вдалося впевнено вилучити, tool НЕ
+    викликається зі сміт-аргументом (раніше `user_goal[:20]`); повертаємо
+    чесний COMMAND_FALLBACK.
+    """
     cmd = extract_command(state["user_goal"])
-    args = {"command": cmd if cmd else state["user_goal"][:20]}
+    if cmd is None:
+        return {
+            "final_answer": COMMAND_FALLBACK,
+            "executed_nodes": state.get("executed_nodes", []) + ["command_workflow"],
+        }
+    args = {"command": cmd}
     obs = get_git_command(args["command"])
     return {
         "tool_calls": [{"name": "get_git_command", "args": args}],
@@ -130,6 +141,17 @@ def route_decision(state: AgentState) -> str:
     return state["selected_route"]
 
 
+def _after_command(state: AgentState) -> str:
+    """Conditional edge after command_workflow (Final).
+
+    If the guardrail produced the honest fallback (no observation), the
+    final_answer is already set — go to END. Otherwise build the answer.
+    """
+    if not state.get("observations"):
+        return "fallback"
+    return "build_answer"
+
+
 # ── Build graph ─────────────────────────────────────────────────────────
 def build_graph():
     graph = StateGraph(AgentState)
@@ -145,7 +167,13 @@ def build_graph():
         "config_workflow": "config_workflow",
         "clarification": "clarification",
     })
-    graph.add_edge("command_workflow", "build_answer")
+    # Final: command_workflow can end in the honest guardrail fallback
+    # (no tool call, no observation) — in that case go straight to END,
+    # not to build_answer (which expects a non-empty observation).
+    graph.add_conditional_edges("command_workflow", _after_command, {
+        "fallback": END,
+        "build_answer": "build_answer",
+    })
     graph.add_edge("config_workflow", "build_answer")
     graph.add_edge("clarification", END)
     graph.add_edge("build_answer", END)

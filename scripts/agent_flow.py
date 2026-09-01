@@ -118,27 +118,36 @@ GIT_COMMANDS = {
 }
 
 # ── Tool 1: get_git_command (mock) ──────────────────────────────────────
+# ── Fuzzy match (SAFE — typo/normalization tolerance only) ─────────────
+# The previous fuzzy used substring matching (`cmd in key or key in cmd`),
+# which returned a WRONG command for coincidental partial words
+# (e.g. "commit" object matching inside "cherry-pick a commit"). That is the
+# root of the confident-wrong-answer failure mode, so substring matching is
+# removed. Only exact (after normalization) and one safe plural->singular
+# normalization remain.
+def _normalize_command(cmd: str) -> str:
+    return cmd.lower().strip().replace(" ", "-").replace("_", "-")
+
+
 def get_git_command(command: str) -> str:
     """Get structured info about a Git command (built-in DB, fixed result)."""
-    cmd = command.lower().strip()
+    cmd = _normalize_command(command)
     if cmd in GIT_COMMANDS:
-        info = GIT_COMMANDS[cmd]
-        return json.dumps({
-            "command": cmd,
-            "synopsis": info["synopsis"],
-            "description": info["description"],
-            "examples": info["examples"],
-        }, indent=2)
-    # Fuzzy match
-    for key in GIT_COMMANDS:
-        if cmd in key or key in cmd:
-            return json.dumps({
-                "command": key,
-                "synopsis": GIT_COMMANDS[key]["synopsis"],
-                "description": GIT_COMMANDS[key]["description"],
-                "examples": GIT_COMMANDS[key]["examples"],
-            }, indent=2)
+        return _command_payload(cmd)
+    # Safe plural -> singular ("logs" -> "log"). No substring matching.
+    if cmd.endswith("s") and cmd[:-1] in GIT_COMMANDS:
+        return _command_payload(cmd[:-1])
     return json.dumps({"error": f"Command '{command}' not found in reference DB"}, indent=2)
+
+
+def _command_payload(cmd: str) -> str:
+    info = GIT_COMMANDS[cmd]
+    return json.dumps({
+        "command": cmd,
+        "synopsis": info["synopsis"],
+        "description": info["description"],
+        "examples": info["examples"],
+    }, indent=2)
 
 # ── Tool 2: get_git_config (mock) ───────────────────────────────────────
 def get_git_config(scope: str = "global") -> str:
@@ -219,20 +228,71 @@ def route_query(query: str) -> str:
     return "clarification"
 
 
-# ── Extract params ──────────────────────────────────────────────────────
+# ── Extract params (Final: intent-based, with fallback) ─────────────────
+# Fallback message for when no command can be confidently extracted.
+# Shared constant: agent_flow.agent_run (HW6) and the LangGraph command
+# node (HW7) both produce this answer, so wording stays consistent.
+COMMAND_FALLBACK = (
+    "Не вдалося визначити, яку саме git-команду ви маєте на увазі. "
+    "Сформулюйте, будь ласка, питання конкретніше — наприклад: "
+    "'git rebase' або 'як зробити git reset?'. Доступні команди: "
+    f"{', '.join(sorted(GIT_COMMANDS))}."
+)
+
+# Natural-language intents that map to a specific command even when the
+# command word is absent from the question (e.g. "undo my last commit"
+# means `reset`, not `commit`). Checked before positional extraction.
+INTENT_PHRASES = {
+    "reset": [
+        "undo my last commit",
+        "undo the last commit",
+        "отбавити останнє комміт",
+        "відмінити останнє комміт",
+        "scroll back to the previous commit",
+    ],
+    "commit": [
+        "amend my last commit",
+        "amend the last commit",
+    ],
+}
+
+
 def extract_command(query: str) -> Optional[str]:
-    """Extract the git command name from the query."""
+    """Extract the git command name from the query (Final version).
+
+    A command is returned ONLY on a strong signal:
+      1. explicit `git <command>`;
+      2. a known natural-language intent phrase (see INTENT_PHRASES);
+      3. the command sitting directly after a command-intent marker
+         ("how do I <cmd>", "як зробити <cmd>", ...).
+    The previous rule — "any DB word appearing anywhere in the query" —
+    treated object words as commands ("cherry-pick a **commit**" -> commit)
+    and produced confident wrong answers. That rule is removed: a bare
+    object word no longer selects a command; the caller falls back
+    honestly instead (COMMAND_FALLBACK / guardrail in the tool).
+    """
     q = query.lower()
-    # 1. Exact command word (word boundary: "commits" ≠ "commit")
-    for cmd in GIT_COMMANDS:
-        if re.search(r"\b" + cmd + r"\b", q):
+    # 1. Explicit "git <command>".
+    for m in re.finditer(r"git\s+([a-z][a-z-]*)", q):
+        word = m.group(1)
+        if word in GIT_COMMANDS:
+            return word
+    # 2. Known intent phrases ("undo my last commit" -> reset, not commit).
+    for cmd, phrases in INTENT_PHRASES.items():
+        if any(p in q for p in phrases):
             return cmd
-    # 2. Phrase hints (e.g. "recent commits graph" → log)
+    # 3. Phrase hints indicating a command without naming it
+    #    (e.g. "recent commits graph" -> log). Kept from HW6: these phrases
+    #    name the OPERATION, not an object word, so they are safe signals.
     for cmd, phrases in PHRASE_HINTS.items():
         if any(p in q for p in phrases):
             return cmd
-    # 3. "git X" pattern
-    m = re.search(r"git\s+(\w+)", q)
+    # 4. Command in command position: marker + optional filler + <command>.
+    marker = (
+        r"(?:how do i|how to|how can i|як\s+мені\s+зробити|як\s+зробити|"
+        r"як\s+використовувати|як\s+справити|як\s+виконати|як|как)"
+    )
+    m = re.search(marker + r"\s+(?:any\s+)?([a-z][a-z-]*)", q)
     if m and m.group(1) in GIT_COMMANDS:
         return m.group(1)
     return None
@@ -305,10 +365,16 @@ def agent_run(query: str) -> dict:
     # Step 2: Execute tool
     if state["selected_route"] == "command_workflow":
         cmd = extract_command(query)
-        args = {"command": cmd if cmd else query[:20]}
-        obs = get_git_command(args["command"])
-        state["tool_calls"].append({"name": "get_git_command", "args": args})
-        state["observations"].append(obs)
+        if cmd is not None:
+            args = {"command": cmd}
+            obs = get_git_command(args["command"])
+            state["tool_calls"].append({"name": "get_git_command", "args": args})
+            state["observations"].append(obs)
+        else:
+            # Guardrail (Final): no command could be confidently extracted, so
+            # do NOT call the tool with a fabricated argument (previously
+            # `query[:20]` garbage). Honest fallback answer instead.
+            state["final_answer"] = COMMAND_FALLBACK
     elif state["selected_route"] == "config_workflow":
         scope = "local" if "local" in query.lower() else "global"
         args = {"scope": scope}
@@ -320,7 +386,10 @@ def agent_run(query: str) -> dict:
 
     # Step 3: Synthesize
     if state["selected_route"] == "command_workflow":
-        state["final_answer"] = synthesize_command(state["observations"][0])
+        if state["final_answer"] is None:
+            # Guardrail passed (a command was extracted and the tool ran).
+            state["final_answer"] = synthesize_command(state["observations"][0])
+        # otherwise: the guardrail already set COMMAND_FALLBACK — keep it
     elif state["selected_route"] == "config_workflow":
         state["final_answer"] = synthesize_config(state["observations"][0])
     else:
@@ -389,7 +458,11 @@ if __name__ == "__main__":
     # Print summary
     for i, r in enumerate(results, 1):
         st = r["state"]
-        if st["selected_route"] == "clarification":
+        if st["selected_route"] == "clarification" or (
+            st["final_answer"] == COMMAND_FALLBACK
+        ):
+            # clarification route, or the Final guardrail kicked in: the
+            # system honestly declined instead of guessing.
             status = "🟡"
         elif st["observations"] and "error" not in st["observations"][0].lower():
             status = "✅"

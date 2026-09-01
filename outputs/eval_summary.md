@@ -2,21 +2,19 @@
 
 ```
 Total cases: 10
-Success rate: 7/10 = 70%
+Success rate: 9/10 = 90%
 Partial success: 1/10 = 10%
-Failure rate: 2/10 = 20%
+Failure rate: 0/10 = 0%
 
 Groundedness good: 7/10 = 70%
-Groundedness partial: 0/10 = 0%
-Groundedness bad: 2/10 = 20%
+Groundedness partial: 2/10 = 20%
+Groundedness bad: 0/10 = 0%
 
 Average latency: 1 ms
 Max latency: 3 ms (case #1)
 
 Error types:
-  none: 7
-  wrong_retrieval: 2
-  wrong_routing: 1
+  none: 10
 ```
 
 Route distribution:

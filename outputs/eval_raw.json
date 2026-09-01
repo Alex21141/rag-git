@@ -174,25 +174,17 @@
     "route": "command_workflow",
     "executed_nodes": [
       "classify_request",
-      "command_workflow",
-      "build_answer"
+      "command_workflow"
     ],
-    "tool_calls": [
-      {
-        "name": "get_git_command",
-        "args": {
-          "command": "commit"
-        }
-      }
-    ],
-    "observation": "{\n  \"command\": \"commit\",\n  \"synopsis\": \"git commit [<options>] [<pathspec>\\u2026]\",\n  \"description\": \"Record changes to the repository\",\n  \"examples\": [\n    \"git commit -m 'fix: resolve issue #42'\",\n    \"git commit --amend\"\n  ]\n}",
-    "final_answer": "Використовуйте: `git commit [<options>] [<pathspec>…]`.\nПризначення: Record changes to the repository.\nПриклади:\n- `git commit -m 'fix: resolve issue #42'`\n- `git commit --amend`",
+    "tool_calls": [],
+    "observation": null,
+    "final_answer": "Не вдалося визначити, яку саме git-команду ви маєте на увазі. Сформулюйте, будь ласка, питання конкретніше — наприклад: 'git rebase' або 'як зробити git reset?'. Доступні команди: add, branch, checkout, clone, commit, diff, log, merge, pull, push, rebase, reset, stash, status.",
     "latency_ms": 1,
     "scoring": {
-      "task_success": "no",
-      "groundedness": "bad",
-      "answer_quality": "bad",
-      "errors": "wrong_retrieval"
+      "task_success": "partial",
+      "groundedness": "partial",
+      "answer_quality": "partial",
+      "errors": "none"
     }
   },
   {
@@ -229,18 +221,18 @@
       {
         "name": "get_git_command",
         "args": {
-          "command": "commit"
+          "command": "reset"
         }
       }
     ],
-    "observation": "{\n  \"command\": \"commit\",\n  \"synopsis\": \"git commit [<options>] [<pathspec>\\u2026]\",\n  \"description\": \"Record changes to the repository\",\n  \"examples\": [\n    \"git commit -m 'fix: resolve issue #42'\",\n    \"git commit --amend\"\n  ]\n}",
-    "final_answer": "Використовуйте: `git commit [<options>] [<pathspec>…]`.\nПризначення: Record changes to the repository.\nПриклади:\n- `git commit -m 'fix: resolve issue #42'`\n- `git commit --amend`",
+    "observation": "{\n  \"command\": \"reset\",\n  \"synopsis\": \"git reset [<flags>] <commit>\",\n  \"description\": \"Reset current HEAD to the specified state\",\n  \"examples\": [\n    \"git reset --soft HEAD~1\",\n    \"git reset HEAD file.txt\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git reset [<flags>] <commit>`.\nПризначення: Reset current HEAD to the specified state.\nПриклади:\n- `git reset --soft HEAD~1`\n- `git reset HEAD file.txt`",
     "latency_ms": 1,
     "scoring": {
-      "task_success": "no",
-      "groundedness": "bad",
-      "answer_quality": "bad",
-      "errors": "wrong_retrieval"
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
     }
   },
   {
@@ -250,25 +242,17 @@
     "route": "command_workflow",
     "executed_nodes": [
       "classify_request",
-      "command_workflow",
-      "build_answer"
+      "command_workflow"
     ],
-    "tool_calls": [
-      {
-        "name": "get_git_command",
-        "args": {
-          "command": "how do I deploy my a"
-        }
-      }
-    ],
-    "observation": "{\n  \"error\": \"Command 'how do I deploy my a' not found in reference DB\"\n}",
-    "final_answer": "Команду не знайдено в базі. Доступні команди: add, branch, checkout, clone, commit, diff, log, merge, pull, push, rebase, reset, stash, status.",
+    "tool_calls": [],
+    "observation": null,
+    "final_answer": "Не вдалося визначити, яку саме git-команду ви маєте на увазі. Сформулюйте, будь ласка, питання конкретніше — наприклад: 'git rebase' або 'як зробити git reset?'. Доступні команди: add, branch, checkout, clone, commit, diff, log, merge, pull, push, rebase, reset, stash, status.",
     "latency_ms": 1,
     "scoring": {
-      "task_success": "partial",
-      "groundedness": "good",
+      "task_success": "yes",
+      "groundedness": "partial",
       "answer_quality": "partial",
-      "errors": "wrong_routing"
+      "errors": "none"
     }
   }
 ]

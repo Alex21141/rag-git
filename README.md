@@ -1,142 +1,87 @@
-# Домашнє завдання №8 — Evaluation + Observability layer
+# Курсовий проєкт — Фінальне технічне доопрацювання chatbot-а
 
-## 1. Що робить шар спостереження
+## 1. Слабка точка, яку виправлено
 
-До системи з HW7 (LangGraph git-агент) додано мінімальний шар спостереження
-й оцінювання якості: eval set із 10 запитів, автозапуск реального графа,
-збір результатів у структуровану таблицю, розрахунок метрик і quality report.
+**Слабка точка:** `extract_command` (`scripts/agent_flow.py`) вважав за
+команду **будь-яке слово з БД, що випадково зустрічається в запиті**.
+Слово `commit` — і команда в БД, і дуже поширене *іменник-об'єкт* у
+природних git-питаннях. До того ж `get_git_command` мав
+substring-фаззійний збіг, який міг м'яко підсунути іншу команду, а вузол
+command передавав у tool вигаданий аргумент `query[:20]`, коли команду не
+було.
 
-- Скрипт: `scripts/eval_observability.py`
-- Таблиця: `outputs/eval_results.csv` (також `eval_results.md`)
-- Метрики: `outputs/eval_summary.md`
-- Повні трасування: `outputs/eval_raw.json`
-- Звіт: `outputs/quality_report.md`
-- Опційно: `--llm` — LLM-інтент-екстрактор (NVIDIA Nemotron 3.5 Lightning
-  через OpenRouter, той самий підхід, що HW4); проведено: 6/6
+Результат — **впевнена неправильна відповідь** (найгірший тип помилки для
+допоміжника):
 
-## 2. Composition eval set (10 запитів)
-
-| # | Сценарій | Приклад |
+| Запит | Система відповідала | Правильно |
 |---|---|---|
-| 1–4 | Просте питання з knowledge base | «how do I stash my changes?» |
-| 3 | Питання, де потрібен tool (phrase → команда) | «show me recent commits graph» → `log` |
-| 5–6 | Питання, де потрібен retrieval (live config, global/local) | «what is my git user.name?» |
-| 7 | Питання, де retrieval може помилитися (команда не в БД) | «how do I cherry-pick a commit?» |
-| 8 | Agent має сказати «не знаю» / уточнити | «what is the best pizza recipe?» |
-| 9–10 | Складне / неоднозначне (trap-кейси) | «undo my last commit but keep the changes» |
+| `how do I cherry-pick a commit?` | `git commit` (cherry-pick взагалі не в БД) | чесне «немає в базі» |
+| `how do I undo my last commit…` | `git commit` (протилежне дії) | `git reset --soft HEAD~1` |
+| `how do I deploy my app…` | tool з аргументом «how do i deploy my a» | чесний fallback |
 
-Ground truth (яку команду має видобути система) закладено в
-`INTENT` map всередині скрипту.
+Виміряно на eval з HW8 (10 кейсів, реальний виклик графа):
+2 `wrong_retrieval` + 1 `wrong_routing`, success 70%.
 
-## 3. Як запустити
+## 2. Що реалізовано
+
+Одне цілісне покращення навколо цієї однієї слабкої точки (комбінація
+варіантів *Improved tool call* + *Simple guardrail* + *Fallback behavior*):
+
+1. **Intent-based extraction** — команда повертається лише за сильним
+   сигналом: експліцитний `git <cmd>`, відома intent-фраза
+   (`INTENT_PHRASES`: «undo my last commit» → `reset`, «amend my last
+   commit» → `commit`), команда одразу після маркера інтенції
+   («how do I <cmd>», «як зробити <cmd>»), безпечні phrase-hints
+   («recent commits graph» → `log`). Правило «будь-яке слово з БД у запиті»
+   прибрано.
+2. **Guardrail перед tool call** (в HW6 `agent_run` і HW7 LangGraph-вузлі
+   `run_command_workflow`) — без впевненої команди tool **не викликається**;
+   в графі додано умовний edge: fallback іде одразу в END (не в
+   `build_answer`, який очікує observation).
+3. **Чесний fallback** (`COMMAND_FALLBACK`) — замість впевненої помилки
+   система каже, що не змогла визначити команду, і перелічує доступні.
+4. **Безпечний збіг у tool** — substring-фаззі в `get_git_command`
+   видалено; залишено лише exact після нормалізації + plural→singular.
+
+## 3. Before / after (реальний виклик, eval set з HW8)
+
+| Кейс | Before | After |
+|---|---|---|
+| `cherry-pick a commit` | впевнено `git commit` (wrong_retrieval) | чесний fallback + перелік команд |
+| `undo my last commit…` | `git commit` (wrong_retrieval) | `git reset`, приклад `--soft HEAD~1` |
+| `deploy my app…` | tool з вигаданим аргументом | guardrail, чесний fallback |
+
+Метрики (10 кейсів):
+
+| | Before (hw8) | After (final) |
+|---|---|---|
+| Success | 7/10 (70%) | 9/10 (90%) |
+| Failures | 2/10 | **0/10** |
+| Groundedness bad | 2/10 | **0/10** |
+| wrong_retrieval / wrong_routing | 2 / 1 | **0 / 0** |
+| Середня затримка | 1 ms | 1 ms (без LLM — без втрат) |
+
+Регресій немає: 6 «зелених» кейсів дають ідентичні відповіді.
+
+Повне обґрунтування, повний changelog та чесний перелік
+remaining limitations — у **`FINAL_IMPROVEMENT.md`**.
+
+## 4. Як запустити
 
 ```bash
-./venv/bin/python scripts/eval_observability.py          # eval
-export OPENROUTER_API_KEY=***
-./venv/bin/python scripts/eval_observability.py --llm    # + LLM-демо
+./venv/bin/python scripts/agent_flow.py        # HW6: 5 demo traces
+./venv/bin/python scripts/langgraph_flow.py    # HW7: 3 route tests
+./venv/bin/python scripts/eval_observability.py  # HW8: eval 10 кейсів
 ```
 
-`--llm` використовує той самий підхід, що HW4 (`scripts/rag_answer.py`):
-OpenRouter + `nvidia/nemotron-3.5-lightning:free` (NVIDIA Nemotron 3.5
-Lightning, безкоштовний варіант — у HW4 була `nemotron-3-nano-30b-a3b:free`,
-але OpenRouter вимкнув free-доступ до неї), `reasoning` увімкнено, фолбек
-на `reasoning_details` (у Nemotron `content` буває None). Ключ — з
-`OPENROUTER_API_KEY`, не зберігається в репо.
-Для eval без LLM жодних зовнішніх залежностей не потрібно.
+## 5. Що залишилось (коротко, повністю — в FINAL_IMPROVEMENT.md)
 
-## 4. Результати (реальний виклик)
-
-```
-Total cases: 10
-Success rate: 7/10 = 70%
-Partial success: 1/10 = 10%
-Failure rate: 2/10 = 20%
-
-Groundedness good: 7/10 = 70%
-Groundedness bad: 2/10 = 20%
-
-Average latency: 1 ms
-Max latency: 4 ms (config-кейс — subprocess)
-
-Error types:
-  none: 7
-  wrong_retrieval: 2
-  wrong_routing: 1
-```
-
-Route-розподіл: command 7, config 2, clarification 1.
-
-### LLM-демо (реальний прогон, NVIDIA Nemotron 3.5 Lightning через OpenRouter)
-
-| id | question | regex (фактично) | intended | Nemotron (LLM) |
-|----|----------|------------------|----------|----------------|
-| 7 | how do I cherry-pick a commit? | `commit` | `cherry-pick` | `cherry-pick` ✅ |
-| 9 | undo my last commit but keep the changes? | `commit` | `reset` | `reset` ✅ |
-| 1–4, 6 | прямі командні запити | правильні | — | правильні ✅ |
-
-**6/6** command-кейсів повернули інтентовану команду — LLM-екстрактор
-вирішує обидва trap-кейси, які regex давав неправильно. Деталі:
-`outputs/llm_intent_demo.md`.
-
-## 5. Аналітичні висновки: де працює добре, а де ні
-
-**Працює добре:**
-- Прямі командні запити (stash/rebase/log/push) — точний route + точний
-  extract, 4/4.
-- Phrase-маршрутизація («commits graph» → `log`) — механізм з HW6 спрацював.
-- Config-retrieval із scope-детекцією (global/local) — відповідь ґрунтується
-  на реальних значеннях `git config`.
-- Out-of-domain («pizza recipe») — правильне уточнювальне питання без
-  інструменту.
-- Latency ~1 ms: deterministic pipeline дає нульовий network-хвіст,
-  на відміну від 1.5–3 s у LLM-based RAG.
-
-**Працює погано:**
-- Кейс 7: `cherry-pick` не в БД → extract бере слово `commit` з самого
-  запиту → агент **впевнено** віддає інформацію про `git commit` без жодного
-  маркера невпевненості (silent wrong answer — найнебезпечніший тип помилки).
-- Кейс 9: «undo my last commit but keep the changes» → правильна відповідь
-  `git reset --soft HEAD~1`, regex бере перше збігнуте слово `commit`.
-- Кейс 10: «how do I deploy my app to a server?» → маркер «how do i» кидає
-  запит в command_workflow замість clarification; додатковий баг — fallback
-  передає урізаний запит `query[:20]` як аргумент `command`.
-
-**3 головні проблеми:**
-1. Word-extract без інтент-розуміння: повний словник команди в запиті дає
-   впевнену неправильну відповідь (кейс 7) — потрібен exact/fuzzy-маркер
-   у відповіді інструмента і чесний «немає в базі».
-2. Regex-екстрактор не розуміє інтенцію («undo» → `reset`): LLM-екстрактор
-   (`--llm`) проведено — 6/6, включаючи цей кейс.
-3. Router не має negative-сигналів: запит без жодного git-маркера все одно
-   йде в command_workflow (кейс 10) — потрібне «жодного маркера →
-   clarification» і не передавати урізаний запит як аргумент.
-
-**Наступний крок:** після трьох виправлень перепуск того ж eval set
-(скрипт відтворюваний, deterministic — diff CSV між коммітами покаже
-регресію/покращення); очікуваний success 7/10 → 9/10.
-
-## 6. Як оцінюється (scoring)
-
-- `task_success` / `groundedness` / `answer_quality` — порівняння
-  **фактичного** результату (route, tool args, observation) з ground truth
-  з eval set; жодне значення не вигадане — усі колонки `answer`,
-  `retrieved_chunks`, `route_or_mode`, `tools_used`, `latency_ms`
-  записані з реального виклику.
-- Типи помилок: `none`, `wrong_retrieval` (неправильна команда),
-  `wrong_routing` (офтоп замість clarification).
-- Обмеження: система deterministic, тому порівняння з ground truth
-  достатнє; для LLM-систем потрібен LLM-as-a-judge (відмічено у звіті).
-
-## 7. Структура проекту (HW8)
-
-```
-scripts/eval_observability.py   — eval-харнес (10 кейсів, метрики, LLM-демо)
-outputs/eval_results.csv        — повна eval table (13 колонок)
-outputs/eval_results.md         — та сама таблиця, Markdown
-outputs/eval_summary.md         — observability metrics
-outputs/eval_raw.json           — повні трасування (для відтворюваності)
-outputs/quality_report.md       — quality report (3 проблеми, next steps)
-outputs/llm_intent_demo.md      — (опційно, --llm) LLM-інтент-екстрактор
-```
-
-Посилання на базову систему: гілка `hw7-langgraph` (граф, вузли, тести).
+- Intent-мапа покриває кейси з eval; інші перефразування («скасувати
+  останній комміт», «revert the previous commit») обробляються **безпечно**
+  (чесний fallback), але не вирішуються — розширення мапи або `--llm`
+  екстрактор (HW8) перетворять ці відмови на правильні відповіді.
+- В БД досі немає `cherry-pick`, `revert`, `reflog` — це механічне
+  доповнення `GIT_COMMANDS`, окрема зміна.
+- Router досі надмірно направляє «how do i …» в command_workflow; його
+  ловить guardrail, а не router. Негативний сигнал у router — свідомо
+  не включено, щоб змінити саме одну вибрану слабку точку.

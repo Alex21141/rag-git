@@ -51,6 +51,13 @@ os.makedirs(OUT, exist_ok=True)
 #   exp_grounded       — good / partial / bad / not_applicable
 #   exp_quality        — good / partial / bad
 # The ACTUAL values below are filled from execution.
+#
+# NOTE (final branch): ground-truth `exp_*` for cases 7, 9, 10 was updated
+# to the CORRECT behavior. On the hw8 branch they encoded the known
+# weaknesses of the old system (naive word extraction), e.g. case 9 had
+# exp_success="no" because the old system was expected to fail. The
+# Before numbers for the old system are preserved in the committed
+# outputs/eval_*.csv of the hw8-evaluation-observability-layer branch.
 EVAL_SET = [
     {
         "id": 1,
@@ -109,9 +116,10 @@ EVAL_SET = [
         "id": 7,
         "question": "how do I cherry-pick a commit?",
         "scenario": "retrieval may fail (command not in DB)",
-        "expected_behavior": "Command not in reference DB → honestly report 'not found' + list available commands",
+        "expected_behavior": "Command not in reference DB -> honestly report 'not found' + list available commands (Final: no fuzzy fallback to a wrong command)",
         "expected_route": "command_workflow",
         "exp_success": "partial", "exp_grounded": "partial", "exp_quality": "partial",
+        "expect_cmd": "cherry-pick",   # absent from the DB on purpose
     },
     {
         "id": 8,
@@ -125,19 +133,20 @@ EVAL_SET = [
         "id": 9,
         "question": "how do I undo my last commit but keep the changes?",
         "scenario": "complex / ambiguous (wrong-retrieval trap)",
-        "expected_behavior": "Correct answer is `git reset --soft HEAD~1`; naive extract matches the word 'commit' → returns `git commit` (WRONG)",
+        "expected_behavior": "Correct answer is `git reset --soft HEAD~1` (Final: intent phrase 'undo my last commit' -> reset)",
         "expected_route": "command_workflow",
-        "exp_success": "no", "exp_grounded": "bad", "exp_quality": "bad",
+        "exp_success": "yes", "exp_grounded": "good", "exp_quality": "good",
+        "expect_cmd": "reset",
         "note_trap": "ambiguous",
     },
     {
         "id": 10,
         "question": "how do I deploy my app to a server?",
         "scenario": "out of domain but looks command-like (mis-route trap)",
-        "expected_behavior": "Not a git command → should clarify; naive router sends to command tool with no command → 'not found' fallback",
-        "expected_route": "clarification",
-        "exp_success": "partial", "exp_grounded": "partial", "exp_quality": "partial",
-        "note_trap": "out-of-domain mis-route",
+        "expected_behavior": "No git command in question -> guardrail: do NOT call the tool with a fabricated argument; honest fallback listing what the bot can help with",
+        "expected_route": "command_workflow",
+        "exp_success": "yes", "exp_grounded": "not_applicable", "exp_quality": "good",
+        "note_trap": "out-of-domain; guardrail fallback expected",
     },
 ]
 
@@ -222,6 +231,9 @@ def score(case: dict, res: dict) -> dict:
     has_error = '"error"' in obs
     route = res["route"]
     err = classify_error(case, res)
+    # Final: the guardrail declined to call the tool (no confident command).
+    # The answer is an honest fallback, not a retrieval result.
+    fallback = (route == "command_workflow" and not res["observations"])
 
     # task_success: did the system do the right thing for this case?
     if err == "wrong_routing":
@@ -236,6 +248,8 @@ def score(case: dict, res: dict) -> dict:
     # groundedness: is the answer supported by the observation?
     if route == "clarification":
         grounded = "not_applicable"
+    elif fallback:
+        grounded = "partial"  # honest fallback, nothing was retrieved
     elif err == "wrong_retrieval":
         grounded = "bad"
     elif has_error and case["question"] in INTENT:
@@ -559,8 +573,11 @@ def sc_score_chunks(case, res):
     has_error = '"error"' in obs
     route = res["route"]
     if route == "command_workflow":
-        actual_cmd = (res["tool_args"][0]["args"].get("command")
-                      if res["tool_args"] else "?")
+        # Final guardrail: no command extracted -> tool NOT called, nothing
+        # was retrieved; the answer is an honest fallback.
+        if not res["tool_args"]:
+            return "none (guardrail: no confident command, tool not called)"
+        actual_cmd = res["tool_args"][0]["args"].get("command")
         if has_error:
             return (f"get_git_command(«{actual_cmd}») → "
                     "(not found, no matching chunk)")
