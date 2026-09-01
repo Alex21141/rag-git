@@ -1,0 +1,274 @@
+[
+  {
+    "id": 1,
+    "question": "how do I stash my changes?",
+    "scenario": "simple KB question",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "stash"
+        }
+      }
+    ],
+    "observation": "{\n  \"command\": \"stash\",\n  \"synopsis\": \"git stash [push|pop|list|apply|drop] [<options>]\",\n  \"description\": \"Temporarily shelf changes in a dirty working directory\",\n  \"examples\": [\n    \"git stash push -m 'work in progress'\",\n    \"git stash pop\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git stash [push|pop|list|apply|drop] [<options>]`.\nПризначення: Temporarily shelf changes in a dirty working directory.\nПриклади:\n- `git stash push -m 'work in progress'`\n- `git stash pop`",
+    "latency_ms": 3,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 2,
+    "question": "how do I rebase onto main?",
+    "scenario": "simple KB question",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "rebase"
+        }
+      }
+    ],
+    "observation": "{\n  \"command\": \"rebase\",\n  \"synopsis\": \"git rebase [<options>] [<branch>]\",\n  \"description\": \"Forward-port local commits to the updated upstream head\",\n  \"examples\": [\n    \"git rebase main\",\n    \"git rebase -i HEAD~3\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git rebase [<options>] [<branch>]`.\nПризначення: Forward-port local commits to the updated upstream head.\nПриклади:\n- `git rebase main`\n- `git rebase -i HEAD~3`",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 3,
+    "question": "show me recent commits graph",
+    "scenario": "requires tool (phrase → log)",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "log"
+        }
+      }
+    ],
+    "observation": "{\n  \"command\": \"log\",\n  \"synopsis\": \"git log [<options>] [<revision range>]\",\n  \"description\": \"Show commit logs\",\n  \"examples\": [\n    \"git log --oneline -10\",\n    \"git log --graph --all --oneline\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git log [<options>] [<revision range>]`.\nПризначення: Show commit logs.\nПриклади:\n- `git log --oneline -10`\n- `git log --graph --all --oneline`",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 4,
+    "question": "git push --force-with-lease",
+    "scenario": "simple KB question (explicit command)",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "push"
+        }
+      }
+    ],
+    "observation": "{\n  \"command\": \"push\",\n  \"synopsis\": \"git push [<remote> [<refspec>]]\",\n  \"description\": \"Update remote refs with local refs\",\n  \"examples\": [\n    \"git push origin main\",\n    \"git push --force-with-lease\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git push [<remote> [<refspec>]]`.\nПризначення: Update remote refs with local refs.\nПриклади:\n- `git push origin main`\n- `git push --force-with-lease`",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 5,
+    "question": "what is my git user.name?",
+    "scenario": "retrieval (config lookup)",
+    "route": "config_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "config_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_config",
+        "args": {
+          "scope": "global"
+        }
+      }
+    ],
+    "observation": "{\n  \"scope\": \"global\",\n  \"settings\": {\n    \"user.name\": \"Alex21141\",\n    \"user.email\": \"alex21141@gmail.com\"\n  }\n}",
+    "final_answer": "Налаштування git (scope: global):\n- `user.name` = `Alex21141`\n- `user.email` = `alex21141@gmail.com`",
+    "latency_ms": 4,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 6,
+    "question": "what is my local git config?",
+    "scenario": "retrieval (config lookup, local scope)",
+    "route": "config_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "config_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_config",
+        "args": {
+          "scope": "local"
+        }
+      }
+    ],
+    "observation": "{\n  \"scope\": \"local\",\n  \"settings\": {\n    \"core.repositoryformatversion\": \"0\",\n    \"core.filemode\": \"true\",\n    \"core.bare\": \"false\",\n    \"core.logallrefupdates\": \"true\",\n    \"remote.origin.url\": \"git@github.com:Alex21141/rag-git.git\",\n    \"remote.origin.fetch\": \"+refs/heads/*:refs/remotes/origin/*\",\n    \"branch.hw1-git.remote\": \"origin\",\n    \"branch.hw1-git.merge\": \"refs/heads/hw1-git\",\n    \"branch.hw7-langgraph.remote\": \"origin\",\n    \"branch.hw7-langgraph.merge\": \"refs/heads/hw7-langgraph\"\n  }\n}",
+    "final_answer": "Налаштування git (scope: local):\n- `core.repositoryformatversion` = `0`\n- `core.filemode` = `true`\n- `core.bare` = `false`\n- `core.logallrefupdates` = `true`\n- `remote.origin.url` = `git@github.com:Alex21141/rag-git.git`\n- `remote.origin.fetch` = `+refs/heads/*:refs/remotes/origin/*`\n- `branch.hw1-git.remote` = `origin`\n- `branch.hw1-git.merge` = `refs/heads/hw1-git`\n- `branch.hw7-langgraph.remote` = `origin`\n- `branch.hw7-langgraph.merge` = `refs/heads/hw7-langgraph`",
+    "latency_ms": 3,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "good",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 7,
+    "question": "how do I cherry-pick a commit?",
+    "scenario": "retrieval may fail (command not in DB)",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "commit"
+        }
+      }
+    ],
+    "observation": "{\n  \"command\": \"commit\",\n  \"synopsis\": \"git commit [<options>] [<pathspec>\\u2026]\",\n  \"description\": \"Record changes to the repository\",\n  \"examples\": [\n    \"git commit -m 'fix: resolve issue #42'\",\n    \"git commit --amend\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git commit [<options>] [<pathspec>…]`.\nПризначення: Record changes to the repository.\nПриклади:\n- `git commit -m 'fix: resolve issue #42'`\n- `git commit --amend`",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "no",
+      "groundedness": "bad",
+      "answer_quality": "bad",
+      "errors": "wrong_retrieval"
+    }
+  },
+  {
+    "id": 8,
+    "question": "what is the best pizza recipe?",
+    "scenario": "out of domain → should say 'I don't know' / clarify",
+    "route": "clarification",
+    "executed_nodes": [
+      "classify_request",
+      "clarification"
+    ],
+    "tool_calls": [],
+    "observation": null,
+    "final_answer": "Уточніть, будь ласка: ви питаєте про git-команду (наприклад, 'як зробити rebase?') чи про налаштування git (наприклад, 'яке у мене user.name?').",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "yes",
+      "groundedness": "not_applicable",
+      "answer_quality": "good",
+      "errors": "none"
+    }
+  },
+  {
+    "id": 9,
+    "question": "how do I undo my last commit but keep the changes?",
+    "scenario": "complex / ambiguous (wrong-retrieval trap)",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "commit"
+        }
+      }
+    ],
+    "observation": "{\n  \"command\": \"commit\",\n  \"synopsis\": \"git commit [<options>] [<pathspec>\\u2026]\",\n  \"description\": \"Record changes to the repository\",\n  \"examples\": [\n    \"git commit -m 'fix: resolve issue #42'\",\n    \"git commit --amend\"\n  ]\n}",
+    "final_answer": "Використовуйте: `git commit [<options>] [<pathspec>…]`.\nПризначення: Record changes to the repository.\nПриклади:\n- `git commit -m 'fix: resolve issue #42'`\n- `git commit --amend`",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "no",
+      "groundedness": "bad",
+      "answer_quality": "bad",
+      "errors": "wrong_retrieval"
+    }
+  },
+  {
+    "id": 10,
+    "question": "how do I deploy my app to a server?",
+    "scenario": "out of domain but looks command-like (mis-route trap)",
+    "route": "command_workflow",
+    "executed_nodes": [
+      "classify_request",
+      "command_workflow",
+      "build_answer"
+    ],
+    "tool_calls": [
+      {
+        "name": "get_git_command",
+        "args": {
+          "command": "how do I deploy my a"
+        }
+      }
+    ],
+    "observation": "{\n  \"error\": \"Command 'how do I deploy my a' not found in reference DB\"\n}",
+    "final_answer": "Команду не знайдено в базі. Доступні команди: add, branch, checkout, clone, commit, diff, log, merge, pull, push, rebase, reset, stash, status.",
+    "latency_ms": 1,
+    "scoring": {
+      "task_success": "partial",
+      "groundedness": "good",
+      "answer_quality": "partial",
+      "errors": "wrong_routing"
+    }
+  }
+]

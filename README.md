@@ -1,172 +1,125 @@
-# Домашнє завдання №7 — Перенесення workflow на фреймворк (LangGraph)
+# Домашнє завдання №8 — Evaluation + Observability layer
 
-## 1. Вибір фреймворку та його обґрунтування
+## 1. Що робить шар спостереження
 
-**Обрано: LangGraph.**
+До системи з HW7 (LangGraph git-агент) додано мінімальний шар спостереження
+й оцінювання якості: eval set із 10 запитів, автозапуск реального графа,
+збір результатів у структуровану таблицю, розрахунок метрик і quality report.
 
-### 1.1. Аналіз альтернатив
+- Скрипт: `scripts/eval_observability.py`
+- Таблиця: `outputs/eval_results.csv` (також `eval_results.md`)
+- Метрики: `outputs/eval_summary.md`
+- Повні трасування: `outputs/eval_raw.json`
+- Звіт: `outputs/quality_report.md`
+- Опційно: `--llm` — демонстрація LLM-інтент-екстрактора (сценарій
+  next-step, порівняння з regex-екстрактором)
 
-| Фреймворк | Модель виконання | Сильні сторони | Слабкі сторони для нашої задачі |
-|---|---|---|---|
-| **LangGraph** | Явний граф: state (TypedDict), nodes, edges, conditional routing | Прямо відображає те, що ми робили вручну в HW6: спільний state, кроки, розгалуження. Підтримка циклів, паралельних гілок, checkpointing | Більше шаблонного коду, ніж у plain-Python циклі |
-| **LlamaIndex Workflows** | Event-driven: async-кроки, об'єкти `Step`/`Event`, маршрутизація за подіями | Зручний для LLM-пайпланів (RAG-кроки, streaming, паралельний fetch) | Event-driven модель зайва для детермінованого графа без подій; state розбитий на event-контексти, а не єдиний TypedDict |
-| **CrewAI (Flows + Crews)** | Мультиагентний: агенти з ролями/целями, оркестрація через `@start`/`@listen`/`@router` | Сильний для сценаріів «команда агентів» (researcher → writer → reviewer) | Надмірна абстракція (роли, персони, кооперація агентів) для задачі «маршрутизація запитання до інструменту»; state керований декораторами, менш явно, ніж граф |
-| **smolagents** | Одиночний агент: цикл «думка → виклик інструменту» (TextAgent/CodeAgent) | Мінімалізм, швидко стартувати з LLM-агентом | Немає явного графа: nodes/edges/conditional routing не виражаються на рівні фреймворку — розгалуження ховається в логіці агента, і ми втрачаємо те, ради чого фреймворк і потрібен |
+## 2. Composition eval set (10 запитів)
 
-### 1.2. Висновок про вибір
-
-Workflow з HW6 — це **граф**: спільний state, послідовні кроки та явне розгалуження на 3 маршрути. LangGraph єдиний із розглянутих фреймворків, де state / nodes / edges / conditional routing є **первинними поняттями**:
-
-- State у LangGraph — TypedDict з partial updates: кожен node повертає лише ті поля, які змінює; злиття оновлень робить runtime. Це один-в-один відповідає ручному накопиченню state з HW6.
-- Conditional edge замість `if/elif` у коді кроку — маршрутизація стає структурою графа, а не текстом функції.
-- Вбудоване трасування та checkpointing — те, що в HW6 довелося писати вручну (`snapshot()` у кожному кроці).
-
-Інші фреймворки вирішують іншу задачу: LlamaIndex — event-driven LLM-пайплани, CrewAI — кооперація агентів із ролями, smolagents — мінімальний агентний цикл. Для детермінованого 5-node графа з 2 інструментами (без LLM) вони додають абстракцію, яка не збігається з формою задачі. Тому **LangGraph** — найкоротший шлях від HW6-логіки до фреймворкової реалізації без зміни семантики.
-
-## 2. Схема графа
-
-```
-                     ┌────────────────────────────┐
-                     │      classify_request      │
-                     │   Класифікація запиту      │
-                     │ (route_query з HW6)        │
-                     └─────────────┬──────────────┘
-                                   │ умовне ребро
-                                   │ (route_decision)
-        ┌──────────────────────────┼──────────────────────────┐
-        ▼                          ▼                          ▼
-┌──────────────────┐      ┌──────────────────┐      ┌────────────────────┐
-│ command_workflow │      │ config_workflow  │      │  clarification     │
-│ Питання про      │      │ Питання про      │      │  Уточнювальне      │
-│ git-команди      │      │ налаштування     │      │  питання           │
-│                  │      │                  │      │                    │
-│ get_git_command  │      │ get_git_config   │      │ (без інструменту)  │
-└────────┬─────────┘      └────────┬─────────┘      └─────────┬──────────┘
-         │ звичайне ребро           │ звичайне ребро           │ звичайне ребро
-         └────────────┬─────────────┘                          │
-                      ▼                                        │
-           ┌──────────────────────┐                            │
-           │     build_answer     │                            │
-           │ Синтез відповіді     │                            │
-           └──────────┬───────────┘                            │
-                      ▼                                        ▼
-                     END                                      END
-```
-
-Пояснення: `classify_request` — вхідна точка. Далі **умовне ребро** веде в один з трьох вузлів залежно від `selected_route`. Вузли-маршрути викликають інструмент (для `clarification` — не викликають). Після виконання маршруту `command_workflow` і `config_workflow` ідуть у спільний вузол `build_answer`, який формує фінальну відповідь; `clarification` закінчується одразу, бо його відповідь вже готова.
-
-## 3. Спільний стан (State)
-
-```python
-class AgentState(TypedDict, total=False):
-    user_goal: str          # оригінальний запит
-    selected_route: str      # command_workflow / config_workflow / clarification
-    tool_calls: list         # [{name, args}]
-    observations: list       # результати інструментів
-    final_answer: str        # синтезована відповідь
-    executed_nodes: list     # трасування виконаних вузлів
-```
-
-Різниця проти HW6: `executed_nodes` — трасування графа (у HW6 це робив ручний `snapshot()` у `agent_run`). Кожен вузол повертає **частковий словник** — LangGraph сам зливає оновлення в спільний state.
-
-## 4. Вузли (5)
-
-П'ять вузлів графа (кожен — окрема функція, реєструється через `graph.add_node`):
-
-1. **`classify_request`** — вхідна точка, визначає маршрут
-2. **`command_workflow`** — гілка «команда git»
-3. **`config_workflow`** — гілка «конфігурація git»
-4. **`clarification`** — гілка «не git-запит»
-5. **`build_answer`** — спільний синтез відповіді
-
-| Вузол | Функція | Оновлює поля |
+| # | Сценарій | Приклад |
 |---|---|---|
-| `classify_request` | Визначає маршрут (імпорт `route_query` з HW6) | `selected_route`, ініціалізує `tool_calls/observations`, `executed_nodes` |
-| `command_workflow` | Викликає `get_git_command` (`extract_command` з HW6) | `tool_calls`, `observations`, `executed_nodes` |
-| `config_workflow` | Викликає `get_git_config` | `tool_calls`, `observations`, `executed_nodes` |
-| `clarification` | Формує уточнювальне питання (без інструменту) | `final_answer`, `executed_nodes` |
-| `build_answer` | Синтезує відповідь (`synthesize_command`/`synthesize_config` з HW6) | `final_answer`, `executed_nodes` |
+| 1–4 | Просте питання з knowledge base | «how do I stash my changes?» |
+| 3 | Питання, де потрібен tool (phrase → команда) | «show me recent commits graph» → `log` |
+| 5–6 | Питання, де потрібен retrieval (live config, global/local) | «what is my git user.name?» |
+| 7 | Питання, де retrieval може помилитися (команда не в БД) | «how do I cherry-pick a commit?» |
+| 8 | Agent має сказати «не знаю» / уточнити | «what is the best pizza recipe?» |
+| 9–10 | Складне / неоднозначне (trap-кейси) | «undo my last commit but keep the changes» |
 
-Доменний код (правила маршрутизації, mock-інструменти, синтез) **імпортується з `agent_flow.py` (HW6)**, а не копіюється — той самий workflow, інша обгортка.
+Ground truth (яку команду має видобути система) закладено в
+`INTENT` map всередині скрипту.
 
-## 5. Ребра
-
-- **Умовне ребро** після `classify_request` → функція `route_decision(state)` повертає `state["selected_route"]`, мапінг: `command_workflow → command_workflow`, `config_workflow → config_workflow`, `clarification → clarification`.
-- **Звичайні ребра:** `command_workflow → build_answer`, `config_workflow → build_answer`, `clarification → END`, `build_answer → END`.
-
-## 6. Тестування (3 приклади)
-
-Повні трасування — в `outputs/langgraph_examples.md` (запит, обраний маршрут, виконані вузли, фінальний state, фінальна відповідь).
-
-| # | Запит | Маршрут | Виконані вузли | Інструмент |
-|---|---|---|---|---|
-| 1 | how do I stash my changes? | `command_workflow` | classify_request → command_workflow → build_answer | `get_git_command(stash)` |
-| 2 | what is my git user.name? | `config_workflow` | classify_request → config_workflow → build_answer | `get_git_config(global)` |
-| 3 | what is the best pizza recipe? | `clarification` | classify_request → clarification | — |
-
-Поведінка графа збігається з ручною реалізацією з HW6 (ті самі маршрути, інструменти, відповіді).
-
-## 7. Порівняння: ручна реалізація (HW6) vs LangGraph (HW7)
-
-| Аспект | Ручна реалізація | LangGraph |
-|---|---|---|
-| Складність коду | Простіше: одна функція `agent_run()` з if/else | Більше шаблонного коду: TypedDict, `add_node`, `add_edge`, `compile`, часткові оновлення |
-| Видимість workflow | Не явна — треба читати `agent_run` | Граф описаний явно: вузли/ребра видно у коді та через `graph.get_graph()` |
-| Робота зі state | Вручну: один словник, накопичується в циклі | TypedDict + часткові оновлення — структура явна, злиття робить runtime |
-| Умовна маршрутизація | `if state["selected_route"] == ...` у коді кроку | Явне умовне ребро з мапінгом маршрут → вузол |
-| Відладка/трасування | Ручний `snapshot()` у кожному кроці | Вбудоване (виконані вузли, checkpointing), частковий state після кожного вузла |
-| Ризик помилок | Легко пропустити крок або забути оновити поле state | Runtime валідує граф (немає вузла для маршруту → помилка при компіляції/виклику) |
-
-**Що стало краще:**
-- Маршрутизація стала явною: мапінг «маршрут → вузол» замість ланцюга if/else, розкиданого по кроках циклу.
-- State має структуру (TypedDict) і оновлюється частковими словниками — неможливо «забути» поле, якого чекає наступний вузол.
-- Трасування виконання (`executed_nodes`, за потреби — checkpointing) дається без ручного коду знімків стану.
-- Граф легко розширювати: новий маршрут = новий вузол + один рядок в умовному краї.
-
-**Що стало складніше:**
-- Шаблонний код: TypedDict, `StateGraph`, 5 викликів `add_node`, края, `compile` — близько 40 рядків «каркасу» для задачі, яка в ручній реалізації помістилася б у 30.
-- Кожен вузол має знати формат часткового оновлення (які поля повертати), а не просто модифікувати словник.
-- Для детермінованого 5-вузлового графа без LLM перевага фреймворку — насамперед у читабельності, а не у функціональності.
-
-**Висновок:** для задачі розміру HW6 (3 кроки, 3 маршрути) фреймворк додає каркас, але робить структуру явною та розширюваною. Перевага LangGraph починає зростати від 4+ маршрутів, паралельних гілок, циклів (повторні спроби, зворотний зв'язок) та checkpointing — усе це в ручній реалізації доводилося б писати вручну. Для цього розміру задачі: додаткова, але не зайва складність.
-
-**Відоме обмеження маршрутизації (спільне з HW6):** якщо запит потрапляє в `command_workflow`, але конкретної команди в ньому не впізнається (наприклад, «how do I use git?»), то `extract_command` повертає `None`, і викликається інструмент із запитом як аргументом. `get_git_command` обробляє це штатно: повертає `{"error": ...}`, а `synthesize_command` формує відповідь «Команду не знайдено в базі. Доступні команди: …». Граф не падає — маршрут закритий. Це точне дзеркало поведінки HW6 (той самий доменний код). Можливе покращення: повертати такий запит назад в `clarification` — але це зміна доменної логіки, виводить HW7 за межі «перенесення того самого workflow».
-
-## 8. Як запустити
+## 3. Як запустити
 
 ```bash
-uv venv venv && uv pip install --python ./venv/bin/python langgraph
-./venv/bin/python scripts/langgraph_flow.py
+./venv/bin/python scripts/eval_observability.py          # eval
+./venv/bin/python scripts/eval_observability.py --llm    # + LLM-демо
 ```
 
-Результат: `outputs/langgraph_examples.md` + консольне резюме (маршрут → вузли для кожного з 3 запитів).
-## 9. Структура проекту
+`--llm` читає `LITELLM_BASE_URL` / `LITELLM_API_KEY` / `LITELLM_MODEL`
+зі середовища (за замовчуванням LiteLLM-проксі, модель `qwen38-27b-awq`).
+Для eval без LLM жодних зовнішніх залежностей не потрібно.
+
+## 4. Результати (реальний виклик)
 
 ```
-.
-├── README.md                      # це завдання (HW7)
-├── data/
-│   ├── raw/                       # 12 джерел: git-scm.com + gitlab.com (markdown, HW1)
-│   └── processed/
-│       └── chunks.jsonl           # 1200 чанків: 800 символів, overlap 100, backtick-aware (HW2)
-├── scripts/
-│   ├── download_sources.py        # завантаження джерел (HW1)
-│   ├── prepare_knowledge_base.py  # chunking → chunks.jsonl (HW2)
-│   ├── validate_chunks.py         # валідація чанків (HW2)
-│   ├── retrieval.py               # FAISS-ретривал: top-5, hybrid, query expansion (HW3)
-│   ├── rag_answer.py              # RAG-відповіді: prompt, цитати, fallback (HW4)
-│   ├── external_tool.py           # mock-інструмент git (read-only) (HW5)
-│   ├── agent_flow.py              # custom workflow: state, routes, синтез (HW6)
-│   └── langgraph_flow.py          # ЦЕ ЗАВДАННЯ: той самий workflow на LangGraph
-└── outputs/
-    ├── retrieval_examples.md      # приклади ретривалу (HW3)
-    ├── rag_answers_examples.md    # RAG-відповіді (HW4)
-    ├── tool_examples.md           # виклики інструменту (HW5)
-    ├── agent_flow_examples.md     # трасування custom workflow (HW6)
-    └── langgraph_examples.md      # трасування графа LangGraph (це завдання)
+Total cases: 10
+Success rate: 7/10 = 70%
+Partial success: 1/10 = 10%
+Failure rate: 2/10 = 20%
+
+Groundedness good: 7/10 = 70%
+Groundedness bad: 2/10 = 20%
+
+Average latency: 1 ms
+Max latency: 4 ms (config-кейс — subprocess)
+
+Error types:
+  none: 7
+  wrong_retrieval: 2
+  wrong_routing: 1
 ```
 
-Зв'язки між файлами:
-- `langgraph_flow.py` імпортує з `agent_flow.py` правила маршрутизації, mock-інструменти та синтез відповіді — доменна логіка однакова в обох реалізаціях, різниця лише в механіці виконання (ручний цикл vs граф).
-- `retrieval.py` використовує `data/processed/chunks.jsonl`; у HW7 ретривал не використовується (workflow детермінований), але залишається частиною проекту.
-- `index/` — локальний FAISS-індекс, не входить у git (`.gitignore`).
+Route-розподіл: command 7, config 2, clarification 1.
+
+## 5. Аналітичні висновки: де працює добре, а де ні
+
+**Працює добре:**
+- Прямі командні запити (stash/rebase/log/push) — точний route + точний
+  extract, 4/4.
+- Phrase-маршрутизація («commits graph» → `log`) — механізм з HW6 спрацював.
+- Config-retrieval із scope-детекцією (global/local) — відповідь ґрунтується
+  на реальних значеннях `git config`.
+- Out-of-domain («pizza recipe») — правильне уточнювальне питання без
+  інструменту.
+- Latency ~1 ms: deterministic pipeline дає нульовий network-хвіст,
+  на відміну від 1.5–3 s у LLM-based RAG.
+
+**Працює погано:**
+- Кейс 7: `cherry-pick` не в БД → extract бере слово `commit` з самого
+  запиту → агент **впевнено** віддає інформацію про `git commit` без жодного
+  маркера невпевненості (silent wrong answer — найнебезпечніший тип помилки).
+- Кейс 9: «undo my last commit but keep the changes» → правильна відповідь
+  `git reset --soft HEAD~1`, regex бере перше збігнуте слово `commit`.
+- Кейс 10: «how do I deploy my app to a server?» → маркер «how do i» кидає
+  запит в command_workflow замість clarification; додатковий баг — fallback
+  передає урізаний запит `query[:20]` як аргумент `command`.
+
+**3 головні проблеми:**
+1. Word-extract без інтент-розуміння: повний словник команди в запиті дає
+   впевнену неправильну відповідь (кейс 7) — потрібен exact/fuzzy-маркер
+   у відповіді інструмента і чесний «немає в базі».
+2. Regex-екстрактор не розуміє інтенцію («undo» → `reset`): розширені
+   phrase-hints або LLM-екстрактор (сценарій реалізований у `--llm`).
+3. Router не має negative-сигналів: запит без жодного git-маркера все одно
+   йде в command_workflow (кейс 10) — потрібне «жодного маркера →
+   clarification» і не передавати урізаний запит як аргумент.
+
+**Наступний крок:** після трьох виправлень перепуск того ж eval set
+(скрипт відтворюваний, deterministic — diff CSV між коммітами покаже
+регресію/покращення); очікуваний success 7/10 → 9–10/10.
+
+## 6. Як оцінюється (scoring)
+
+- `task_success` / `groundedness` / `answer_quality` — порівняння
+  **фактичного** результату (route, tool args, observation) з ground truth
+  з eval set; жодне значення не вигадане — усі колонки `answer`,
+  `retrieved_chunks`, `route_or_mode`, `tools_used`, `latency_ms`
+  записані з реального виклику.
+- Типи помилок: `none`, `wrong_retrieval` (неправильна команда),
+  `wrong_routing` (офтоп замість clarification).
+- Обмеження: система deterministic, тому порівняння з ground truth
+  достатнє; для LLM-систем потрібен LLM-as-a-judge (відмічено у звіті).
+
+## 7. Структура проекту (HW8)
+
+```
+scripts/eval_observability.py   — eval-харнес (10 кейсів, метрики, LLM-демо)
+outputs/eval_results.csv        — повна eval table (13 колонок)
+outputs/eval_results.md         — та сама таблиця, Markdown
+outputs/eval_summary.md         — observability metrics
+outputs/eval_raw.json           — повні трасування (для відтворюваності)
+outputs/quality_report.md       — quality report (3 проблеми, next steps)
+outputs/llm_intent_demo.md      — (опційно, --llm) LLM-інтент-екстрактор
+```
+
+Посилання на базову систему: гілка `hw7-langgraph` (граф, вузли, тести).
