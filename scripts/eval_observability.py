@@ -285,10 +285,23 @@ def score(case: dict, res: dict) -> dict:
     }
 
 
+# ── LLM Configuration (same approach as HW4: OpenRouter + Nemotron) ───────
+# HW4 used the ":free" variant; OpenRouter has since retired free access to
+# this model, so the default is the paid slug. Both are the same Nemotron
+# 3 Nano 30B A3B. Override with LLM_MODEL env var if needed.
+LLM_BASE_URL = "https://openrouter.ai/api/v1"
+LLM_MODEL = "nvidia/nemotron-3-nano-30b-a3b"
+# API key from environment variable (not stored in repo)
+# Set: export OPENROUTER_API_KEY=sk-or-v1-...
+
+
 def llm_extract_command(question: str, model: str = None) -> dict:
     """Демо: LLM як інтент-екстрактор (наївний regex-екстрактор → LLM).
 
-    Читає LITELLM_BASE_URL / LITELLM_API_KEY / LITELLM_MODEL зі środowiskа.
+    ЛLM-виклик за підходом HW4 (scripts/rag_answer.py): OpenRouter +
+    nvidia/nemotron-3-nano-30b-a3b:free, reasoning увімкнено. У Nano Nemotron
+    `content` буває None, тому є фолбек на `reasoning_details`.
+    Ключ читається з OPENROUTER_API_KEY (не зберігається в репо).
     Повертає {"command": str|None, "raw": str, "ok": bool}.
     """
     import os
@@ -297,9 +310,12 @@ def llm_extract_command(question: str, model: str = None) -> dict:
     except ImportError:
         return {"command": None, "ok": False,
                 "raw": "openai package not installed (pip install openai)"}
-    base = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000/v1")
-    key = os.environ.get("LITELLM_API_KEY", "")
-    model = model or os.environ.get("LITELLM_MODEL", "qwen38-27b-awq")
+    base = os.environ.get("LLM_BASE_URL", LLM_BASE_URL)
+    key = os.environ.get("OPENROUTER_API_KEY", "")
+    model = model or os.environ.get("LLM_MODEL", LLM_MODEL)
+    if not key:
+        return {"command": None, "ok": False,
+                "raw": "OPENROUTER_API_KEY not set in environment"}
     valid = ", ".join(sorted(GIT_COMMANDS_KEYS))
     sys_prompt = (
         "You extract the git command a user is asking about. "
@@ -314,16 +330,23 @@ def llm_extract_command(question: str, model: str = None) -> dict:
             model=model,
             messages=[{"role": "system", "content": sys_prompt},
                       {"role": "user", "content": question}],
-            max_tokens=16,
+            max_tokens=2048,
             temperature=0,
+            extra_body={"reasoning": {"enabled": True}},
         )
-        out = (r.choices[0].message.content or "").strip()
-        # some reasoning models put the answer inside reasoning; take last token
+        msg = r.choices[0].message
+        out = (msg.content or "").strip()
+        if not out:
+            # Nano Nemotron: answer may live inside reasoning_details
+            rd = getattr(msg, "reasoning_details", None)
+            if rd:
+                out = str(rd).strip()
+        # take the last non-empty word (reasoning models end with the answer)
         cand = [w for w in out.replace("\n", " ").split() if w and not w.startswith("{")]
         word = (cand[-1] if cand else out).strip(".\"'").lower()
-        if word in ("none", "нічого", "") :
+        if word in ("none", "нічого", ""):
             word = None
-        return {"command": word, "ok": True, "raw": out}
+        return {"command": word, "ok": True, "raw": out[:200]}
     except Exception as e:
         return {"command": None, "ok": False, "raw": str(e)}
 
@@ -359,6 +382,10 @@ def run_llm_demo(rows: list, raw: list) -> None:
             fixed += 1
         lines.append(f"| {r['id']} | {q} | `{actual}` | `{intended}` | "
                      f"`{out}` | {verdict} |")
+        # stay within the free-model rate limit (20 RPM) — same as HW4
+        if tested < len(INTENT):
+            import time
+            time.sleep(3)
     lines += [
         "",
         f"**Result:** {fixed}/{tested} command cases would return the intended command.",

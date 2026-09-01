@@ -84,19 +84,36 @@ extract — regex word match + phrase hints, tools — mock DB + subprocess.
    Виправлення: якщо `extract_command` повернуло None і в запиті немає
    жодного git-маркера — маршрутизувати в `clarification`, а не в tool.
 
+## LLM-демо: замінити regex-екстрактор LLM-викликом (реальний прогон)
+
+Опційний `--llm` режим `eval_observability.py` проведено на моделі
+`nvidia/nemotron-3-nano-30b-a3b` через OpenRouter (той самий підхід, що в
+HW4: `reasoning` увімкнено, фолбек на `reasoning_details`, бо в Nano
+Nemotron `content` буває None). Результат (`outputs/llm_intent_demo.md`):
+
+| id | question | regex (фактично) | intended | Nemotron (LLM) |
+|----|----------|------------------|----------|----------------|
+| 7 | how do I cherry-pick a commit? | `commit` ❌ | `cherry-pick` | `cherry-pick` ✅ |
+| 9 | undo my last commit but keep the changes? | `commit` ❌ | `reset` | `reset` ✅ |
+| 1–4, 6 | прямі командні запити | правильні | — | правильні ✅ |
+
+**6/6 command-кейсів** повернули інтентовану команду, зокрема два
+trap-кейси, які regex-екстрактор давав неправильно. Це підтверджує
+гіпотезу звіту: для малого домену (14 команд) LLM-екстрактор —
+прийнятний trade-off (сотні ms замість ~0 ms), який закриває обидві
+проблеми wrong_retrieval без розширення словника phrase-hints.
+
 ## Що покращити наступним кроком
 
 1. Exact/fuzzy match-маркер в `get_git_command` + чесний «not found»
    замість підсунутої суміжної команди (закриває кейс 7 — найгірший
    за ризиком).
-2. Intent-based extract: розширені phrase-hints або LLM-екстрактор
-   (`--llm` режим уже написаний і готовий до порівняльного прогону).
+2. LLM-екстрактор як основний `extract_command` — `--llm` режим
+   реалізований і проведений: 6/6, включаючи кейси 7 і 9.
 3. Negative routing: жодного git-маркера → `clarification` (закриває
    кейс 10) + не передавати урізаний запит як аргумент інструменту.
-4. Після виправлень — перепуск цього ж eval set: очікуваний success
-   7/10 → 10/10 (кейс 9 залишиться partial, якщо не впровадити LLM,
-   бо `reset` не згадано в запиті прямо — це і є аргумент на користь
-   LLM-екстрактора).
+4. Після впровадження LLM-екстрактора — перепуск eval set: очікуваний
+   success 7/10 → 9/10 (кейс 10 закривається пунктом 3).
 
 ## Оцінка спостережуваності (meta)
 

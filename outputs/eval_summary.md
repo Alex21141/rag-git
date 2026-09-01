@@ -11,7 +11,7 @@ Groundedness partial: 0/10 = 0%
 Groundedness bad: 2/10 = 20%
 
 Average latency: 1 ms
-Max latency: 4 ms (case #5)
+Max latency: 3 ms (case #1)
 
 Error types:
   none: 7

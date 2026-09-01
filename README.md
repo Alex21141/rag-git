@@ -11,8 +11,8 @@
 - Метрики: `outputs/eval_summary.md`
 - Повні трасування: `outputs/eval_raw.json`
 - Звіт: `outputs/quality_report.md`
-- Опційно: `--llm` — демонстрація LLM-інтент-екстрактора (сценарій
-  next-step, порівняння з regex-екстрактором)
+- Опційно: `--llm` — LLM-інтент-екстрактор (Nemotron 3 Nano 30B A3B через
+  OpenRouter, той самий підхід, що HW4); проведено: 6/6
 
 ## 2. Composition eval set (10 запитів)
 
@@ -32,11 +32,16 @@ Ground truth (яку команду має видобути система) за
 
 ```bash
 ./venv/bin/python scripts/eval_observability.py          # eval
+export OPENROUTER_API_KEY=***
 ./venv/bin/python scripts/eval_observability.py --llm    # + LLM-демо
 ```
 
-`--llm` читає `LITELLM_BASE_URL` / `LITELLM_API_KEY` / `LITELLM_MODEL`
-зі середовища (за замовчуванням LiteLLM-проксі, модель `qwen38-27b-awq`).
+`--llm` використовує той самий підхід, що HW4 (`scripts/rag_answer.py`):
+OpenRouter + `nvidia/nemotron-3-nano-30b-a3b` (Nemotron 3 Nano 30B A3B),
+`reasoning` увімкнено, фолбек на `reasoning_details` (у Nano Nemotron
+`content` буває None). Ключ — з `OPENROUTER_API_KEY`, не зберігається
+в репо. Зауваження: `:free`-варіант моделі OpenRouter вимкнено,
+тому за замовчуванням платний slug (той самій моделі).
 Для eval без LLM жодних зовнішніх залежностей не потрібно.
 
 ## 4. Результати (реальний виклик)
@@ -60,6 +65,18 @@ Error types:
 ```
 
 Route-розподіл: command 7, config 2, clarification 1.
+
+### LLM-демо (реальний прогон, Nemotron 3 Nano 30B A3B через OpenRouter)
+
+| id | question | regex (фактично) | intended | Nemotron (LLM) |
+|----|----------|------------------|----------|----------------|
+| 7 | how do I cherry-pick a commit? | `commit` | `cherry-pick` | `cherry-pick` ✅ |
+| 9 | undo my last commit but keep the changes? | `commit` | `reset` | `reset` ✅ |
+| 1–4, 6 | прямі командні запити | правильні | — | правильні ✅ |
+
+**6/6** command-кейсів повернули інтентовану команду — LLM-екстрактор
+вирішує обидва trap-кейси, які regex давав неправильно. Деталі:
+`outputs/llm_intent_demo.md`.
 
 ## 5. Аналітичні висновки: де працює добре, а де ні
 
@@ -88,15 +105,15 @@ Route-розподіл: command 7, config 2, clarification 1.
 1. Word-extract без інтент-розуміння: повний словник команди в запиті дає
    впевнену неправильну відповідь (кейс 7) — потрібен exact/fuzzy-маркер
    у відповіді інструмента і чесний «немає в базі».
-2. Regex-екстрактор не розуміє інтенцію («undo» → `reset`): розширені
-   phrase-hints або LLM-екстрактор (сценарій реалізований у `--llm`).
+2. Regex-екстрактор не розуміє інтенцію («undo» → `reset`): LLM-екстрактор
+   (`--llm`) проведено — 6/6, включаючи цей кейс.
 3. Router не має negative-сигналів: запит без жодного git-маркера все одно
    йде в command_workflow (кейс 10) — потрібне «жодного маркера →
    clarification» і не передавати урізаний запит як аргумент.
 
 **Наступний крок:** після трьох виправлень перепуск того ж eval set
 (скрипт відтворюваний, deterministic — diff CSV між коммітами покаже
-регресію/покращення); очікуваний success 7/10 → 9–10/10.
+регресію/покращення); очікуваний success 7/10 → 9/10.
 
 ## 6. Як оцінюється (scoring)
 
