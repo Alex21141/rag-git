@@ -87,3 +87,6 @@ weakness (preferring a deep niche chunk over the chapter opener for "what is
 X" intro questions) is small and is mitigated by the hybrid retrieval, where
 BM25 anchors the exact terms and metadata filters the doc. Recommendation:
 adopt bge-small-en-v1.5 for the semantic leg of the hybrid.
+
+(Project decision: keep all-MiniLM-L6-v2 as-is for now; bge-small-en-v1.5
+is recorded here as the measured drop-in upgrade option.)

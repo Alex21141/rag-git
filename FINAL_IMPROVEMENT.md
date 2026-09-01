@@ -217,8 +217,9 @@ chapter, milder). Score calibration clearly favors B (higher, more spread
 cosines → better for re-ranking/thresholds in the HW3 hybrid). B is the same
 384d, so adoption is a drop-in: change `MODEL_NAME` + rebuild the 145-chunk
 index (~3s). Its one mild weakness is mitigated by the hybrid, where BM25
-anchors exact terms. **Recommendation: use bge-small-en-v1.5 for the
-semantic leg of the hybrid.**
+anchors exact terms. **Decision (project owner): keep all-MiniLM-L6-v2
+as-is** — bge-small-en-v1.5 is recorded as the measured drop-in upgrade
+option for the future.
 
 (Note: this A/B documents the *option*; it is not wired into the retrieval
 pipeline on this branch — that pipeline is HW2/HW3 code, kept as-is here.
