@@ -11,8 +11,8 @@
 - Метрики: `outputs/eval_summary.md`
 - Повні трасування: `outputs/eval_raw.json`
 - Звіт: `outputs/quality_report.md`
-- Опційно: `--llm` — LLM-інтент-екстрактор (Nemotron 3 Nano 30B A3B через
-  OpenRouter, той самий підхід, що HW4); проведено: 6/6
+- Опційно: `--llm` — LLM-інтент-екстрактор (NVIDIA Nemotron 3.5 Lightning
+  через OpenRouter, той самий підхід, що HW4); проведено: 6/6
 
 ## 2. Composition eval set (10 запитів)
 
@@ -37,11 +37,11 @@ export OPENROUTER_API_KEY=***
 ```
 
 `--llm` використовує той самий підхід, що HW4 (`scripts/rag_answer.py`):
-OpenRouter + `nvidia/nemotron-3-nano-30b-a3b` (Nemotron 3 Nano 30B A3B),
-`reasoning` увімкнено, фолбек на `reasoning_details` (у Nano Nemotron
-`content` буває None). Ключ — з `OPENROUTER_API_KEY`, не зберігається
-в репо. Зауваження: `:free`-варіант моделі OpenRouter вимкнено,
-тому за замовчуванням платний slug (той самій моделі).
+OpenRouter + `nvidia/nemotron-3.5-lightning:free` (NVIDIA Nemotron 3.5
+Lightning, безкоштовний варіант — у HW4 була `nemotron-3-nano-30b-a3b:free`,
+але OpenRouter вимкнув free-доступ до неї), `reasoning` увімкнено, фолбек
+на `reasoning_details` (у Nemotron `content` буває None). Ключ — з
+`OPENROUTER_API_KEY`, не зберігається в репо.
 Для eval без LLM жодних зовнішніх залежностей не потрібно.
 
 ## 4. Результати (реальний виклик)
@@ -66,7 +66,7 @@ Error types:
 
 Route-розподіл: command 7, config 2, clarification 1.
 
-### LLM-демо (реальний прогон, Nemotron 3 Nano 30B A3B через OpenRouter)
+### LLM-демо (реальний прогон, NVIDIA Nemotron 3.5 Lightning через OpenRouter)
 
 | id | question | regex (фактично) | intended | Nemotron (LLM) |
 |----|----------|------------------|----------|----------------|

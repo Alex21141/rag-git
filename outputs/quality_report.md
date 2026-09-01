@@ -87,9 +87,11 @@ extract — regex word match + phrase hints, tools — mock DB + subprocess.
 ## LLM-демо: замінити regex-екстрактор LLM-викликом (реальний прогон)
 
 Опційний `--llm` режим `eval_observability.py` проведено на моделі
-`nvidia/nemotron-3-nano-30b-a3b` через OpenRouter (той самий підхід, що в
-HW4: `reasoning` увімкнено, фолбек на `reasoning_details`, бо в Nano
-Nemotron `content` буває None). Результат (`outputs/llm_intent_demo.md`):
+`nvidia/nemotron-3.5-lightning:free` (NVIDIA Nemotron 3.5 Lightning,
+безкоштовний) через OpenRouter (той самий підхід, що в HW4: `reasoning`
+увімкнено, фолбек на `reasoning_details`, бо в Nemotron `content` буває
+None; у HW4 була `nemotron-3-nano-30b-a3b:free`, але OpenRouter вимкнув
+free-доступ до неї). Результат (`outputs/llm_intent_demo.md`):
 
 | id | question | regex (фактично) | intended | Nemotron (LLM) |
 |----|----------|------------------|----------|----------------|

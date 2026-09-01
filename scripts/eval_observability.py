@@ -286,11 +286,11 @@ def score(case: dict, res: dict) -> dict:
 
 
 # ── LLM Configuration (same approach as HW4: OpenRouter + Nemotron) ───────
-# HW4 used the ":free" variant; OpenRouter has since retired free access to
-# this model, so the default is the paid slug. Both are the same Nemotron
-# 3 Nano 30B A3B. Override with LLM_MODEL env var if needed.
+# HW4 used nvidia/nemotron-3-nano-30b-a3b:free; OpenRouter has since retired
+# free access to that model. This eval uses the free variant of the newer
+# Nemotron 3.5 Lightning. Override with LLM_MODEL env var if needed.
 LLM_BASE_URL = "https://openrouter.ai/api/v1"
-LLM_MODEL = "nvidia/nemotron-3-nano-30b-a3b"
+LLM_MODEL = "nvidia/nemotron-3.5-lightning:free"
 # API key from environment variable (not stored in repo)
 # Set: export OPENROUTER_API_KEY=sk-or-v1-...
 
@@ -299,7 +299,7 @@ def llm_extract_command(question: str, model: str = None) -> dict:
     """Демо: LLM як інтент-екстрактор (наївний regex-екстрактор → LLM).
 
     ЛLM-виклик за підходом HW4 (scripts/rag_answer.py): OpenRouter +
-    nvidia/nemotron-3-nano-30b-a3b:free, reasoning увімкнено. У Nano Nemotron
+    nvidia/nemotron-3.5-lightning:free, reasoning увімкнено. У Nano Nemotron
     `content` буває None, тому є фолбек на `reasoning_details`.
     Ключ читається з OPENROUTER_API_KEY (не зберігається в репо).
     Повертає {"command": str|None, "raw": str, "ok": bool}.
